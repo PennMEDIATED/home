@@ -1,0 +1,846 @@
+/* =============================================================================
+   Atlassian Spacing Tokens — 8px base unit
+   https://atlassian.design/foundations/spacing
+   Shared conventions with the Penn MEDIATED /about repo for brand consistency.
+   ============================================================================= */
+:root {
+  --space-025:   2px;
+  --space-050:   4px;
+  --space-075:   6px;
+  --space-100:   8px;
+  --space-150:  12px;
+  --space-200:  16px;
+  --space-250:  20px;
+  --space-300:  24px;
+  --space-400:  32px;
+  --space-500:  40px;
+  --space-600:  48px;
+  --space-800:  64px;
+  --space-1000: 80px;
+
+  /* ── Figma colour tokens ── */
+  --c-bg:         #ffffff;
+  --c-dark:       #0d0d0c;          /* rgb(13,13,12)   */
+  --c-nav-bg:     rgba(13,13,12,0.92);
+  --c-light-bg:   #f8f7f4;          /* rgb(248,247,244)*/
+  --c-accent:     #5533ee;          /* rgb(85,51,238)  */
+  --c-red:        #f03d1f;          /* rgb(240,61,31)  */
+  --c-gray:       #888680;          /* rgb(136,134,128)*/
+  --c-gray-dark:  #54534f;          /* rgb(84,83,79) — opaque body copy, ~8:1 contrast on white */
+  --c-muted:      #c8c6c0;          /* rgb(200,198,192) date/meta text */
+  --c-white:      #ffffff;
+
+  /* Brand gradient — used on newsletter/supporters and the hero, matches
+     /about's orbital section exactly: 150deg #5533ee 0% → #df3611 81% */
+  --c-gradient: linear-gradient(150deg, #5533ee 0%, #df3611 81%);
+
+  /* ── Figma typography tokens ── */
+  --f-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --f-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
+  --f-mono:  'Courier New', Courier, monospace;
+
+  /* ── Page layout ── */
+  --max-w: 1440px;
+  --pad-x: var(--space-1000);   /* 80px side padding — page-level rhythm */
+  --nav-h: 52px;
+}
+
+/* =============================================================================
+   Reset
+   ============================================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--f-sans);
+  color: var(--c-dark);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+ul, ol { list-style: none; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; height: auto; display: block; }
+button { font: inherit; cursor: pointer; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
+}
+
+/* =============================================================================
+   Shared inner container
+   ============================================================================= */
+.nav__inner,
+.hero__inner,
+.whats-new__inner,
+.research-cta__inner,
+.events__inner,
+.newsletter__inner,
+.supporters__inner,
+.footer__inner,
+.footer__bottom {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--pad-x);
+}
+
+/* =============================================================================
+   NAV
+   Figma: 1434×52, fill rgba(13,13,12,.92), sticky over the hero
+   ============================================================================= */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  background: var(--c-nav-bg);
+  backdrop-filter: blur(12px);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Brand lockup: concentric red ring mark + PENN/MEDIATED wordmark.
+   Nav = PENN caption above italic-mixed MEDIATED; footer reverses the
+   stack and drops the italic, per Figma's two distinct treatments. */
+.brand { display: flex; align-items: center; gap: var(--space-150); }
+
+.brand__mark {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-red);
+}
+
+.brand__mark::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-red);
+  opacity: 0.6;
+}
+
+.brand__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-red);
+  transform: translate(-50%, -50%);
+}
+
+.brand__text { display: flex; flex-direction: column; }
+
+.brand__eyebrow {
+  font-family: var(--f-sans);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.brand__word {
+  font-family: var(--f-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.13px;
+  color: var(--c-white);
+}
+
+.brand__word em { font-style: italic; }
+.brand__word--upright { font-style: normal; font-size: 18px; }
+
+.brand--footer .brand__mark { width: 26px; height: 26px; }
+.brand--footer .brand__text { gap: var(--space-025); }
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-500);   /* 40px between nav items */
+}
+
+.nav__links a {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 17.25px;
+  color: var(--c-white);
+  transition: opacity 0.15s;
+}
+
+.nav__links a:hover { opacity: 0.7; }
+
+.nav__subscribe {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding-inline: var(--space-200);
+  font-family: var(--f-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.44px;
+  color: var(--c-white);
+  background: var(--c-red);
+  border-radius: 100px;
+  transition: opacity 0.15s;
+}
+
+.nav__subscribe:hover { opacity: 0.85; }
+
+/* =============================================================================
+   HERO
+   Figma "HorizontalBorder": dark bg + subtle grid texture + gradient wash,
+   giant EB Garamond headline (115px), visualization graphic right, ticker foot
+   ============================================================================= */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--c-dark);
+  background-image: url(assets/hero-bg.png);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* Fully opaque gradient overlay, same as /about's .orbital::before —
+   covers the background texture entirely, matching that section's
+   brighter, cleaner depth instead of a darker/translucent wash. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--c-gradient);
+  pointer-events: none;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--space-1000) var(--space-800);
+  min-height: 900px;
+  pointer-events: none;
+}
+
+.hero__inner * { pointer-events: auto; }
+
+/* Centered composition: text sits directly over the circle's own center.
+   A text-shadow (not a panel) keeps it legible against the graphic. */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.hero__eyebrow {
+  font-family: var(--f-sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--c-red);
+  margin-bottom: var(--space-400);
+  text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+}
+
+/* h1: EB Garamond Medium ~96px (scaled down from Figma's 115px for web),
+   ls=-2.7%, lh tight. text-shadow keeps it legible over the graphic
+   without a visible background panel. */
+.hero__title {
+  font-family: var(--f-serif);
+  font-weight: 500;
+  font-size: clamp(40px, 5.2vw, 76px);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
+  color: var(--c-white);
+  margin-inline: auto;
+  margin-bottom: var(--space-500);
+  text-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.7);
+}
+
+.hero__subtitle {
+  font-family: var(--f-sans);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.72);
+  text-shadow: 0 2px 20px rgba(0,0,0,0.55);
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+/* Full-bleed layer: sits above the gradient wash but behind the text, so
+   the graphic's dissipating particles can drift across the whole hero
+   instead of being boxed into a corner. */
+.hero__visual {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Interactive ASCII graphic (assets/broadcast-tower.html) — background is
+   transparent so the hero's own gradient shows through underneath it. */
+.hero__visual-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* =============================================================================
+   WHAT'S NEW  —  bento article grid, 6-unit column system
+   Figma "Imported HTML": row 1 = 3+1+2 units, row 2 = 2+2+1+1 units
+   ============================================================================= */
+/* Standard section spacing: generous top breathing room before a new
+   section's heading, per common web UX rhythm (section gap > element gap). */
+.whats-new { background: var(--c-white); padding-top: var(--space-1000); }
+
+.whats-new__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--space-300);
+  border-bottom: 1px solid rgba(13,13,12,0.08);
+}
+
+.whats-new__label {
+  font-family: var(--f-sans);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--c-dark);
+}
+
+.whats-new__all {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-dark);
+  transition: opacity 0.15s;
+}
+
+.whats-new__all:hover { opacity: 0.6; }
+
+.whats-new__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  margin-top: var(--space-600);
+  background: rgba(13,13,12,0.1);   /* shows through the 1px gaps as hairlines */
+}
+
+.news-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-white);
+  min-height: 280px;
+}
+
+.news-card--dark   { background: var(--c-dark); color: var(--c-white); }
+.news-card--purple { background: var(--c-accent); color: var(--c-white); }
+.news-card--red    { background: var(--c-red); color: var(--c-white); }
+
+.news-card__image {
+  width: 100%;
+  aspect-ratio: 719 / 330;
+  overflow: hidden;
+}
+
+.news-card__image img { width: 100%; height: 100%; object-fit: cover; }
+
+.news-card__image--placeholder { background: var(--c-light-bg); aspect-ratio: 479 / 260; }
+.news-card__image--short { aspect-ratio: 479 / 130; }
+
+.news-card__arrow {
+  position: absolute;
+  top: var(--space-250);
+  right: var(--space-250);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-dark);
+  color: var(--c-white);
+  font-size: 10px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.news-card--dark .news-card__arrow,
+.news-card--purple .news-card__arrow,
+.news-card--red .news-card__arrow { background: rgba(255,255,255,0.14); }
+
+/* Hover affordance: arrow pops and nudges toward its own direction of
+   travel, same transition/size on every card regardless of variant. */
+.news-card:hover .news-card__arrow {
+  transform: scale(1.15) translate(2px, -2px);
+  background: var(--c-red);
+}
+
+.news-card--dark:hover .news-card__arrow,
+.news-card--purple:hover .news-card__arrow,
+.news-card--red:hover .news-card__arrow {
+  background: var(--c-white);
+  color: var(--c-dark);
+}
+
+.news-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+  padding: var(--space-400);
+}
+
+.news-card__body--bottom { margin-top: auto; }
+
+.news-card__tag {
+  font-family: var(--f-sans);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.44px;
+  text-transform: uppercase;
+  color: var(--c-red);
+}
+
+.news-card__tag--purple { color: var(--c-accent); }
+.news-card__tag--muted  { color: rgba(255,255,255,0.38); }
+.news-card__tag--muted-light { color: rgba(255,255,255,0.48); }
+
+.news-card__title {
+  font-family: var(--f-sans);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.152px;
+  line-height: 1.3;
+  color: var(--c-dark);
+}
+
+.news-card__title--serif {
+  font-family: var(--f-serif);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.news-card__desc {
+  font-family: var(--f-sans);
+  font-size: 12.5px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--c-gray-dark);   /* #54534f — more opaque than the old --c-gray */
+}
+
+.news-card--dark .news-card__desc,
+.news-card--purple .news-card__desc,
+.news-card--red .news-card__desc { color: rgba(255,255,255,0.55); }
+
+.news-card__date {
+  margin-top: var(--space-100);
+  font-family: var(--f-sans);
+  font-size: 11.2px;
+  font-weight: 400;
+  letter-spacing: 0.336px;
+  color: var(--c-muted);
+}
+
+.news-card--dark .news-card__date,
+.news-card--purple .news-card__date,
+.news-card--red .news-card__date { color: rgba(255,255,255,0.35); }
+
+/* =============================================================================
+   RESEARCH CTA
+   Figma "Section": purple 1443×465, big DM Sans headline + dashboard image
+   ============================================================================= */
+.research-cta {
+  background: var(--c-accent);
+  padding-block: var(--space-1000);
+}
+
+.research-cta__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-800);
+}
+
+.research-cta__copy { max-width: 500px; }
+
+.research-cta__lead {
+  font-family: var(--f-sans);
+  font-size: 35.2px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.704px;
+  color: var(--c-white);
+  margin-bottom: var(--space-500);
+}
+
+.research-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--c-white);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  padding-bottom: 2px;
+  transition: opacity 0.15s;
+}
+
+.research-cta__link:hover { opacity: 0.75; }
+
+.research-cta__image {
+  flex-shrink: 0;
+  width: min(38vw, 523px);
+  border-radius: var(--space-100);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+
+/* =============================================================================
+   UPCOMING EVENTS
+   Figma "section": white 1434×526, 3-up card row
+   ============================================================================= */
+/* Same top spacing as .whats-new — consistent section rhythm site-wide. */
+.events { background: var(--c-white); padding-top: var(--space-1000); padding-bottom: var(--space-800); }
+
+/* Same head treatment as .whats-new__head — one heading/link pattern,
+   used consistently everywhere it appears. */
+.events__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--space-300);
+  border-bottom: 1px solid rgba(13,13,12,0.08);
+}
+
+.events__label {
+  font-family: var(--f-sans);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--c-dark);
+}
+
+.events__all {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-dark);
+  transition: opacity 0.15s;
+}
+
+.events__all:hover { opacity: 0.6; }
+
+.events__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-800);
+  padding-top: var(--space-600);
+}
+
+.event-card { display: flex; flex-direction: column; }
+
+.event-card__date {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16px;
+  color: var(--c-muted);
+  margin-bottom: var(--space-150);
+}
+
+.event-card__title {
+  font-family: var(--f-sans);
+  font-size: 26.4px;
+  font-weight: 500;
+  letter-spacing: -0.528px;
+  line-height: 1.15;
+  color: var(--c-dark);
+  margin-bottom: var(--space-200);
+}
+
+.event-card__desc {
+  font-family: var(--f-sans);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--c-gray-dark);
+  margin-bottom: var(--space-200);
+}
+
+.event-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: var(--space-100);
+  column-gap: var(--space-200);
+  margin-bottom: var(--space-300);
+}
+
+.event-card__location {
+  font-family: var(--f-sans);
+  font-size: 11px;
+  letter-spacing: 0.22px;
+  line-height: 1.6;
+  color: var(--c-gray);
+}
+
+.event-card__recording {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.55px;
+  color: var(--c-gray);
+}
+
+.event-card__status {
+  font-family: var(--f-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.26px;
+  text-transform: uppercase;
+  padding: var(--space-075) var(--space-200);
+  border-radius: 100px;
+}
+
+.event-card__status--upcoming {
+  color: var(--c-red);
+  background: rgba(240,61,31,0.06);
+}
+
+.event-card__image {
+  aspect-ratio: 397 / 260;
+  background: var(--c-light-bg);
+  overflow: hidden;
+}
+
+.event-card__image img { width: 100%; height: 100%; object-fit: cover; }
+
+/* =============================================================================
+   Shared gradient block — newsletter + supporters
+   Figma "Paragraph+Background": 150deg #5533ee 0% → #df3611 81%
+   ============================================================================= */
+.cta-block { background: var(--c-gradient); }
+
+/* NEWSLETTER */
+.newsletter { padding-block: var(--space-800); }
+
+.newsletter__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  row-gap: var(--space-400);
+  column-gap: var(--space-800);
+}
+
+.newsletter__title {
+  font-family: var(--f-serif);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 40.8px;
+  letter-spacing: -0.544px;
+  color: var(--c-white);
+  margin-bottom: var(--space-050);
+}
+
+.newsletter__desc {
+  font-family: var(--f-sans);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 19.2px;
+  color: var(--c-white);
+}
+
+/* Subscribe CTA: white rectangle; on hover the copy is knocked out to
+   reveal the section's own gradient showing through the letterforms.
+   Matches the /about repo's newsletter CTA exactly. */
+.newsletter__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  flex-shrink: 0;
+  height: 48px;
+  padding-inline: var(--space-400);
+  background: var(--c-white);
+}
+
+.newsletter__cta-label {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.24px;
+  color: var(--c-dark);
+}
+
+.newsletter__cta:hover .newsletter__cta-label {
+  background: var(--c-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* SUPPORTERS — matches the /about repo's supporters section exactly */
+.supporters {
+  background: var(--c-white);
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  padding-block: var(--space-300);   /* breathing room when logos wrap */
+}
+
+.supporters__inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: var(--space-300);
+  gap: var(--space-500);             /* 40px — group label with logos */
+}
+
+.supporters__label {
+  font-family: var(--f-sans);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 30px;
+  letter-spacing: 1.8px;
+  color: var(--c-dark);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.supporters__logo-link {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  opacity: 1;
+  transition: opacity 0.15s;
+}
+
+.supporters__logo-link:hover { opacity: 0.75; }
+
+.supporters__logo--knight { height: 65px; width: auto; }
+.supporters__logo--upenn  { height: 120px; width: auto; }
+
+/* FOOTER */
+.footer { background: var(--c-dark); padding-top: var(--space-800); }
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800);
+  padding-bottom: var(--space-600);
+}
+
+.footer__brand {
+  flex: 1 1 320px;
+  max-width: 484px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.footer__tagline {
+  font-family: var(--f-sans);
+  font-size: 12.8px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--c-white);
+  max-width: 320px;
+}
+
+.footer__email {
+  font-family: var(--f-sans);
+  font-size: 12.8px;
+  color: var(--c-red);
+  transition: opacity 0.15s;
+}
+
+.footer__email:hover { opacity: 0.8; }
+
+.footer__social { display: flex; align-items: center; gap: var(--space-200); }
+
+.footer__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-white);
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+
+.footer__social-link:hover { opacity: 1; }
+
+.footer__nav {
+  flex: 2 1 480px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800);
+}
+
+.footer__nav-col { flex: 1 1 170px; min-width: 170px; }
+
+.footer__nav-heading {
+  font-family: var(--f-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--c-white);
+  margin-bottom: var(--space-250);
+}
+
+.footer__nav-col ul { display: flex; flex-direction: column; gap: var(--space-200); }
+
+.footer__nav-col a {
+  font-family: var(--f-sans);
+  font-size: 12.8px;
+  font-weight: 300;
+  color: var(--c-white);
+  transition: opacity 0.15s;
+}
+
+.footer__nav-col a:hover { opacity: 0.7; }
+
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-200);
+  padding-block: var(--space-250);
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer__bottom p {
+  font-family: var(--f-sans);
+  font-size: 11.2px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+}
+
+.footer__bottom-mediated { font-style: italic; }

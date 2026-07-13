@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v1 — Tower</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:transparent}
+#stage{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:crosshair;user-select:none;position:relative}
+pre{font-family:'Courier New',Courier,monospace;font-size:1.05vh;line-height:1.32;letter-spacing:0.08em;color:#F0EEE8;white-space:pre;position:relative;z-index:2;
+  -webkit-mask-image:radial-gradient(ellipse 92% 92% at 50% 50%, #000 45%, transparent 94%);
+  mask-image:radial-gradient(ellipse 92% 92% at 50% 50%, #000 45%, transparent 94%);
+}
+</style>
+</head>
+<body>
+<div id="stage"><pre id="out"></pre></div>
+<script>
+(function(){
+const el=document.getElementById('out');
+const stage=document.getElementById('stage');
+const W=202,H=64;
+const CX=Math.floor(W/2),CY=Math.floor(H/2);
+let mx=0.5,my=0.5,amx=0.5,amy=0.5,vx=0,vy=0,lastT=0;
+let held=false,holdStart=0,charge=0;
+const pulses=[];
+
+function coords(e){const r=stage.getBoundingClientRect();return[Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];}
+function tcoords(e){const r=stage.getBoundingClientRect(),t=e.touches[0];return[Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(t.clientY-r.top)/r.height))];}
+
+stage.addEventListener('mousemove',e=>{const[nx,ny]=coords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();});
+stage.addEventListener('mousedown',()=>{held=true;holdStart=performance.now();});
+stage.addEventListener('mouseup',e=>{
+  if(held){const[ox,oy]=coords(e);pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});if(pulses.length>8)pulses.shift();}
+  held=false;charge=0;
+});
+stage.addEventListener('touchmove',e=>{e.preventDefault();const[nx,ny]=tcoords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();},{passive:false});
+stage.addEventListener('touchstart',e=>{const[nx,ny]=tcoords(e);mx=nx;my=ny;held=true;holdStart=performance.now();});
+stage.addEventListener('touchend',e=>{
+  if(held){const r=stage.getBoundingClientRect(),t=e.changedTouches[0];const ox=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),oy=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});}
+  held=false;charge=0;
+});
+
+const RINGS=[
+  {r:3, lo:['·','·','·'],              hi:['*','*','*'],              speed:0.000042},
+  {r:6, lo:['>','·','>','·'],          hi:['>','+','>','+'],          speed:0.000058},
+  {r:10,lo:['>','-','>','-'],          hi:['»','=','»','='],          speed:0.000072},
+  {r:14,lo:['»','·','»','·'],          hi:['»','*','»','*'],          speed:0.000086},
+  {r:18,lo:['»','-','»','-'],          hi:['»','#','»','#'],          speed:0.000100},
+  {r:23,lo:['»','·','»','·'],          hi:['»','X','»','X'],          speed:0.000115},
+];
+
+const D=(x,y,cx,cy)=>Math.sqrt((x-cx)**2+((y-cy)*1.85)**2);
+const RC=(chars,angle,phase)=>{const n=chars.length;const s=Math.floor(((angle/(Math.PI*2))+phase)*n*4)%n;return chars[((s%n)+n)%n];};
+
+// TOWER — drawn as a clear ASCII art broadcast tower
+// Read top-to-bottom: signal arcs, tip, upper mast, crossbar, lower mast, legs, base
+const TOWER=[
+  // [dx, dy, char]
+  // signal arcs at top
+  [-5,-9,'('],[-4,-9,'('],[-3,-9,'('],
+  [5,-9,')'],[4,-9,')'],[3,-9,')'],
+  [-3,-8,'('],[-2,-8,'('],
+  [3,-8,')'],[2,-8,')'],
+  // tip
+  [0,-7,'*'],
+  // upper mast
+  [0,-6,'|'],[0,-5,'|'],
+  // upper crossbar
+  [-2,-5,'-'],[-1,-5,'-'],[1,-5,'-'],[2,-5,'-'],
+  // mid mast
+  [0,-4,'|'],[0,-3,'|'],
+  // mid crossbar
+  [-3,-3,'-'],[-2,-3,'-'],[-1,-3,'-'],[1,-3,'-'],[2,-3,'-'],[3,-3,'-'],
+  // lower mast
+  [0,-2,'|'],[0,-1,'|'],
+  // lower crossbar
+  [-4,-1,'-'],[-3,-1,'-'],[-2,-1,'-'],[-1,-1,'-'],[1,-1,'-'],[2,-1,'-'],[3,-1,'-'],[4,-1,'-'],
+  // legs splaying out
+  [-1,0,'\\'],[1,0,'/'],
+  [-2,1,'\\'],[2,1,'/'],
+  [-3,2,'\\'],[3,2,'/'],
+  // base platform
+  [-4,3,'['],[- 3,3,'='],[- 2,3,'='],[- 1,3,'='],[0,3,'='],[1,3,'='],[2,3,'='],[3,3,'='],[4,3,']'],
+];
+
+function render(t){
+  const speed=Math.sqrt(vx*vx+vy*vy);
+  const idle=Math.max(0,Math.min(1,(t-lastT-1800)/2500));
+  const breath=0.5+0.5*Math.sin(t*0.0007);
+  if(held) charge=Math.min(1,(t-holdStart)/1200);
+
+  const cx=CX+(amx-0.5)*12,cy=CY+(amy-0.5)*7;
+  const curX=amx*(W-1),curY=amy*(H-1);
+  const activeP=pulses.map(p=>({
+    px:p.ox*(W-1),py:p.oy*(H-1),
+    age:(t-p.born)/1000,
+    rad:(t-p.born)/1000*28*p.power,
+    power:p.power
+  })).filter(p=>p.age<1.6);
+
+  // charge ring around cursor when holding
+  const chargeRing=held&&charge>0.05;
+
+  const G=[];for(let y=0;y<H;y++){G.push([]);for(let x=0;x<W;x++)G[y].push(' ');}
+  const P=(x,y,c)=>{const xi=Math.round(x),yi=Math.round(y);if(xi>=0&&xi<W&&yi>=0&&yi<H)G[yi][xi]=c;};
+
+  const breathScale=1+idle*breath*0.14;
+  for(const ring of RINGS){
+    const phase=-t*ring.speed;
+    const steps=Math.max(40,ring.r*18);
+    const effR=ring.r*breathScale*(1+charge*0.15);
+    for(let i=0;i<steps;i++){
+      const angle=(i/steps)*Math.PI*2;
+      const dot=Math.cos(angle-Math.atan2(vy,vx));
+      const warp=1+dot*speed*0.024;
+      const stretch=1+speed*0.014;
+      const rx=cx+Math.cos(angle)*effR*warp;
+      const ry=cy+Math.sin(angle)*effR*warp*0.52*stretch;
+      const dCur=D(rx,ry,curX,curY);
+      const prox=Math.max(0,1-dCur/10);
+      const intensity=prox>0.4||charge>0.5?ring.hi:ring.lo;
+      P(rx,ry,RC(intensity,angle,phase));
+    }
+  }
+
+  // pulse wavefronts
+  for(const p of activeP){
+    const fade=1-p.age/1.6;
+    const outer=p.power>0.7?'#':p.power>0.4?'*':'+';
+    const inner=fade>0.5?outer:'.';
+    const steps=Math.max(30,Math.floor(p.rad*12));
+    for(let i=0;i<steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      P(p.px+Math.cos(a)*p.rad,p.py+Math.sin(a)*p.rad*0.52,outer);
+      if(p.rad>4)P(p.px+Math.cos(a)*(p.rad-3),p.py+Math.sin(a)*(p.rad-3)*0.52,inner);
+    }
+  }
+
+  // charge ring — builds up around cursor as you hold
+  if(chargeRing){
+    const cr=2+charge*5;
+    const ch=['·','o','+','*','#'][Math.min(4,Math.floor(charge*5))];
+    const steps=Math.max(16,Math.floor(cr*14));
+    for(let i=0;i<steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      P(curX+Math.cos(a)*cr,curY+Math.sin(a)*cr*0.52,ch);
+    }
+  }
+
+  // TOWER — drawn at shifted origin
+  const bcx=Math.round(cx),bcy=Math.round(cy);
+  const tipChar=Math.sin(t*0.004)>0.5?'*':'o';
+  for(const[dx,dy,ch] of TOWER){
+    P(bcx+dx,bcy+dy,dy===-7?tipChar:ch);
+  }
+
+  // sparks near tower
+  const dTower=D(curX,curY,cx,cy);
+  const pBoost=Math.max(0,1-dTower/12);
+  const sPhase=-t*0.00012;
+  const sc=Math.floor(3+(0.5+0.5*Math.sin(t*0.0011))*3+pBoost*6+charge*5);
+  for(let s=0;s<sc;s++){
+    const a=(s/sc)*Math.PI*2+sPhase*2;
+    const r=4+Math.sin(sPhase*5+s)*2+charge*3;
+    P(cx+Math.cos(a)*r,cy+Math.sin(a)*r*0.52,['*','+','·','x','o','#'][s%6]);
+  }
+
+  // cursor field
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      if(G[y][x]!==' ')continue;
+      const dC=D(x,y,curX,curY);
+      if(dC<0.9){G[y][x]='X';continue;}
+      if(dC<1.7){G[y][x]='+';continue;}
+      if(dC<2.5){G[y][x]='o';continue;}
+      if(dC<3.2){G[y][x]='.';continue;}
+      if(speed>0.3&&dC<6+speed*4.5){
+        const ta=Math.atan2(vy,vx),tp=Math.atan2((y-curY)*1.85,x-curX);
+        if(Math.abs(((ta-tp+Math.PI*3)%(Math.PI*2))-Math.PI)<Math.PI*0.36){
+          const fade=1-dC/(6+speed*4.5);
+          G[y][x]=['.','-','=','»','#'][Math.min(4,Math.floor(fade*5))];continue;
+        }
+      }
+      if(speed>1.8&&dC<4+speed*2){
+        const ta=Math.atan2(vy,vx)+Math.PI,tp=Math.atan2((y-curY)*1.85,x-curX);
+        if(Math.abs(((ta-tp+Math.PI*3)%(Math.PI*2))-Math.PI)<Math.PI*0.26){G[y][x]='.';continue;}
+      }
+      if(idle>0.25){
+        const w=Math.sin(x*0.38+t*0.00035)*Math.sin(y*0.55+t*0.00028);
+        if(w>0.87+0.11*(1-idle)){G[y][x]='.';continue;}
+      }
+    }
+  }
+  el.textContent=G.map(r=>r.join('')).join('\n');
+}
+
+function loop(t){
+  vx*=0.79;vy*=0.79;
+  amx+=(mx-amx)*0.052;amy+=(my-amy)*0.052;
+  render(t);requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
