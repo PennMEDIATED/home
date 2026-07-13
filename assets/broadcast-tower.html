@@ -8,7 +8,8 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;background:transparent}
 #stage{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:crosshair;user-select:none;position:relative}
-pre{font-family:'Courier New',Courier,monospace;font-size:1.05vh;line-height:1.32;letter-spacing:0.08em;color:#F0EEE8;white-space:pre;position:relative;z-index:2;
+pre{font-family:'Courier New',Courier,monospace;font-size:8px;line-height:1.32;letter-spacing:0.08em;color:#F0EEE8;white-space:pre;position:relative;z-index:2;
+  transform-origin:center center;
   -webkit-mask-image:radial-gradient(ellipse 92% 92% at 50% 50%, #000 45%, transparent 94%);
   mask-image:radial-gradient(ellipse 92% 92% at 50% 50%, #000 45%, transparent 94%);
 }
@@ -20,35 +21,50 @@ pre{font-family:'Courier New',Courier,monospace;font-size:1.05vh;line-height:1.3
 (function(){
 const el=document.getElementById('out');
 const stage=document.getElementById('stage');
-const W=202,H=64;
+const W=260,H=150;
 const CX=Math.floor(W/2),CY=Math.floor(H/2);
-let mx=0.5,my=0.5,amx=0.5,amy=0.5,vx=0,vy=0,lastT=0;
-let held=false,holdStart=0,charge=0;
+let mx=0.5,my=0.5,amx=0.5,amy=0.5,vx=0,vy=0,svx=0,svy=0,lastT=0;
+let held=false,holdStart=0,charge=0,dCharge=0;
 const pulses=[];
+
+// Ambient broadcast waves — slow rings that emanate outward from the
+// tower on their own, independent of interaction, so it reads as
+// actively "broadcasting" rather than only reacting to the cursor.
+const waves=[];
+let nextWave=2200;
+const WAVE_LIFE=5.2,WAVE_MAX_R=72;
 
 function coords(e){const r=stage.getBoundingClientRect();return[Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];}
 function tcoords(e){const r=stage.getBoundingClientRect(),t=e.touches[0];return[Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(t.clientY-r.top)/r.height))];}
 
 stage.addEventListener('mousemove',e=>{const[nx,ny]=coords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();});
-stage.addEventListener('mousedown',()=>{held=true;holdStart=performance.now();});
+stage.addEventListener('mousedown',e=>{
+  held=true;holdStart=performance.now();
+  const[ox,oy]=coords(e);
+  pulses.push({ox,oy,born:performance.now(),power:0.28});
+  if(pulses.length>8)pulses.shift();
+});
 stage.addEventListener('mouseup',e=>{
   if(held){const[ox,oy]=coords(e);pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});if(pulses.length>8)pulses.shift();}
   held=false;charge=0;
 });
 stage.addEventListener('touchmove',e=>{e.preventDefault();const[nx,ny]=tcoords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();},{passive:false});
-stage.addEventListener('touchstart',e=>{const[nx,ny]=tcoords(e);mx=nx;my=ny;held=true;holdStart=performance.now();});
+stage.addEventListener('touchstart',e=>{
+  const[nx,ny]=tcoords(e);mx=nx;my=ny;held=true;holdStart=performance.now();
+  pulses.push({ox:nx,oy:ny,born:performance.now(),power:0.28});
+  if(pulses.length>8)pulses.shift();
+});
 stage.addEventListener('touchend',e=>{
   if(held){const r=stage.getBoundingClientRect(),t=e.changedTouches[0];const ox=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),oy=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});}
   held=false;charge=0;
 });
 
+/* Pushed well outside the centered text block's radius so the revolving
+   rings frame the headline instead of passing behind it. */
 const RINGS=[
-  {r:3, lo:['·','·','·'],              hi:['*','*','*'],              speed:0.000042},
-  {r:6, lo:['>','·','>','·'],          hi:['>','+','>','+'],          speed:0.000058},
-  {r:10,lo:['>','-','>','-'],          hi:['»','=','»','='],          speed:0.000072},
-  {r:14,lo:['»','·','»','·'],          hi:['»','*','»','*'],          speed:0.000086},
-  {r:18,lo:['»','-','»','-'],          hi:['»','#','»','#'],          speed:0.000100},
-  {r:23,lo:['»','·','»','·'],          hi:['»','X','»','X'],          speed:0.000115},
+  {r:66, lo:['»','·','»','·'],  mid:['»','+','»','+'],  hi:['»','*','»','*'],  speed:0.000072},
+  {r:86, lo:['»','-','»','-'],  mid:['»','=','»','='],  hi:['»','#','»','#'],  speed:0.000086},
+  {r:106,lo:['»','·','»','·'],  mid:['»','o','»','o'],  hi:['»','X','»','X'],  speed:0.000100},
 ];
 
 const D=(x,y,cx,cy)=>Math.sqrt((x-cx)**2+((y-cy)*1.85)**2);
@@ -86,22 +102,29 @@ const TOWER=[
 ];
 
 function render(t){
-  const speed=Math.sqrt(vx*vx+vy*vy);
+  const speed=Math.sqrt(svx*svx+svy*svy);
   const idle=Math.max(0,Math.min(1,(t-lastT-1800)/2500));
   const breath=0.5+0.5*Math.sin(t*0.0007);
   if(held) charge=Math.min(1,(t-holdStart)/1200);
 
   const cx=CX+(amx-0.5)*12,cy=CY+(amy-0.5)*7;
   const curX=amx*(W-1),curY=amy*(H-1);
-  const activeP=pulses.map(p=>({
-    px:p.ox*(W-1),py:p.oy*(H-1),
-    age:(t-p.born)/1000,
-    rad:(t-p.born)/1000*28*p.power,
-    power:p.power
-  })).filter(p=>p.age<1.6);
+  const PULSE_LIFE=2.6;
+  const activeP=pulses.map(p=>{
+    const age=(t-p.born)/1000;
+    const life=Math.min(1,age/PULSE_LIFE);
+    const maxR=38+p.power*55;
+    return{
+      px:p.ox*(W-1),py:p.oy*(H-1),
+      age,life,
+      rad:(1-Math.pow(1-life,3))*maxR,            // ease-out: fast start, settles gently
+      fade:Math.min(1,age/0.15)*(1-Math.pow(life,1.8)), // quick attack, slow natural decay
+      power:p.power
+    };
+  }).filter(p=>p.age<PULSE_LIFE);
 
   // charge ring around cursor when holding
-  const chargeRing=held&&charge>0.05;
+  const chargeRing=dCharge>0.04;
 
   const G=[];for(let y=0;y<H;y++){G.push([]);for(let x=0;x<W;x++)G[y].push(' ');}
   const P=(x,y,c)=>{const xi=Math.round(x),yi=Math.round(y);if(xi>=0&&xi<W&&yi>=0&&yi<H)G[yi][xi]=c;};
@@ -110,26 +133,31 @@ function render(t){
   for(const ring of RINGS){
     const phase=-t*ring.speed;
     const steps=Math.max(40,ring.r*18);
-    const effR=ring.r*breathScale*(1+charge*0.15);
+    const effR=ring.r*breathScale*(1+dCharge*0.15);
     for(let i=0;i<steps;i++){
       const angle=(i/steps)*Math.PI*2;
-      const dot=Math.cos(angle-Math.atan2(vy,vx));
-      const warp=1+dot*speed*0.024;
-      const stretch=1+speed*0.014;
+      const dot=Math.cos(angle-Math.atan2(svy,svx));
+      const warp=1+dot*speed*0.0052;
+      const stretch=1+speed*0.003;
       const rx=cx+Math.cos(angle)*effR*warp;
       const ry=cy+Math.sin(angle)*effR*warp*0.52*stretch;
       const dCur=D(rx,ry,curX,curY);
-      const prox=Math.max(0,1-dCur/10);
-      const intensity=prox>0.4||charge>0.5?ring.hi:ring.lo;
+      const prox=Math.max(0,1-dCur/12)+dCharge*0.6;
+      const intensity=prox>0.62?ring.hi:prox>0.28?ring.mid:ring.lo;
       P(rx,ry,RC(intensity,angle,phase));
     }
   }
 
-  // pulse wavefronts
+  // pulse wavefronts — eased radius + a fade envelope (see activeP above)
+  // instead of linear growth and a hard cutoff, so a burst reads as a
+  // natural ripple settling outward rather than a twitch that vanishes
+  // before it reaches anything.
   for(const p of activeP){
-    const fade=1-p.age/1.6;
-    const outer=p.power>0.7?'#':p.power>0.4?'*':'+';
-    const inner=fade>0.5?outer:'.';
+    if(p.fade<0.02)continue;
+    const ramp=['·','.','+','*','#','X'];
+    const outerIdx=Math.min(5,Math.floor((0.35+p.power*0.65)*5*p.fade));
+    const outer=ramp[Math.max(0,outerIdx)];
+    const inner=ramp[Math.max(0,Math.floor(outerIdx*p.fade*0.6))];
     const steps=Math.max(30,Math.floor(p.rad*12));
     for(let i=0;i<steps;i++){
       const a=(i/steps)*Math.PI*2;
@@ -138,10 +166,29 @@ function render(t){
     }
   }
 
+  // ambient broadcast waves — slow, faint rings drifting outward from the
+  // tower on their own; a gentle sine ease in/out keeps them soft rather
+  // than popping in or snapping off at either end of their life
+  for(const w of waves){
+    const age=(t-w.born)/1000;
+    if(age<0||age>WAVE_LIFE)continue;
+    const life=age/WAVE_LIFE;
+    const r=Math.sin(life*Math.PI*0.5)*WAVE_MAX_R;
+    const fade=Math.sin(life*Math.PI);
+    if(fade<0.03)continue;
+    const ch=fade>0.6?'·':'.';
+    const steps=Math.max(50,Math.floor(r*10));
+    for(let i=0;i<steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      if((i+Math.floor(r))%3===0)continue;
+      P(cx+Math.cos(a)*r,cy+Math.sin(a)*r*0.52,ch);
+    }
+  }
+
   // charge ring — builds up around cursor as you hold
   if(chargeRing){
-    const cr=2+charge*5;
-    const ch=['·','o','+','*','#'][Math.min(4,Math.floor(charge*5))];
+    const cr=2+dCharge*5;
+    const ch=['·','o','+','*','#'][Math.min(4,Math.floor(dCharge*5))];
     const steps=Math.max(16,Math.floor(cr*14));
     for(let i=0;i<steps;i++){
       const a=(i/steps)*Math.PI*2;
@@ -160,10 +207,10 @@ function render(t){
   const dTower=D(curX,curY,cx,cy);
   const pBoost=Math.max(0,1-dTower/12);
   const sPhase=-t*0.00012;
-  const sc=Math.floor(3+(0.5+0.5*Math.sin(t*0.0011))*3+pBoost*6+charge*5);
+  const sc=Math.floor(3+(0.5+0.5*Math.sin(t*0.0011))*3+pBoost*6+dCharge*5);
   for(let s=0;s<sc;s++){
     const a=(s/sc)*Math.PI*2+sPhase*2;
-    const r=4+Math.sin(sPhase*5+s)*2+charge*3;
+    const r=4+Math.sin(sPhase*5+s)*2+dCharge*3;
     P(cx+Math.cos(a)*r,cy+Math.sin(a)*r*0.52,['*','+','·','x','o','#'][s%6]);
   }
 
@@ -177,14 +224,14 @@ function render(t){
       if(dC<2.5){G[y][x]='o';continue;}
       if(dC<3.2){G[y][x]='.';continue;}
       if(speed>0.3&&dC<6+speed*4.5){
-        const ta=Math.atan2(vy,vx),tp=Math.atan2((y-curY)*1.85,x-curX);
+        const ta=Math.atan2(svy,svx),tp=Math.atan2((y-curY)*1.85,x-curX);
         if(Math.abs(((ta-tp+Math.PI*3)%(Math.PI*2))-Math.PI)<Math.PI*0.36){
           const fade=1-dC/(6+speed*4.5);
           G[y][x]=['.','-','=','»','#'][Math.min(4,Math.floor(fade*5))];continue;
         }
       }
       if(speed>1.8&&dC<4+speed*2){
-        const ta=Math.atan2(vy,vx)+Math.PI,tp=Math.atan2((y-curY)*1.85,x-curX);
+        const ta=Math.atan2(svy,svx)+Math.PI,tp=Math.atan2((y-curY)*1.85,x-curX);
         if(Math.abs(((ta-tp+Math.PI*3)%(Math.PI*2))-Math.PI)<Math.PI*0.26){G[y][x]='.';continue;}
       }
       if(idle>0.25){
@@ -198,10 +245,28 @@ function render(t){
 
 function loop(t){
   vx*=0.79;vy*=0.79;
+  svx+=(vx-svx)*0.18;svy+=(vy-svy)*0.18;
+  if(Math.abs(svx)<0.02)svx=0;
+  if(Math.abs(svy)<0.02)svy=0;
   amx+=(mx-amx)*0.052;amy+=(my-amy)*0.052;
+  dCharge+=(charge-dCharge)*0.1;
+  if(t>=nextWave){waves.push({born:t});nextWave=t+3800+Math.random()*2200;if(waves.length>3)waves.shift();}
   render(t);requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
+
+// Stretch the fixed character grid to fill the whole stage — independent
+// X/Y scale, not just uniform font-size — so there's no visible "box"
+// with margin around it regardless of the hero's aspect ratio.
+function fit(){
+  el.style.transform='none';
+  const eb=el.getBoundingClientRect(),sb=stage.getBoundingClientRect();
+  if(eb.width<1||eb.height<1)return;
+  const sx=(sb.width*0.98)/eb.width,sy=(sb.height*0.98)/eb.height;
+  el.style.transform=`scale(${sx},${sy})`;
+}
+requestAnimationFrame(()=>requestAnimationFrame(fit));
+window.addEventListener('resize',()=>{clearTimeout(window._fitT);window._fitT=setTimeout(fit,120);});
 })();
 </script>
 </body>

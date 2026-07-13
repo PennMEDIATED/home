@@ -45,6 +45,15 @@
   --nav-h: 52px;
 }
 
+/* Side padding scales down on smaller screens — 80px fixed padding eats
+   ~43% of a 375px phone width otherwise. */
+@media (max-width: 900px) {
+  :root { --pad-x: var(--space-400); }  /* 32px */
+}
+@media (max-width: 480px) {
+  :root { --pad-x: var(--space-250); }  /* 20px */
+}
+
 /* =============================================================================
    Reset
    ============================================================================= */
@@ -250,20 +259,23 @@ button { font: inherit; cursor: pointer; }
   text-align: center;
 }
 
+/* Reads as the center's formal name (serif, normal case) rather than a
+   decorative section kicker — no uppercase/heavy tracking, which would
+   make it look like a category tag instead of a proper name. */
 .hero__eyebrow {
-  font-family: var(--f-sans);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 2.2px;
-  text-transform: uppercase;
-  color: var(--c-red);
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--c-white);
   margin-bottom: var(--space-400);
-  text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
 /* h1: EB Garamond Medium ~96px (scaled down from Figma's 115px for web),
-   ls=-2.7%, lh tight. text-shadow keeps it legible over the graphic
-   without a visible background panel. */
+   ls=-2.7%, lh tight. A tight shadow (not a big blur) keeps it legible
+   without smudging into a haze over the gradient. */
 .hero__title {
   font-family: var(--f-serif);
   font-weight: 500;
@@ -273,7 +285,7 @@ button { font: inherit; cursor: pointer; }
   color: var(--c-white);
   margin-inline: auto;
   margin-bottom: var(--space-500);
-  text-shadow: 0 4px 32px rgba(0,0,0,0.55), 0 1px 3px rgba(0,0,0,0.7);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
 }
 
 .hero__subtitle {
@@ -281,8 +293,8 @@ button { font: inherit; cursor: pointer; }
   font-size: 18px;
   font-weight: 500;
   line-height: 1.4;
-  color: rgba(255,255,255,0.72);
-  text-shadow: 0 2px 20px rgba(0,0,0,0.55);
+  color: var(--c-white);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
   max-width: 480px;
   margin-inline: auto;
 }
@@ -316,8 +328,10 @@ button { font: inherit; cursor: pointer; }
 
 .whats-new__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
+  row-gap: var(--space-100);
   padding-bottom: var(--space-300);
   border-bottom: 1px solid rgba(13,13,12,0.08);
 }
@@ -346,6 +360,24 @@ button { font: inherit; cursor: pointer; }
   gap: 1px;
   margin-top: var(--space-600);
   background: rgba(13,13,12,0.1);   /* shows through the 1px gaps as hairlines */
+}
+
+.news-card--s1 { grid-column: span 1; }
+.news-card--s2 { grid-column: span 2; }
+.news-card--s3 { grid-column: span 3; }
+
+/* Rearrange the grid itself as it narrows, instead of just shrinking
+   6 columns down to slivers (which forces every heading/word to wrap
+   and reads as "very vertical"). Fewer, wider columns at each step. */
+@media (max-width: 1100px) {
+  .whats-new__grid { grid-template-columns: repeat(2, 1fr); }
+  .news-card--s1, .news-card--s2, .news-card--s3 { grid-column: span 1; }
+  .news-card:first-child { grid-column: span 2; }
+}
+
+@media (max-width: 640px) {
+  .whats-new__grid { grid-template-columns: 1fr; }
+  .news-card--s1, .news-card--s2, .news-card--s3, .news-card:first-child { grid-column: span 1; }
 }
 
 .news-card {
@@ -481,6 +513,7 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-800);
@@ -531,8 +564,10 @@ button { font: inherit; cursor: pointer; }
    used consistently everywhere it appears. */
 .events__head {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
+  row-gap: var(--space-100);
   padding-bottom: var(--space-300);
   border-bottom: 1px solid rgba(13,13,12,0.08);
 }
@@ -562,6 +597,10 @@ button { font: inherit; cursor: pointer; }
   padding-top: var(--space-600);
 }
 
+@media (max-width: 640px) {
+  .events__grid { grid-template-columns: 1fr; }
+}
+
 .event-card { display: flex; flex-direction: column; }
 
 .event-card__date {
@@ -573,6 +612,10 @@ button { font: inherit; cursor: pointer; }
   margin-bottom: var(--space-150);
 }
 
+/* Fixed height (not min-height, not line-clamp alone) — exactly 2 lines
+   whether the actual title is 1 line or 3. A cap alone still lets a
+   1-line title come up shorter than a 2-line one, so height + clamp
+   together are what keeps every image aligned regardless of viewport. */
 .event-card__title {
   font-family: var(--f-sans);
   font-size: 26.4px;
@@ -581,6 +624,11 @@ button { font: inherit; cursor: pointer; }
   line-height: 1.15;
   color: var(--c-dark);
   margin-bottom: var(--space-200);
+  height: 2.3em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .event-card__desc {
@@ -589,55 +637,22 @@ button { font: inherit; cursor: pointer; }
   font-weight: 300;
   line-height: 1.7;
   color: var(--c-gray-dark);
-  margin-bottom: var(--space-200);
-}
-
-.event-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  row-gap: var(--space-100);
-  column-gap: var(--space-200);
   margin-bottom: var(--space-300);
-}
-
-.event-card__location {
-  font-family: var(--f-sans);
-  font-size: 11px;
-  letter-spacing: 0.22px;
-  line-height: 1.6;
-  color: var(--c-gray);
-}
-
-.event-card__recording {
-  font-family: var(--f-mono);
-  font-size: 11px;
-  letter-spacing: 0.55px;
-  color: var(--c-gray);
-}
-
-.event-card__status {
-  font-family: var(--f-sans);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1.26px;
-  text-transform: uppercase;
-  padding: var(--space-075) var(--space-200);
-  border-radius: 100px;
-}
-
-.event-card__status--upcoming {
-  color: var(--c-red);
-  background: rgba(240,61,31,0.06);
+  height: 3.4em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .event-card__image {
+  width: 100%;
   aspect-ratio: 397 / 260;
   background: var(--c-light-bg);
   overflow: hidden;
 }
 
-.event-card__image img { width: 100%; height: 100%; object-fit: cover; }
+.event-card__image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* =============================================================================
    Shared gradient block — newsletter + supporters
