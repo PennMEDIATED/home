@@ -694,6 +694,7 @@ button { font: inherit; cursor: pointer; }
    reveal the section's own gradient showing through the letterforms.
    Matches the /about repo's newsletter CTA exactly. */
 .newsletter__cta {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -702,6 +703,46 @@ button { font: inherit; cursor: pointer; }
   height: 48px;
   padding-inline: var(--space-400);
   background: var(--c-white);
+}
+
+/* Animated border trace on hover — a single line chases around the
+   button's perimeter via a rotating conic-gradient "comet," masked down
+   to a 2px ring. Static (no hidden layout shift) until hover triggers
+   both the fade-in and the rotation. Same effect in /about and /grants. */
+@property --cta-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.newsletter__cta::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  padding: 2px;
+  /* Solid for the first 40deg, then a smooth fade to transparent by
+     62deg — the leading edge stays crisp, the trailing end tapers into
+     nothing instead of cutting off abruptly. */
+  background: conic-gradient(from var(--cta-angle), var(--c-red) 0deg, var(--c-red) 40deg, transparent 62deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.newsletter__cta:hover::before {
+  /* One lap, then fades itself out and stays gone (forwards) — it
+     actually ends instead of sitting there statically for the rest of
+     the hover. Opacity lives in the keyframes (not a separate
+     transition) so the fade-out is part of the same timeline. */
+  animation: cta-trace 1.3s linear forwards;
+}
+
+@keyframes cta-trace {
+  0% { opacity: 1; --cta-angle: 0deg; }
+  85% { opacity: 1; --cta-angle: 360deg; }
+  100% { opacity: 0; --cta-angle: 360deg; }
 }
 
 .newsletter__cta-label {
