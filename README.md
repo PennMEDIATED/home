@@ -28,23 +28,25 @@ What Claude Code will do:
 
 ### Updating "Recent Events"
 
+Unlike What's New, event images are never fetched from a URL. Add the image file to `assets/events/` yourself first — drag it into the folder on GitHub, or copy it in locally — rather than uploading it to the WordPress media library and linking to it. Claude Code only wires up the card; it doesn't source the image.
+
 Sample prompt:
 
-> Add a new event to Recent Events: "**[Event Name]**", [date, e.g. "Wed, Sep 3, 2026"] — [one sentence description]. Link it to [URL]. Use this image: [path or URL]. Remove the oldest event.
+> Add a new event to Recent Events: "**[Event Name]**", [date, e.g. "Wed, Sep 3, 2026"] — [one sentence description]. Link it to [URL]. Image: already added to `assets/events/[filename]`. Remove the oldest event.
 
 Example, filled in:
 
-> Add a new event to Recent Events: "**Spring 2026 Research Symposium**", Thu, Apr 9, 2026 — A day of talks from Penn MEDIATED-affiliated faculty on the latest in information ecosystem research. Link it to https://infodem.upenn.edu/events/. Use this image: assets/events/symposium.jpg (already downloaded). Remove the oldest event.
+> Add a new event to Recent Events: "**Spring 2026 Research Symposium**", Thu, Apr 9, 2026 — A day of talks from Penn MEDIATED-affiliated faculty on the latest in information ecosystem research. Link it to https://infodem.upenn.edu/events/. Image: already added to `assets/events/symposium.jpg`. Remove the oldest event.
 
 What Claude Code will do:
-1. Download the image into `assets/events/`.
+1. Reference the image already sitting in `assets/events/` — if it isn't there yet, stop and ask for it rather than downloading or fabricating one.
 2. Add a new `.event-card` at the front of `.events__grid` in `index.html`.
 3. Remove the oldest (currently second) card to keep the total at 2.
 4. Match the existing card structure exactly — date, title, one-line description, image — since `.event-card__title` and `.event-card__desc` use a fixed 2-line height (`height: 2.3em` / `3.4em` with `-webkit-line-clamp: 2`) specifically so both cards' images always line up. Keep descriptions roughly one sentence so they don't get visibly truncated.
 
 ### General tips
 
-- If you have a real image, just say where it is (a local path or a URL) — Claude Code will pull it in rather than inventing a placeholder.
+- For **What's New**, if you have a real image, just say where it is (a local path or a URL) — Claude Code will pull it in rather than inventing a placeholder. For **Recent Events**, add the image to `assets/events/` yourself first — Claude Code won't download one.
 - If you don't have an image yet, say so — better to leave a card without one than fabricate a stock photo.
 - If you want more than one new item added, or a different number of oldest items removed, just say so explicitly (the default is "one in, one out").
 - After any content update, open `index.html` in a browser to confirm the new card looks right before considering it done.
