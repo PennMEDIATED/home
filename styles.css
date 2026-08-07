@@ -85,7 +85,7 @@ button { font: inherit; cursor: pointer; }
 .hero__inner,
 .whats-new__inner,
 .research-cta__inner,
-.events__inner,
+.faculty-cta__inner,
 .newsletter__inner,
 .supporters__inner,
 .footer__inner,
@@ -263,13 +263,29 @@ button { font: inherit; cursor: pointer; }
    decorative section kicker — no uppercase/heavy tracking, which would
    make it look like a category tag instead of a proper name. */
 .hero__eyebrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-050);
+  margin-bottom: var(--space-400);
+}
+
+.hero__eyebrow-brand {
   font-family: var(--f-serif);
   font-style: italic;
   font-size: 26px;
   font-weight: 700;
   letter-spacing: 0.3px;
   color: var(--c-white);
-  margin-bottom: var(--space-400);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.hero__eyebrow-full {
+  font-family: var(--f-serif);
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: var(--c-white);
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
@@ -289,6 +305,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .hero__subtitle {
+  display: block;
   font-family: var(--f-sans);
   font-size: 18px;
   font-weight: 500;
@@ -297,6 +314,14 @@ button { font: inherit; cursor: pointer; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
   max-width: 480px;
   margin-inline: auto;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.hero__subtitle:hover,
+.hero__subtitle:focus-visible {
+  opacity: 0.8;
+  text-decoration: underline;
 }
 
 /* Full-bleed layer: sits above the gradient wash but behind the text, so
@@ -324,7 +349,9 @@ button { font: inherit; cursor: pointer; }
    ============================================================================= */
 /* Standard section spacing: generous top breathing room before a new
    section's heading, per common web UX rhythm (section gap > element gap). */
-.whats-new { background: var(--c-white); padding-top: var(--space-1000); }
+/* padding-bottom gives breathing room before the hard color transition
+   into the Research CTA section below. */
+.whats-new { background: var(--c-white); padding-top: var(--space-1000); padding-bottom: var(--space-800); }
 
 .whats-new__head {
   display: flex;
@@ -354,30 +381,23 @@ button { font: inherit; cursor: pointer; }
 
 .whats-new__all:hover { opacity: 0.6; }
 
+/* Uniform tile grid — every card is the same size, so squares sit flush
+   against each other with no leftover space under shorter neighbors
+   (mixed spans used to leave ragged gaps in the row). */
 .whats-new__grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   margin-top: var(--space-600);
   background: rgba(13,13,12,0.1);   /* shows through the 1px gaps as hairlines */
 }
 
-.news-card--s1 { grid-column: span 1; }
-.news-card--s2 { grid-column: span 2; }
-.news-card--s3 { grid-column: span 3; }
-
-/* Rearrange the grid itself as it narrows, instead of just shrinking
-   6 columns down to slivers (which forces every heading/word to wrap
-   and reads as "very vertical"). Fewer, wider columns at each step. */
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .whats-new__grid { grid-template-columns: repeat(2, 1fr); }
-  .news-card--s1, .news-card--s2, .news-card--s3 { grid-column: span 1; }
-  .news-card:first-child { grid-column: span 2; }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .whats-new__grid { grid-template-columns: 1fr; }
-  .news-card--s1, .news-card--s2, .news-card--s3, .news-card:first-child { grid-column: span 1; }
 }
 
 .news-card {
@@ -385,28 +405,40 @@ button { font: inherit; cursor: pointer; }
   display: flex;
   flex-direction: column;
   background: var(--c-white);
-  min-height: 280px;
+  overflow: hidden;
 }
 
 .news-card--dark   { background: var(--c-dark); color: var(--c-white); }
 .news-card--purple { background: var(--c-accent); color: var(--c-white); }
 .news-card--red    { background: var(--c-red); color: var(--c-white); }
 
+/* Image is its own square (aspect-ratio: 1) sitting above the text, not
+   filling the whole tile — the text body below is a plain rectangle that
+   sizes to its (clamped) content instead of being forced into the square. */
 .news-card__image {
   width: 100%;
-  aspect-ratio: 719 / 330;
+  aspect-ratio: 1;
   overflow: hidden;
 }
 
 .news-card__image img { width: 100%; height: 100%; object-fit: cover; }
 
-.news-card__image--placeholder { background: var(--c-light-bg); aspect-ratio: 479 / 260; }
-.news-card__image--short { aspect-ratio: 479 / 130; }
+/* Wide brand lockups (logos with a wordmark) lose the wordmark entirely
+   when center-cropped to a square — letterbox those instead of cropping. */
+.news-card__image--contain {
+  background: var(--c-light-bg);
+}
+
+.news-card__image--contain img {
+  object-fit: contain;
+  padding: var(--space-400);
+}
 
 .news-card__arrow {
   position: absolute;
   top: var(--space-250);
   right: var(--space-250);
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -442,7 +474,7 @@ button { font: inherit; cursor: pointer; }
   display: flex;
   flex-direction: column;
   gap: var(--space-100);
-  padding: var(--space-400);
+  padding: var(--space-300);
 }
 
 .news-card__body--bottom { margin-top: auto; }
@@ -467,14 +499,10 @@ button { font: inherit; cursor: pointer; }
   letter-spacing: -0.152px;
   line-height: 1.3;
   color: var(--c-dark);
-}
-
-.news-card__title--serif {
-  font-family: var(--f-serif);
-  font-size: 28px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .news-card__desc {
@@ -482,8 +510,16 @@ button { font: inherit; cursor: pointer; }
   font-size: 12.5px;
   font-weight: 300;
   line-height: 1.7;
-  color: var(--c-gray-dark);   /* #54534f — more opaque than the old --c-gray */
+  color: var(--c-gray-dark);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
+
+.news-card--dark .news-card__title,
+.news-card--purple .news-card__title,
+.news-card--red .news-card__title { color: var(--c-white); }
 
 .news-card--dark .news-card__desc,
 .news-card--purple .news-card__desc,
@@ -554,105 +590,61 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* =============================================================================
-   UPCOMING EVENTS
-   Figma "section": white 1434×526, 3-up card row
+   FACULTY CTA
+   Same pattern as RESEARCH CTA above (copy left, image right), --c-red
+   (brand red/orange) instead of --c-accent so the two CTAs read as a pair
+   without being identical.
    ============================================================================= */
-/* Same top spacing as .whats-new — consistent section rhythm site-wide. */
-.events { background: var(--c-white); padding-top: var(--space-1000); padding-bottom: var(--space-800); }
+/* margin-top (not padding) so the page's white background shows through
+   as a hairline-to-full gap between the two full-bleed color blocks,
+   instead of purple bleeding directly into orange at a hard seam. */
+.faculty-cta {
+  background: var(--c-red);
+  padding-block: var(--space-1000);
+  margin-top: var(--space-800);
+}
 
-/* Same head treatment as .whats-new__head — one heading/link pattern,
-   used consistently everywhere it appears. */
-.events__head {
+.faculty-cta__inner {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  row-gap: var(--space-100);
-  padding-bottom: var(--space-300);
-  border-bottom: 1px solid rgba(13,13,12,0.08);
-}
-
-.events__label {
-  font-family: var(--f-sans);
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--c-dark);
-}
-
-.events__all {
-  font-family: var(--f-sans);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--c-dark);
-  transition: opacity 0.15s;
-}
-
-.events__all:hover { opacity: 0.6; }
-
-.events__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-800);
-  padding-top: var(--space-600);
 }
 
-@media (max-width: 640px) {
-  .events__grid { grid-template-columns: 1fr; }
+.faculty-cta__copy { max-width: 500px; }
+
+.faculty-cta__lead {
+  font-family: var(--f-sans);
+  font-size: 35.2px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.704px;
+  color: var(--c-white);
+  margin-bottom: var(--space-500);
 }
 
-.event-card { display: flex; flex-direction: column; }
-
-.event-card__date {
+.faculty-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-100);
   font-family: var(--f-sans);
   font-size: 16px;
   font-weight: 500;
-  letter-spacing: 0.16px;
-  color: var(--c-muted);
-  margin-bottom: var(--space-150);
+  color: var(--c-white);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  padding-bottom: 2px;
+  transition: opacity 0.15s;
 }
 
-/* Fixed height (not min-height, not line-clamp alone) — exactly 2 lines
-   whether the actual title is 1 line or 3. A cap alone still lets a
-   1-line title come up shorter than a 2-line one, so height + clamp
-   together are what keeps every image aligned regardless of viewport. */
-.event-card__title {
-  font-family: var(--f-sans);
-  font-size: 26.4px;
-  font-weight: 500;
-  letter-spacing: -0.528px;
-  line-height: 1.15;
-  color: var(--c-dark);
-  margin-bottom: var(--space-200);
-  height: 2.3em;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
+.faculty-cta__link:hover { opacity: 0.75; }
 
-.event-card__desc {
-  font-family: var(--f-sans);
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 1.7;
-  color: var(--c-gray-dark);
-  margin-bottom: var(--space-300);
-  height: 3.4em;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+.faculty-cta__image {
+  flex-shrink: 0;
+  width: min(38vw, 523px);
+  border-radius: var(--space-100);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
 }
-
-.event-card__image {
-  width: 100%;
-  aspect-ratio: 397 / 260;
-  background: var(--c-light-bg);
-  overflow: hidden;
-}
-
-.event-card__image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* =============================================================================
    Shared gradient block — newsletter + supporters

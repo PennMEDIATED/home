@@ -8,7 +8,7 @@ The homepage for the [Center on Media, Technology and Democracy](https://infodem
 
 ## Updating content
 
-The **What's New** grid and **Recent Events** section are meant to stay current. Both are fixed-size — when you add something new, the oldest entry comes out so the count stays the same (7 cards for What's New, 2 for Events). You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
+The **What's New** grid is meant to stay current. It's fixed-size — when you add something new, the oldest entry comes out so the count stays at 8 cards (a full two rows of 4). You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
 
 ### Updating "What's New"
 
@@ -23,30 +23,13 @@ Example, filled in:
 What Claude Code will do:
 1. Download the image into `assets/whats-new/`.
 2. Add a new card at the **front** of `.whats-new__grid` in `index.html` (newest items lead).
-3. Remove the **last** card in the grid to keep the total at 7.
-4. Rebalance the `news-card--s1/s2/s3` span classes so the 6-column grid math still adds up (each row of cards must sum to 6 — e.g. 3+2+1 or 2+2+1+1). Point this out explicitly if you have a preference for how prominent the new card should be (span 3 = biggest, span 1 = smallest).
+3. Remove the **last** card in the grid to keep the total at 8.
 
-### Updating "Recent Events"
-
-Unlike What's New, event images are never fetched from a URL. Add the image file to `assets/events/` yourself first — drag it into the folder on GitHub, or copy it in locally — rather than uploading it to the WordPress media library and linking to it. Claude Code only wires up the card; it doesn't source the image.
-
-Sample prompt:
-
-> Add a new event to Recent Events: "**[Event Name]**", [date, e.g. "Wed, Sep 3, 2026"] — [one sentence description]. Link it to [URL]. Image: already added to `assets/events/[filename]`. Remove the oldest event.
-
-Example, filled in:
-
-> Add a new event to Recent Events: "**Spring 2026 Research Symposium**", Thu, Apr 9, 2026 — A day of talks from Penn MEDIATED-affiliated faculty on the latest in information ecosystem research. Link it to https://infodem.upenn.edu/events/. Image: already added to `assets/events/symposium.jpg`. Remove the oldest event.
-
-What Claude Code will do:
-1. Reference the image already sitting in `assets/events/` — if it isn't there yet, stop and ask for it rather than downloading or fabricating one.
-2. Add a new `.event-card` at the front of `.events__grid` in `index.html`.
-3. Remove the oldest (currently second) card to keep the total at 2.
-4. Match the existing card structure exactly — date, title, one-line description, image — since `.event-card__title` and `.event-card__desc` use a fixed 2-line height (`height: 2.3em` / `3.4em` with `-webkit-line-clamp: 2`) specifically so both cards' images always line up. Keep descriptions roughly one sentence so they don't get visibly truncated.
+Every card is the same square size (`aspect-ratio: 1`, uniform 4-column grid) — no span classes to rebalance. Titles clamp to 2 lines and descriptions to 2 lines, so keep both short; anything longer gets truncated rather than overflowing the square.
 
 ### General tips
 
-- For **What's New**, if you have a real image, just say where it is (a local path or a URL) — Claude Code will pull it in rather than inventing a placeholder. For **Recent Events**, add the image to `assets/events/` yourself first — Claude Code won't download one.
+- If you have a real image, just say where it is (a local path or a URL) — Claude Code will pull it in rather than inventing a placeholder.
 - If you don't have an image yet, say so — better to leave a card without one than fabricate a stock photo.
 - If you want more than one new item added, or a different number of oldest items removed, just say so explicitly (the default is "one in, one out").
 - After any content update, open `index.html` in a browser to confirm the new card looks right before considering it done.
@@ -83,7 +66,7 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 **Type:**
 - `--f-serif`: `'EB Garamond', Georgia, 'Times New Roman', serif` — headlines, quotes, the "MEDIATED" wordmark
 - `--f-sans`: `'DM Sans', system-ui, -apple-system, sans-serif` — everything else
-- `--f-mono`: `'Courier New', Courier, monospace` — small meta labels only (e.g. event "Recording available" tags)
+- `--f-mono`: `'Courier New', Courier, monospace` — small meta labels only
 
 **Layout:** `--max-w: 1440px` page cap, `--pad-x: var(--space-1000)` (80px) side padding on the shared `*__inner` containers. In `home`, `--pad-x` scales down responsively (32px under 900px, 20px under 480px) — `about`'s simpler page hasn't needed this yet, but if you add anything to `about` wider than a headline/paragraph, backport the same responsive `--pad-x` media queries rather than letting content overflow on mobile.
 
@@ -91,15 +74,15 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 
 - Every section's content wrapper is named `.<section>__inner` and shares one rule (`width:100%; max-width:var(--max-w); margin-inline:auto; padding-inline:var(--pad-x);`). Add new sections to that shared selector list instead of writing a one-off inner container.
 - Section-to-section vertical rhythm uses `--space-1000` (80px) for generous breaks (e.g. before a new heading like "What's New") and `--space-600` (48px) between a heading row and the content below it.
-- BEM-ish naming: `.block__element`, modifiers as `.block--variant` or `.block__element--variant` (e.g. `.news-card--dark`, `.event-card__status--upcoming`).
+- BEM-ish naming: `.block__element`, modifiers as `.block--variant` or `.block__element--variant` (e.g. `.news-card--dark`, `.news-card__image--contain`).
 
 ### Shared components
 
-- **Section header pattern** (`What's New` / `Recent Events` / etc.): a heading (24px, weight 600, `--c-dark`) and a "view all" link (14px, weight 500) in a `flex` row with `align-items:baseline` and a bottom border. Keep any new listing section (a future "Publications" grid, say) on this exact pattern rather than inventing a new header style.
+- **Section header pattern** (`What's New` / etc.): a heading (24px, weight 600, `--c-dark`) and a "view all" link (14px, weight 500) in a `flex` row with `align-items:baseline` and a bottom border. Keep any new listing section (a future "Publications" grid, say) on this exact pattern rather than inventing a new header style.
 - **Newsletter CTA ("Subscribe Here")**: a white rectangle button. On hover, the label is knocked out via `background-clip:text` filled with `--c-gradient`, so the brand gradient appears to show through the letterforms — background stays solid white, only the text goes transparent. This exact effect lives in both repos' `.newsletter__cta:hover .newsletter__cta-label` — if you touch one, touch the other.
 - **Supporters row**: `.supporters__label` 24px/weight 700/uppercase, Knight Foundation logo at `height:65px`, Penn logo at `height:120px`, both `width:auto`. Logos use `assets/knight-foundation-logo.png` and `assets/upenn-logo-full.png` — same files, copied between repos; don't re-crop or re-export one without the other.
-- **Cards** (`news-card`, `event-card`): image on top (fixed `aspect-ratio`, `object-fit:cover`), then a text body. When a card grid holds more than one item side by side, lock the title/description to a fixed height (`height` + `-webkit-line-clamp`, not just `min-height`) so images stay aligned regardless of copy length — see `home`'s `.event-card__title`/`.event-card__desc` for the pattern; a `min-height` alone isn't sufficient because it only sets a floor, not a ceiling.
-- **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` and `.events__grid` media queries).
+- **Cards** (`news-card`): square image (`aspect-ratio: 1`, `object-fit:cover`) on top, plain-rectangle text body below. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length can't grow one card taller than its neighbors. Brand-lockup logos that lose their wordmark under a center-crop use `.news-card__image--contain` to letterbox instead of cropping.
+- **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` media queries).
 
 ### Keeping the two repos in sync
 
