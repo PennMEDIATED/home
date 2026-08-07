@@ -602,6 +602,7 @@ button { font: inherit; cursor: pointer; }
   background: var(--c-red);
   padding-block: var(--space-1000);
   margin-top: var(--space-800);
+  margin-bottom: var(--space-800);
 }
 
 .faculty-cta__inner {
