@@ -12,25 +12,34 @@ The **What's New** grid is meant to stay current. It's fixed-size — when you a
 
 ### Updating "What's New"
 
-Sample prompt:
+First, upload the image directly to `assets/whats-new/` in this repository:
 
-> Add a new What's New item: "**[Title]**" — [one or two sentence description]. Link it to [URL]. Use this image: [path to image, or a URL to pull from]. Remove the oldest item to make room for it.
+1. Open the `assets/whats-new/` folder on GitHub.
+2. Select **Add file**, then **Upload files**.
+3. Choose the image and commit it to the repository.
+4. Copy its filename for the prompt below.
 
-Example, filled in:
+Use a short, descriptive filename with lowercase letters and hyphens, such as
+`podcast-series-launch.jpg`. The image must be stored in the repository before the
+update is requested; do not submit an external image link.
 
-> Add a new What's New item: "**Center Launches Podcast Series**" — Our new podcast brings together researchers and journalists to unpack the week's biggest stories in media and democracy. Link it to https://infodem.upenn.edu/podcast/. Use this image: https://infodem.upenn.edu/wp-content/uploads/2026/06/podcast-launch.png. Remove the oldest item to make room for it.
+Once the image is in `assets/whats-new/`, give Claude Code this prompt:
+
+> Add a new What's New item: "**[Title]**" — [one or two sentence description]. Link it to [destination URL]. Use the image I uploaded at `assets/whats-new/[image-filename]`. Use this image alt text: "[brief description of the image]". Remove the oldest item to make room for it.
 
 What Claude Code will do:
-1. Download the image into `assets/whats-new/`.
+1. Confirm that the named image already exists in `assets/whats-new/`.
 2. Add a new card at the **front** of `.whats-new__grid` in `index.html` (newest items lead).
-3. Remove the **last** card in the grid to keep the total at 8.
+3. Use the uploaded image and supplied alt text in the new card.
+4. Remove the **last** card in the grid to keep the total at 8.
 
 Every card is the same square size (`aspect-ratio: 1`, uniform 4-column grid) — no span classes to rebalance. Titles clamp to 2 lines and descriptions to 2 lines, so keep both short; anything longer gets truncated rather than overflowing the square.
 
 ### General tips
 
-- If you have a real image, just say where it is (a local path or a URL) — Claude Code will pull it in rather than inventing a placeholder.
-- If you don't have an image yet, say so — better to leave a card without one than fabricate a stock photo.
+- Upload the image before sending the prompt. The prompt should point to its exact path inside `assets/whats-new/`; external image URLs are not part of this workflow.
+- Include useful alt text that describes the image for someone who cannot see it.
+- If you don't have an image yet, wait to add the update rather than using a fabricated stock image.
 - If you want more than one new item added, or a different number of oldest items removed, just say so explicitly (the default is "one in, one out").
 - After any content update, open `index.html` in a browser to confirm the new card looks right before considering it done.
 
@@ -87,4 +96,3 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 ### Keeping the two repos in sync
 
 `about` and `home` are separate repos with duplicated CSS, not a shared stylesheet — so consistency is a discipline, not something enforced automatically. When you change a shared token or component in one repo, check whether the same change belongs in the other before considering the task done.
-
