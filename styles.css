@@ -584,6 +584,7 @@ button { font: inherit; cursor: pointer; }
 .about-center {
   background: var(--c-light-bg);
   padding-block: var(--space-800);
+  margin-block: var(--space-800);
 }
 
 .about-center__card {
