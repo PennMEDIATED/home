@@ -396,27 +396,24 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* The newest update always leads the markup, so :first-child makes the
-   featured treatment automatic whenever the grid is refreshed. Its image
-   and copy each occupy one standard grid column. */
+   featured treatment automatic whenever the grid is refreshed. It occupies
+   two grid positions as one wide card; later cards flow into the next open
+   position without needing manual placement. */
 .news-card:first-child {
   grid-column: span 2;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.news-card:first-child .news-card__body {
-  justify-content: center;
-  padding: var(--space-600);
+.news-card:first-child .news-card__image {
+  aspect-ratio: 2 / 1;
 }
 
 @media (max-width: 480px) {
   .news-card:first-child {
     grid-column: span 1;
-    display: flex;
   }
 
-  .news-card:first-child .news-card__body {
-    padding: var(--space-300);
+  .news-card:first-child .news-card__image {
+    aspect-ratio: 1;
   }
 }
 
