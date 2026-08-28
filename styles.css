@@ -30,8 +30,8 @@
   --c-muted:      #c8c6c0;          /* rgb(200,198,192) date/meta text */
   --c-white:      #ffffff;
 
-  /* Brand gradient — used on newsletter/supporters and the hero, matches
-     /about's orbital section exactly: 150deg #5533ee 0% → #df3611 81% */
+  /* Brand gradient — used on the hero, matches /about's orbital section
+     and newsletter/supporters block exactly: 150deg #5533ee 0% → #df3611 81% */
   --c-gradient: linear-gradient(150deg, #5533ee 0%, #df3611 81%);
 
   /* ── Figma typography tokens ── */
@@ -87,8 +87,6 @@ button { font: inherit; cursor: pointer; }
 .research-cta__inner,
 .about-center__inner,
 .faculty-cta__inner,
-.newsletter__inner,
-.supporters__inner,
 .footer__inner,
 .footer__bottom {
   width: 100%;
@@ -603,7 +601,7 @@ button { font: inherit; cursor: pointer; }
    White editorial card between the purple research and orange faculty CTAs.
    ============================================================================= */
 .about-center {
-  background: var(--c-light-bg);
+  background: var(--c-white);
   padding-block: var(--space-800);
   margin-block: var(--space-800);
 }
@@ -740,154 +738,6 @@ button { font: inherit; cursor: pointer; }
   border-radius: var(--space-100);
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
 }
-
-/* =============================================================================
-   Shared gradient block — newsletter + supporters
-   Figma "Paragraph+Background": 150deg #5533ee 0% → #df3611 81%
-   ============================================================================= */
-.cta-block { background: var(--c-gradient); }
-
-/* NEWSLETTER */
-.newsletter { padding-block: var(--space-800); }
-
-.newsletter__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  row-gap: var(--space-400);
-  column-gap: var(--space-800);
-}
-
-.newsletter__title {
-  font-family: var(--f-serif);
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 40.8px;
-  letter-spacing: -0.544px;
-  color: var(--c-white);
-  margin-bottom: var(--space-050);
-}
-
-.newsletter__desc {
-  font-family: var(--f-sans);
-  font-size: 20px;
-  font-weight: 300;
-  line-height: 19.2px;
-  color: var(--c-white);
-}
-
-/* Subscribe CTA: white rectangle; on hover the copy is knocked out to
-   reveal the section's own gradient showing through the letterforms.
-   Matches the /about repo's newsletter CTA exactly. */
-.newsletter__cta {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-end;
-  flex-shrink: 0;
-  height: 48px;
-  padding-inline: var(--space-400);
-  background: var(--c-white);
-}
-
-/* Animated border trace on hover — a single line chases around the
-   button's perimeter via a rotating conic-gradient "comet," masked down
-   to a 2px ring. Static (no hidden layout shift) until hover triggers
-   both the fade-in and the rotation. Same effect in /about and /grants. */
-@property --cta-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-.newsletter__cta::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  padding: 2px;
-  /* Solid for the first 40deg, then a smooth fade to transparent by
-     62deg — the leading edge stays crisp, the trailing end tapers into
-     nothing instead of cutting off abruptly. */
-  background: conic-gradient(from var(--cta-angle), var(--c-red) 0deg, var(--c-red) 40deg, transparent 62deg, transparent 360deg);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.newsletter__cta:hover::before {
-  /* One lap, then fades itself out and stays gone (forwards) — it
-     actually ends instead of sitting there statically for the rest of
-     the hover. Opacity lives in the keyframes (not a separate
-     transition) so the fade-out is part of the same timeline. */
-  animation: cta-trace 1.3s linear forwards;
-}
-
-@keyframes cta-trace {
-  0% { opacity: 1; --cta-angle: 0deg; }
-  85% { opacity: 1; --cta-angle: 360deg; }
-  100% { opacity: 0; --cta-angle: 360deg; }
-}
-
-.newsletter__cta-label {
-  font-family: var(--f-sans);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.24px;
-  color: var(--c-dark);
-}
-
-.newsletter__cta:hover .newsletter__cta-label {
-  background: var(--c-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
-/* SUPPORTERS — matches the /about repo's supporters section exactly */
-.supporters {
-  background: var(--c-white);
-  min-height: 180px;
-  display: flex;
-  align-items: center;
-  padding-block: var(--space-300);   /* breathing room when logos wrap */
-}
-
-.supporters__inner {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  row-gap: var(--space-300);
-  gap: var(--space-500);             /* 40px — group label with logos */
-}
-
-.supporters__label {
-  font-family: var(--f-sans);
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 30px;
-  letter-spacing: 1.8px;
-  color: var(--c-dark);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.supporters__logo-link {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  opacity: 1;
-  transition: opacity 0.15s;
-}
-
-.supporters__logo-link:hover { opacity: 0.75; }
-
-.supporters__logo--knight { height: 65px; width: auto; }
-.supporters__logo--upenn  { height: 120px; width: auto; }
 
 /* FOOTER */
 .footer { background: var(--c-dark); padding-top: var(--space-800); }

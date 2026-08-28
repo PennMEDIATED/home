@@ -1,6 +1,6 @@
 # Penn MEDIATED — Home
 
-The homepage for the [Center on Media, Technology and Democracy](https://infodem.upenn.edu). Static HTML/CSS, no build step — same conventions as the [`about`](https://github.com/PennMEDIATED/about) repo (shared spacing tokens, brand colors, fonts, and the "Subscribe Here" newsletter treatment).
+The homepage for the [Center on Media, Technology and Democracy](https://infodem.upenn.edu). Static HTML/CSS, no build step — same conventions as the [`about`](https://github.com/PennMEDIATED/about) repo (shared spacing tokens, brand colors, and fonts).
 
 - `index.html` — page markup
 - `styles.css` — all styling (design tokens live at the top in `:root`)
@@ -47,6 +47,17 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 - If you want more than one new item added, or a different number of oldest items removed, just say so explicitly (the default is "one in, one out").
 - After any content update, open `index.html` in a browser to confirm the new card looks right before considering it done.
 
+### Image sizes
+
+| Image | How it displays | Recommended file |
+|---|---|---|
+| **What's New** — featured card (newest item, spans 2 columns) | Cropped to a 2:1 wide rectangle with `object-fit: cover` | 1200×600px or larger, roughly 2:1 |
+| **What's New** — regular card | Cropped to a 1:1 square with `object-fit: cover` | 800×800px or larger, square |
+| **What's New** — logo/lockup card (use the `news-card__image--contain` class, e.g. partner logos) | Not cropped — letterboxed inside the square tile with `object-fit: contain` | Any size; a transparent-background PNG looks cleanest |
+| Research CTA / Faculty CTA screenshots | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | Export already cropped to the shape you want, at least 1050px wide for a sharp retina image |
+
+The two "cropped" rows above will center-crop whatever you upload, so keep the subject centered in the frame. Everything else displays uncropped at its native aspect ratio, so crop the image yourself before uploading rather than relying on the page to do it.
+
 ## Style guide (shared across `about` and `home`)
 
 Both repos are static HTML/CSS built off the same design system. If you're adding or editing anything, pull values from here rather than guessing new ones — that's what keeps the two sites looking like one brand instead of drifting apart.
@@ -74,7 +85,7 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 | `--c-light-bg` | `#f8f7f4` | Placeholder/image background |
 | `--c-white` | `#ffffff` | — |
 
-**Brand gradient** — used on every purple-to-red surface (the about page's orbital section, both repos' newsletter/supporters block, the home hero): `linear-gradient(150deg, #5533ee 0%, #df3611 81%)` via `--c-gradient`. Never write this gradient out by hand or approximate it with different stops — reference the variable so a future palette tweak only has to happen in one place per repo.
+**Brand gradient** — used on every purple-to-red surface (the about page's orbital section and newsletter/supporters block, the home hero): `linear-gradient(150deg, #5533ee 0%, #df3611 81%)` via `--c-gradient`. Never write this gradient out by hand or approximate it with different stops — reference the variable so a future palette tweak only has to happen in one place per repo. (`home` no longer has a newsletter/supporters section — see below.)
 
 **Type:**
 - `--f-serif`: `'EB Garamond', Georgia, 'Times New Roman', serif` — headlines, quotes, the "MEDIATED" wordmark
@@ -92,10 +103,10 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 ### Shared components
 
 - **Section header pattern** (`What's New` / etc.): a heading (24px, weight 600, `--c-dark`) and a "view all" link (14px, weight 500) in a `flex` row with `align-items:baseline` and a bottom border. Keep any new listing section (a future "Publications" grid, say) on this exact pattern rather than inventing a new header style.
-- **Newsletter CTA ("Subscribe Here")**: a white rectangle button. On hover, the label is knocked out via `background-clip:text` filled with `--c-gradient`, so the brand gradient appears to show through the letterforms — background stays solid white, only the text goes transparent. This exact effect lives in both repos' `.newsletter__cta:hover .newsletter__cta-label` — if you touch one, touch the other.
-- **Supporters row**: `.supporters__label` 24px/weight 700/uppercase, Knight Foundation logo at `height:65px`, Penn logo at `height:120px`, both `width:auto`. Logos use `assets/knight-foundation-logo.png` and `assets/upenn-logo-full.png` — same files, copied between repos; don't re-crop or re-export one without the other.
 - **Cards** (`news-card`): the first card automatically spans two columns as one wide card, with a `2 / 1` image above a full-width text body. All other cards place a square image (`aspect-ratio: 1`, `object-fit:cover`) above a plain-rectangle text body. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length stays controlled. Brand-lockup logos that lose their wordmark under a center-crop use `.news-card__image--contain` to letterbox instead of cropping.
 - **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` media queries).
+
+`home` does not have a newsletter or "Supported by" section — those were removed. The `about` repo still has both (`.newsletter`, `.supporters`, the shared `.cta-block` gradient wrapper); if you're porting a component between the two repos, don't reintroduce them here without being asked.
 
 ### Keeping the two repos in sync
 
