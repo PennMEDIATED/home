@@ -369,9 +369,8 @@ button { font: inherit; cursor: pointer; }
 
 .whats-new__all:hover { opacity: 0.6; }
 
-/* Uniform tile grid — every card is the same size, so squares sit flush
-   against each other with no leftover space under shorter neighbors
-   (mixed spans used to leave ragged gaps in the row). */
+/* Four-column tile grid. The first card is automatically featured across
+   two columns; all remaining cards occupy one column each. */
 .whats-new__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -394,6 +393,31 @@ button { font: inherit; cursor: pointer; }
   flex-direction: column;
   background: var(--c-white);
   overflow: hidden;
+}
+
+/* The newest update always leads the markup, so :first-child makes the
+   featured treatment automatic whenever the grid is refreshed. Its image
+   and copy each occupy one standard grid column. */
+.news-card:first-child {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.news-card:first-child .news-card__body {
+  justify-content: center;
+  padding: var(--space-600);
+}
+
+@media (max-width: 480px) {
+  .news-card:first-child {
+    grid-column: span 1;
+    display: flex;
+  }
+
+  .news-card:first-child .news-card__body {
+    padding: var(--space-300);
+  }
 }
 
 .news-card--dark   { background: var(--c-dark); color: var(--c-white); }
