@@ -85,6 +85,7 @@ button { font: inherit; cursor: pointer; }
 .hero__inner,
 .whats-new__inner,
 .research-cta__inner,
+.about-center__inner,
 .faculty-cta__inner,
 .newsletter__inner,
 .supporters__inner,
@@ -259,25 +260,12 @@ button { font: inherit; cursor: pointer; }
   text-align: center;
 }
 
-/* Reads as the center's formal name (serif, normal case) rather than a
-   decorative section kicker — no uppercase/heavy tracking, which would
-   make it look like a category tag instead of a proper name. */
+/* Reads as the center's formal name rather than a decorative section kicker. */
 .hero__eyebrow {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-050);
   margin-bottom: var(--space-400);
-}
-
-.hero__eyebrow-brand {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  color: var(--c-white);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
 .hero__eyebrow-full {
@@ -381,9 +369,8 @@ button { font: inherit; cursor: pointer; }
 
 .whats-new__all:hover { opacity: 0.6; }
 
-/* Uniform tile grid — every card is the same size, so squares sit flush
-   against each other with no leftover space under shorter neighbors
-   (mixed spans used to leave ragged gaps in the row). */
+/* Four-column tile grid. The first card is automatically featured across
+   two columns; all remaining cards occupy one column each. */
 .whats-new__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -406,6 +393,28 @@ button { font: inherit; cursor: pointer; }
   flex-direction: column;
   background: var(--c-white);
   overflow: hidden;
+}
+
+/* The newest update always leads the markup, so :first-child makes the
+   featured treatment automatic whenever the grid is refreshed. It occupies
+   two grid positions as one wide card; later cards flow into the next open
+   position without needing manual placement. */
+.news-card:first-child {
+  grid-column: span 2;
+}
+
+.news-card:first-child .news-card__image {
+  aspect-ratio: 2 / 1;
+}
+
+@media (max-width: 480px) {
+  .news-card:first-child {
+    grid-column: span 1;
+  }
+
+  .news-card:first-child .news-card__image {
+    aspect-ratio: 1;
+  }
 }
 
 .news-card--dark   { background: var(--c-dark); color: var(--c-white); }
@@ -590,18 +599,103 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* =============================================================================
+   ABOUT THE CENTER
+   White editorial card between the purple research and orange faculty CTAs.
+   ============================================================================= */
+.about-center {
+  background: var(--c-light-bg);
+  padding-block: var(--space-800);
+  margin-block: var(--space-800);
+}
+
+.about-center__card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: var(--space-800);
+  align-items: start;
+  padding: var(--space-800);
+  background: var(--c-white);
+  border: 1px solid rgba(13,13,12,0.08);
+  box-shadow: 0 20px 60px rgba(13,13,12,0.08);
+}
+
+.about-center__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-250);
+}
+
+.about-center__eyebrow {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--c-red);
+}
+
+.about-center__title {
+  max-width: 520px;
+  font-family: var(--f-serif);
+  font-size: clamp(38px, 4vw, 56px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  color: var(--c-dark);
+}
+
+.about-center__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  max-width: 680px;
+}
+
+.about-center__copy p {
+  font-family: var(--f-sans);
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--c-gray-dark);
+}
+
+.about-center__link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-100);
+  margin-top: var(--space-100);
+  padding-bottom: var(--space-050);
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--c-dark);
+  border-bottom: 1px solid rgba(13,13,12,0.35);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.about-center__link:hover {
+  color: var(--c-red);
+  border-color: var(--c-red);
+}
+
+@media (max-width: 760px) {
+  .about-center__card {
+    grid-template-columns: 1fr;
+    gap: var(--space-500);
+    padding: var(--space-400);
+  }
+}
+
+/* =============================================================================
    FACULTY CTA
    Same pattern as RESEARCH CTA above (copy left, image right), --c-red
    (brand red/orange) instead of --c-accent so the two CTAs read as a pair
    without being identical.
    ============================================================================= */
-/* margin-top (not padding) so the page's white background shows through
-   as a hairline-to-full gap between the two full-bleed color blocks,
-   instead of purple bleeding directly into orange at a hard seam. */
 .faculty-cta {
   background: var(--c-red);
   padding-block: var(--space-1000);
-  margin-top: var(--space-800);
   margin-bottom: var(--space-800);
 }
 

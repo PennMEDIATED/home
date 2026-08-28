@@ -8,7 +8,7 @@ The homepage for the [Center on Media, Technology and Democracy](https://infodem
 
 ## Updating content
 
-The **What's New** grid is meant to stay current. It's fixed-size — when you add something new, the oldest entry comes out so the count stays at 8 cards (a full two rows of 4). You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
+The **What's New** grid is meant to stay current. It's fixed-size — when you add something new, the oldest entry comes out so the count stays at 8 cards. The newest card automatically spans two columns as one wide card; its image and text both use the card's full width. The remaining cards use one column each and automatically flow into the next available grid position. You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
 
 ### Updating "What's New"
 
@@ -30,10 +30,10 @@ Once the image is in `assets/whats-new/`, give Claude Code this prompt:
 What Claude Code will do:
 1. Confirm that the named image already exists in `assets/whats-new/`.
 2. Add a new card at the **front** of `.whats-new__grid` in `index.html` (newest items lead).
-3. Use the uploaded image and supplied alt text in the new card.
+3. Use the uploaded image and supplied alt text in the new card. Because the featured layout is applied with `.news-card:first-child`, placing the card first automatically makes it span two columns and shifts every existing card to the next grid position; do not add a special featured class or manually position the other cards.
 4. Remove the **last** card in the grid to keep the total at 8.
 
-Every card is the same square size (`aspect-ratio: 1`, uniform 4-column grid) — no span classes to rebalance. Titles clamp to 2 lines and descriptions to 2 lines, so keep both short; anything longer gets truncated rather than overflowing the square.
+The newest card spans two columns on desktop and tablet. Its image uses a wide `2 / 1` ratio and its text sits below it across the full card width. At the phone breakpoint (480px), it returns to the same square-image, single-column stacked layout as every other card. Titles clamp to 2 lines and descriptions to 2 lines, so keep both short; anything longer gets truncated rather than overflowing the card.
 
 ### General tips
 
@@ -90,7 +90,7 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 - **Section header pattern** (`What's New` / etc.): a heading (24px, weight 600, `--c-dark`) and a "view all" link (14px, weight 500) in a `flex` row with `align-items:baseline` and a bottom border. Keep any new listing section (a future "Publications" grid, say) on this exact pattern rather than inventing a new header style.
 - **Newsletter CTA ("Subscribe Here")**: a white rectangle button. On hover, the label is knocked out via `background-clip:text` filled with `--c-gradient`, so the brand gradient appears to show through the letterforms — background stays solid white, only the text goes transparent. This exact effect lives in both repos' `.newsletter__cta:hover .newsletter__cta-label` — if you touch one, touch the other.
 - **Supporters row**: `.supporters__label` 24px/weight 700/uppercase, Knight Foundation logo at `height:65px`, Penn logo at `height:120px`, both `width:auto`. Logos use `assets/knight-foundation-logo.png` and `assets/upenn-logo-full.png` — same files, copied between repos; don't re-crop or re-export one without the other.
-- **Cards** (`news-card`): square image (`aspect-ratio: 1`, `object-fit:cover`) on top, plain-rectangle text body below. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length can't grow one card taller than its neighbors. Brand-lockup logos that lose their wordmark under a center-crop use `.news-card__image--contain` to letterbox instead of cropping.
+- **Cards** (`news-card`): the first card automatically spans two columns as one wide card, with a `2 / 1` image above a full-width text body. All other cards place a square image (`aspect-ratio: 1`, `object-fit:cover`) above a plain-rectangle text body. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length stays controlled. Brand-lockup logos that lose their wordmark under a center-crop use `.news-card__image--contain` to letterbox instead of cropping.
 - **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` media queries).
 
 ### Keeping the two repos in sync
