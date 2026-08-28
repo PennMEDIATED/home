@@ -8,7 +8,7 @@ The homepage for the [Center on Media, Technology and Democracy](https://infodem
 
 ## Updating content
 
-The **What's New** grid is meant to stay current. It's fixed-size — when you add something new, the oldest entry comes out so the count stays at 8 cards. The newest card automatically spans two columns as one wide card; its image and text both use the card's full width. The remaining cards use one column each and automatically flow into the next available grid position. You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
+The **What's New** grid is meant to stay current. It's fixed-size — when you add something new, the card in the bottom-right position comes out so the count stays at 7 cards (a full two rows of 4). The newest card automatically spans two columns as one wide card, always appearing largest in the top-left position; its image and text both use the card's full width. The remaining cards use one column each and automatically flow into the next available grid position. You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
 
 ### Updating "What's New"
 
@@ -25,13 +25,17 @@ update is requested; do not submit an external image link.
 
 Once the image is in `assets/whats-new/`, give Claude Code this prompt:
 
-> Add a new What's New item: "**[Title]**" — [one or two sentence description]. Link it to [destination URL]. Use the image I uploaded at `assets/whats-new/[image-filename]`. Use this image alt text: "[brief description of the image]". Remove the oldest item to make room for it.
+> Add a new What's New item: "**[Title]**" — [one or two sentence description]. Link it to [destination URL]. Use the image I uploaded at `assets/whats-new/[image-filename]`. Use this image alt text: "[brief description of the image]". Remove the item in the bottom-right position to make room for it.
+
+Example, filled in (this is the current front card, for reference):
+
+> Add a new What's New item: "**New Report on Monitoring LLMs**" — In a new Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal monitoring to understand how LLMs impact politics. Link it to https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research. Use the image I uploaded at `assets/whats-new/llm-monitoring-report.png`. Use this image alt text: "Carnegie Endowment report on monitoring large language models". Remove the item in the bottom-right position to make room for it.
 
 What Claude Code will do:
 1. Confirm that the named image already exists in `assets/whats-new/`.
-2. Add a new card at the **front** of `.whats-new__grid` in `index.html` (newest items lead).
+2. Add a new card at the **front** of `.whats-new__grid` in `index.html` (newest items lead). It automatically becomes the largest card, spanning two columns in the top-left position.
 3. Use the uploaded image and supplied alt text in the new card. Because the featured layout is applied with `.news-card:first-child`, placing the card first automatically makes it span two columns and shifts every existing card to the next grid position; do not add a special featured class or manually position the other cards.
-4. Remove the **last** card in the grid to keep the total at 8.
+4. Remove the card in the **bottom-right** position (currently the last card in the grid, since 7 cards exactly fill two full rows) to keep the total at 7.
 
 The newest card spans two columns on desktop and tablet. Its image uses a wide `2 / 1` ratio and its text sits below it across the full card width. At the phone breakpoint (480px), it returns to the same square-image, single-column stacked layout as every other card. Titles clamp to 2 lines and descriptions to 2 lines, so keep both short; anything longer gets truncated rather than overflowing the card.
 
