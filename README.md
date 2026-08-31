@@ -108,6 +108,10 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 
 `home` does not have a newsletter or "Supported by" section — those were removed. The `about` repo still has both (`.newsletter`, `.supporters`, the shared `.cta-block` gradient wrapper); if you're porting a component between the two repos, don't reintroduce them here without being asked.
 
+### Hyperlinks in body copy
+
+This page has no inline links inside flowing prose today — every `<a>` here is a whole-card/tile link (`news-card`, `research-cta__link`, etc.) or a nav/footer link, not a link embedded mid-sentence in a paragraph. If body copy with an inline link is ever added, use the sitewide treatment: `color: var(--c-red)`, `font-weight: 500`, no underline, `opacity: 0.7` on hover, no color change — see `.event-card__caption a` (`events`), `.post-excerpt a` (`blog`), `.intro__body a` (`data`/`grants`), and the bio/card-desc rules in `our-team-faculty`.
+
 ### Keeping the two repos in sync
 
 `about` and `home` are separate repos with duplicated CSS, not a shared stylesheet — so consistency is a discipline, not something enforced automatically. When you change a shared token or component in one repo, check whether the same change belongs in the other before considering the task done.
