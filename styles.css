@@ -266,11 +266,12 @@ button { font: inherit; cursor: pointer; }
   margin-bottom: var(--space-400);
 }
 
-.hero__eyebrow-full {
+.hero__eyebrow-brand {
   font-family: var(--f-serif);
+  font-style: italic;
   font-size: 26px;
-  font-weight: 500;
-  letter-spacing: 0.4px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
   color: var(--c-white);
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
@@ -463,11 +464,20 @@ button { font: inherit; cursor: pointer; }
 .news-card--purple .news-card__arrow,
 .news-card--red .news-card__arrow { background: rgba(255,255,255,0.14); }
 
-/* Hover affordance: arrow pops and nudges toward its own direction of
-   travel, same transition/size on every card regardless of variant. */
+/* Hover affordance: arrow pops and slides through an animated brand
+   gradient (matches the person-card arrow treatment on the
+   team-leadership site) instead of a flat color, same transition/size
+   on every card regardless of variant. */
 .news-card:hover .news-card__arrow {
   transform: scale(1.15) translate(2px, -2px);
-  background: var(--c-red);
+  background: linear-gradient(100deg, var(--c-accent), var(--c-red), var(--c-accent));
+  background-size: 220% 100%;
+  animation: news-card-arrow-slide 1.2s linear infinite;
+}
+
+@keyframes news-card-arrow-slide {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 .news-card--dark:hover .news-card__arrow,
@@ -475,6 +485,7 @@ button { font: inherit; cursor: pointer; }
 .news-card--red:hover .news-card__arrow {
   background: var(--c-white);
   color: var(--c-dark);
+  animation: none;
 }
 
 .news-card__body {
