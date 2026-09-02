@@ -86,6 +86,8 @@ The top five are `clamp()` values that interpolate across the viewport, so table
 
 **Line heights are tokens too** — `--lh-display` 1.05, `--lh-heading` 1.15, `--lh-lede` 1.26, `--lh-title` 1.3, `--lh-body` 1.55. Never set a line-height in px; it breaks the fluid sizes.
 
+**No kicker labels.** No small uppercase label above a heading anywhere on the page — the sitewide convention already documented in `about`, `team-leadership`, `data` and `grants`. The hero's `.hero__eyebrow-brand` ("Penn MEDIATED") is not one of these: it is white serif italic brand-name text, not a kicker, and it stays.
+
 **The one exception is the `.nav`/`.brand` component.** Its sizes (9.5px eyebrow, 15/18px wordmark, 16px links, 11px subscribe) come straight from the Figma nav frame and are deliberately left as raw px — see "Site nav" above for why those rules are kept at all. Its font families were moved off `--f-mono` with everything else, so the reference stays accurate for the header build; only the sizes are frozen.
 
 ## Site nav

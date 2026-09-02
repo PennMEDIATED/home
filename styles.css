@@ -652,15 +652,6 @@ button { font: inherit; cursor: pointer; }
   gap: var(--space-250);
 }
 
-.about-center__eyebrow {
-  font-family: var(--f-sans);
-  font-size: var(--fs-micro);
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--c-red);
-}
-
 .about-center__title {
   max-width: 520px;
   font-family: var(--f-serif);
