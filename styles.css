@@ -37,7 +37,25 @@
   /* ── Figma typography tokens ── */
   --f-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
   --f-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
-  --f-mono:  'Courier New', Courier, monospace;
+  /* ── Type scale (sitewide — see README) ──
+     Fluid clamps interpolate across the viewport, so tablet needs no
+     separate breakpoint. 12px is the floor for page copy; the .nav/.brand
+     component keeps its own Figma-spec'd sizes (see README). */
+  --fs-display:     clamp(36px, 22.7px + 3.70vw, 76px);
+  --fs-h1:          clamp(36px, 29.3px + 1.85vw, 56px);
+  --fs-h2:          clamp(26px, 21.3px + 1.30vw, 40px);
+  --fs-h3:          clamp(20px, 18.7px + 0.37vw, 24px);
+  --fs-lede:        clamp(18px, 17.3px + 0.19vw, 20px);
+  --fs-body:        16px;
+  --fs-small:       14px;
+  --fs-small-serif: 15px;
+  --fs-micro:       12px;
+
+  --lh-display: 1.05;
+  --lh-heading: 1.15;
+  --lh-lede:    1.26;
+  --lh-title:   1.3;
+  --lh-body:    1.55;
 
   /* ── Page layout ── */
   --max-w: 1440px;
@@ -58,7 +76,7 @@
    Reset
    ============================================================================= */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
+html { scroll-behavior: smooth; }
 body {
   font-family: var(--f-sans);
   color: var(--c-dark);
@@ -152,7 +170,7 @@ button { font: inherit; cursor: pointer; }
 .brand__text { display: flex; flex-direction: column; }
 
 .brand__eyebrow {
-  font-family: var(--f-mono);
+  font-family: var(--f-sans);
   font-size: 9.5px;
   font-weight: 500;
   letter-spacing: 1.8px;
@@ -269,7 +287,7 @@ button { font: inherit; cursor: pointer; }
 .hero__eyebrow-brand {
   font-family: var(--f-serif);
   font-style: italic;
-  font-size: 26px;
+  font-size: var(--fs-h3);
   font-weight: 700;
   letter-spacing: 0.3px;
   color: var(--c-white);
@@ -282,8 +300,8 @@ button { font: inherit; cursor: pointer; }
 .hero__title {
   font-family: var(--f-serif);
   font-weight: 500;
-  font-size: clamp(40px, 5.2vw, 76px);
-  line-height: 1.05;
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
   letter-spacing: -0.028em;
   color: var(--c-white);
   margin-inline: auto;
@@ -294,9 +312,9 @@ button { font: inherit; cursor: pointer; }
 .hero__subtitle {
   display: block;
   font-family: var(--f-sans);
-  font-size: 18px;
+  font-size: var(--fs-lede);
   font-weight: 500;
-  line-height: 1.4;
+  line-height: var(--lh-lede);
   color: var(--c-white);
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
   max-width: 480px;
@@ -352,7 +370,7 @@ button { font: inherit; cursor: pointer; }
 
 .whats-new__label {
   font-family: var(--f-sans);
-  font-size: 24px;
+  font-size: var(--fs-h3);
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--c-dark);
@@ -360,7 +378,7 @@ button { font: inherit; cursor: pointer; }
 
 .whats-new__all {
   font-family: var(--f-sans);
-  font-size: 14px;
+  font-size: var(--fs-small);
   font-weight: 500;
   color: var(--c-dark);
   transition: opacity 0.15s;
@@ -456,7 +474,7 @@ button { font: inherit; cursor: pointer; }
   border-radius: 50%;
   background: var(--c-dark);
   color: var(--c-white);
-  font-size: 10px;
+  font-size: var(--fs-micro);
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -498,8 +516,8 @@ button { font: inherit; cursor: pointer; }
 .news-card__body--bottom { margin-top: auto; }
 
 .news-card__tag {
-  font-family: var(--f-mono);
-  font-size: 9px;
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
   font-weight: 600;
   letter-spacing: 1.44px;
   text-transform: uppercase;
@@ -512,10 +530,10 @@ button { font: inherit; cursor: pointer; }
 
 .news-card__title {
   font-family: var(--f-sans);
-  font-size: 17px;
+  font-size: var(--fs-body);
   font-weight: 500;
   letter-spacing: -0.152px;
-  line-height: 1.3;
+  line-height: var(--lh-title);
   color: var(--c-dark);
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -525,9 +543,9 @@ button { font: inherit; cursor: pointer; }
 
 .news-card__desc {
   font-family: var(--f-sans);
-  font-size: 12.5px;
+  font-size: var(--fs-small);
   font-weight: 300;
-  line-height: 1.7;
+  line-height: var(--lh-body);
   color: var(--c-gray-dark);
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -546,7 +564,7 @@ button { font: inherit; cursor: pointer; }
 .news-card__date {
   margin-top: var(--space-100);
   font-family: var(--f-sans);
-  font-size: 11.2px;
+  font-size: var(--fs-micro);
   font-weight: 400;
   letter-spacing: 0.336px;
   color: var(--c-muted);
@@ -577,9 +595,9 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__lead {
   font-family: var(--f-sans);
-  font-size: 35.2px;
+  font-size: var(--fs-h2);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: var(--lh-heading);
   letter-spacing: -0.704px;
   color: var(--c-white);
   margin-bottom: var(--space-500);
@@ -590,7 +608,7 @@ button { font: inherit; cursor: pointer; }
   align-items: center;
   gap: var(--space-100);
   font-family: var(--f-sans);
-  font-size: 16px;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--c-white);
   border-bottom: 1px solid rgba(255,255,255,0.4);
@@ -635,8 +653,8 @@ button { font: inherit; cursor: pointer; }
 }
 
 .about-center__eyebrow {
-  font-family: var(--f-mono);
-  font-size: 11px;
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.6px;
   text-transform: uppercase;
@@ -646,9 +664,9 @@ button { font: inherit; cursor: pointer; }
 .about-center__title {
   max-width: 520px;
   font-family: var(--f-serif);
-  font-size: clamp(38px, 4vw, 56px);
+  font-size: var(--fs-h1);
   font-weight: 500;
-  line-height: 1.02;
+  line-height: var(--lh-display);
   letter-spacing: -0.025em;
   color: var(--c-dark);
 }
@@ -662,9 +680,9 @@ button { font: inherit; cursor: pointer; }
 
 .about-center__copy p {
   font-family: var(--f-sans);
-  font-size: 18px;
+  font-size: var(--fs-lede);
   font-weight: 300;
-  line-height: 1.65;
+  line-height: var(--lh-body);
   color: var(--c-gray-dark);
 }
 
@@ -676,7 +694,7 @@ button { font: inherit; cursor: pointer; }
   margin-top: var(--space-100);
   padding-bottom: var(--space-050);
   font-family: var(--f-sans);
-  font-size: 16px;
+  font-size: var(--fs-body);
   font-weight: 600;
   color: var(--c-dark);
   border-bottom: 1px solid rgba(13,13,12,0.35);
@@ -720,9 +738,9 @@ button { font: inherit; cursor: pointer; }
 
 .faculty-cta__lead {
   font-family: var(--f-sans);
-  font-size: 35.2px;
+  font-size: var(--fs-h2);
   font-weight: 500;
-  line-height: 1.2;
+  line-height: var(--lh-heading);
   letter-spacing: -0.704px;
   color: var(--c-white);
   margin-bottom: var(--space-500);
@@ -733,7 +751,7 @@ button { font: inherit; cursor: pointer; }
   align-items: center;
   gap: var(--space-100);
   font-family: var(--f-sans);
-  font-size: 16px;
+  font-size: var(--fs-body);
   font-weight: 500;
   color: var(--c-white);
   border-bottom: 1px solid rgba(255,255,255,0.4);
@@ -770,16 +788,16 @@ button { font: inherit; cursor: pointer; }
 
 .footer__tagline {
   font-family: var(--f-sans);
-  font-size: 12.8px;
+  font-size: var(--fs-small);
   font-weight: 300;
-  line-height: 1.7;
+  line-height: var(--lh-body);
   color: var(--c-white);
   max-width: 320px;
 }
 
 .footer__email {
   font-family: var(--f-sans);
-  font-size: 12.8px;
+  font-size: var(--fs-small);
   color: var(--c-red);
   transition: opacity 0.15s;
 }
@@ -809,8 +827,8 @@ button { font: inherit; cursor: pointer; }
 .footer__nav-col { flex: 1 1 170px; min-width: 170px; }
 
 .footer__nav-heading {
-  font-family: var(--f-mono);
-  font-size: 9px;
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.8px;
   text-transform: uppercase;
@@ -822,7 +840,7 @@ button { font: inherit; cursor: pointer; }
 
 .footer__nav-col a {
   font-family: var(--f-sans);
-  font-size: 12.8px;
+  font-size: var(--fs-small);
   font-weight: 300;
   color: var(--c-white);
   transition: opacity 0.15s;
@@ -842,7 +860,7 @@ button { font: inherit; cursor: pointer; }
 
 .footer__bottom p {
   font-family: var(--f-sans);
-  font-size: 11.2px;
+  font-size: var(--fs-micro);
   font-weight: 300;
   color: rgba(255,255,255,0.6);
 }

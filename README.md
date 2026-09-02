@@ -58,6 +58,36 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 
 The two "cropped" rows above will center-crop whatever you upload, so keep the subject centered in the frame. Everything else displays uncropped at its native aspect ratio, so crop the image yourself before uploading rather than relying on the page to do it.
 
+## Typography
+
+Sitewide convention. The `--fs-*`/`--lh-*` block at the top of `styles.css` is canonical and identical in every page repo.
+
+**Two families, no third.** `--f-serif` (EB Garamond) for page and section titles and pull-quote copy; `--f-sans` (DM Sans) for everything else. There is no monospace face — uppercase micro-labels are DM Sans, not Courier.
+
+**Sizes come from tokens, never raw px.**
+
+| Token | Mobile (=<480px) | Desktop (>=1440px) | Used for |
+| --- | --- | --- | --- |
+| `--fs-display` | 36px | 76px | the hero title |
+| `--fs-h1` | 36px | 56px | page title (`.about-center__title` here) |
+| `--fs-h2` | 26px | 40px | section titles, the CTA leads |
+| `--fs-h3` | 20px | 24px | card and third-level titles |
+| `--fs-lede` | 18px | 20px | intro paragraphs |
+| `--fs-body` | 16px | 16px | body copy |
+| `--fs-small` | 14px | 14px | captions, meta, footer copy |
+| `--fs-small-serif` | 15px | 15px | EB Garamond at small sizes |
+| `--fs-micro` | 12px | 12px | uppercase labels, tags, dates |
+
+`.hero__title` and `.about-center__title` used to carry their own bespoke clamps (`40→76` and `38→56`); those are now `--fs-display` and `--fs-h1`, whose ceilings match exactly.
+
+The top five are `clamp()` values that interpolate across the viewport, so tablet widths need no separate `@media` override. Only add a breakpoint font-size when a specific layout actually demands it.
+
+**12px is the floor** for page copy. Nothing on the page ships smaller.
+
+**Line heights are tokens too** — `--lh-display` 1.05, `--lh-heading` 1.15, `--lh-lede` 1.26, `--lh-title` 1.3, `--lh-body` 1.55. Never set a line-height in px; it breaks the fluid sizes.
+
+**The one exception is the `.nav`/`.brand` component.** Its sizes (9.5px eyebrow, 15/18px wordmark, 16px links, 11px subscribe) come straight from the Figma nav frame and are deliberately left as raw px — see "Site nav" above for why those rules are kept at all. Its font families were moved off `--f-mono` with everything else, so the reference stays accurate for the header build; only the sizes are frozen.
+
 ## Site nav
 
 `styles.css` carries a full `.nav` component — sticky bar, brand lockup, links, subscribe button, sized by `--nav-h` and `--c-nav-bg`. There is deliberately no matching markup in `index.html`: WordPress renders the live nav, wired to its native menu system so submenu items can be added in wp-admin without a code deploy.
