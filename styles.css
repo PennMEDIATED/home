@@ -152,7 +152,7 @@ button { font: inherit; cursor: pointer; }
 .brand__text { display: flex; flex-direction: column; }
 
 .brand__eyebrow {
-  font-family: var(--f-sans);
+  font-family: var(--f-mono);
   font-size: 9.5px;
   font-weight: 500;
   letter-spacing: 1.8px;
@@ -498,7 +498,7 @@ button { font: inherit; cursor: pointer; }
 .news-card__body--bottom { margin-top: auto; }
 
 .news-card__tag {
-  font-family: var(--f-sans);
+  font-family: var(--f-mono);
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 1.44px;
@@ -809,7 +809,7 @@ button { font: inherit; cursor: pointer; }
 .footer__nav-col { flex: 1 1 170px; min-width: 170px; }
 
 .footer__nav-heading {
-  font-family: var(--f-sans);
+  font-family: var(--f-mono);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.8px;
