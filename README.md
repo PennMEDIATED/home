@@ -58,6 +58,14 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 
 The two "cropped" rows above will center-crop whatever you upload, so keep the subject centered in the frame. Everything else displays uncropped at its native aspect ratio, so crop the image yourself before uploading rather than relying on the page to do it.
 
+## Site nav
+
+`styles.css` carries a full `.nav` component — sticky bar, brand lockup, links, subscribe button, sized by `--nav-h` and `--c-nav-bg`. There is deliberately no matching markup in `index.html`: WordPress renders the live nav, wired to its native menu system so submenu items can be added in wp-admin without a code deploy.
+
+Keep these rules. They are the only implementation of the nav design outside Figma, and they are the reference the WordPress header build works from. They are not dead code to prune.
+
+`--nav-h` belongs here, with the component that defines it. Page repos never hardcode a nav height — if one needs the value (for `scroll-margin-top` on an anchor target under the sticky nav, say), the header build sets `--nav-h` and the page reads `var(--nav-h, 0px)`, so the page still lays out correctly standalone where there is no nav.
+
 ## Style guide (shared across `about` and `home`)
 
 Both repos are static HTML/CSS built off the same design system. If you're adding or editing anything, pull values from here rather than guessing new ones — that's what keeps the two sites looking like one brand instead of drifting apart.
