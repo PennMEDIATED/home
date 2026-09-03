@@ -161,13 +161,17 @@ One taxonomy, five categories, shared by every page repo. Pick the category by w
 
 Both grounds use `font-weight: 500` and `transition: opacity 0.15s`, and both fade rather than change hue. On a white ground **colour is the affordance** — no underline; the underline is category 2's job. On a coloured ground the red is invisible, so the link goes white and takes the hairline rule instead. Where an underline is used it is a `border-bottom`, never `text-decoration`.
 
-#### Why link text uses `--c-red-dark`, not `--c-red`
+#### Why interactive red is `--c-red-dark`, not `--c-red`
 
 `--c-red-dark` (`#df3611`) is the closing stop of `--c-gradient`, promoted to a token of its own and declared in all twelve repos.
 
-Link text on a white ground gets it because `--c-red` (`#f03d1f`) measures roughly **3.9:1** against white — under the 4.5:1 WCAG AA threshold for body text. That was tolerable while the link also carried an underline, but once colour became the only cue the ratio had to carry the whole affordance on its own. `--c-red-dark` measures about **4.5:1** and clears it. The two are near-indistinguishable at text sizes, so this is a contrast fix, not a visual change.
+`--c-red` (`#f03d1f`) measures roughly **3.9:1** against white — under the 4.5:1 WCAG AA threshold for body text, and the same 3.9:1 applies to white text sitting on a `--c-red` fill. `--c-red-dark` measures about **4.5:1** either way and clears it. The two are near-indistinguishable at text sizes, so this is a contrast fix, not a visual change.
 
-The rule is scoped to **link text**, not to red generally. `--c-red` remains the brand accent everywhere else — fills, borders, icons, tags, eyebrow labels, section headings, and control hovers — where it is either not body text, not the sole affordance, or sits on a tinted rather than white ground. Red *link* text on white, in any category and in any state, uses `--c-red-dark`.
+**The rule: anything you click is `--c-red-dark`.** Links and buttons take it wherever they would otherwise be red-orange — as text colour, as a box fill, as a hover or active state, and on the markers inside them (disclosure chevrons and their labels). It applies in every category and every state.
+
+**`--c-red` stays the brand accent for everything you don't click**: section headings, eyebrow and metadata labels, tag and pill backgrounds, accent bars and card borders, full-width colour bands, the `.card-arrow` hover gradient, and focus rings. These are either large text, non-text UI at the 3:1 threshold, or sit on a tinted rather than white ground.
+
+The one deliberate hold-out is red link text on a **dark** ground (`home`'s `.footer__email`), where the darker red would *reduce* contrast rather than improve it. That link has a separate outstanding issue — on a dark ground the standard is white text with an opacity fade, not red at all.
 
 **2. Independent links** — a standalone text link that isn't inside a sentence ("Learn More About the Center", "Download the Full Schedule"). Unlike category 1 these carry the underline and are set in the body colour, so they read as a control rather than as emphasis inside a sentence:
 
@@ -182,7 +186,7 @@ Plus a **thin arrow** `⟶` after the text. Use `⟶` (`&#10230;`), not the `↗
 
 | ground | box | text |
 | --- | --- | --- |
-| white / light | `--c-red` | `--c-white` |
+| white / light | `--c-red-dark` | `--c-white` |
 | colour / gradient | `--c-white` | `--c-dark` |
 
 Hover is **movement, not colour** — a lift or nudge. Do not darken or recolour the box.
@@ -195,6 +199,6 @@ Hover is **movement, not colour** — a lift or nudge. Do not darken or recolour
 
 ### Dropdowns and disclosures
 
-A dropdown, `<details>` block or expand/collapse control uses one affordance sitewide: a **chevron SVG** (`M2 5l5 5 5-5`, 13×13, `--c-red` stroke, `stroke-width: 1.8`) beside a `--c-red` label at `--fs-small`, rotating `180deg` on open with `transition: transform 0.25s`. See `llm-civic-discourse`'s "Full summary & details" toggle for the reference implementation.
+A dropdown, `<details>` block or expand/collapse control uses one affordance sitewide: a **chevron SVG** (`M2 5l5 5 5-5`, 13×13, `--c-red-dark` stroke, `stroke-width: 1.8`) beside a `--c-red-dark` label at `--fs-small`, rotating `180deg` on open with `transition: transform 0.25s`. See `llm-civic-discourse`'s "Full summary & details" toggle for the reference implementation.
 
 Never leave the marker to the browser — style `<select>` with `appearance: none` and supply the chevron, and hide the native `<summary>` marker. The `↗` circle badge is category 4's language and does not belong on a disclosure control.
