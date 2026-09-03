@@ -45,7 +45,7 @@
  
         <a href="https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research" class="news-card" target="_blank" rel="noopener">
           <div class="news-card__image">
-            <img src="assets/whats-new/llm-monitoring-report.png" width="1141" height="515" alt="Carnegie Endowment report on monitoring large language models">
+            <img src="assets/whats-new/llm-monitoring-report.webp" width="1141" height="515" alt="Carnegie Endowment report on monitoring large language models">
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -56,7 +56,7 @@
  
         <a href="https://infodem.upenn.edu/blog/#gni-membership" class="news-card">
           <div class="news-card__image news-card__image--contain">
-            <img src="assets/whats-new/gni-membership.png" width="7992" height="2637" alt="Global Network Initiative logo">
+            <img src="assets/whats-new/gni-membership.webp" width="640" height="211" alt="Global Network Initiative logo">
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -67,7 +67,7 @@
  
         <a href="https://infodem.upenn.edu/faculty/" class="news-card">
           <div class="news-card__image">
-            <img src="assets/whats-new/affiliated-faculty.gif" width="1460" height="908" alt="Animated graphic of Penn's campus with icons overlaying research themes">
+            <video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated graphic of Penn&#8217;s campus with icons overlaying research themes"></video>
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -78,7 +78,7 @@
  
         <a href="https://infodem.upenn.edu/research-compendium/" class="news-card">
           <div class="news-card__image">
-            <img src="assets/whats-new/research-compendium.gif" width="1278" height="622" alt="Animated screenshot of the Research Compendium dashboard">
+            <video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Research Compendium dashboard"></video>
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -89,7 +89,7 @@
  
         <a href="https://infodem.upenn.edu/blog/#knight-fellows" class="news-card">
           <div class="news-card__image news-card__image--contain">
-            <img src="assets/whats-new/knight-fellows.png" width="1886" height="984" alt="&quot;Welcoming Our Newest Knight Fellows&quot; graphic with Penn MEDIATED and Knight Foundation logos">
+            <img src="assets/whats-new/knight-fellows.webp" width="640" height="334" alt="&quot;Welcoming Our Newest Knight Fellows&quot; graphic with Penn MEDIATED and Knight Foundation logos">
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -100,7 +100,7 @@
  
         <a href="https://infodem.upenn.edu/blog/#dfrlab-partnership" class="news-card">
           <div class="news-card__image news-card__image--contain">
-            <img src="assets/whats-new/dfr-lab-partnership.png" width="768" height="370" alt="Penn MEDIATED and DFRLab logos above a &quot;Digital Sherlocks&quot; graphic">
+            <img src="assets/whats-new/dfr-lab-partnership.webp" width="640" height="308" alt="Penn MEDIATED and DFRLab logos above a &quot;Digital Sherlocks&quot; graphic">
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -111,7 +111,7 @@
  
         <a href="https://t.e2ma.net/webview/1odgwu/d30c49ebf9bccf8f52c4d5cb2f85b22b" class="news-card" target="_blank" rel="noopener">
           <div class="news-card__image">
-            <img src="assets/whats-new/directors-welcome.png" width="1112" height="786" alt="Penn MEDIATED newsletter introducing the Center's faculty co-directors">
+            <img src="assets/whats-new/directors-welcome.webp" width="640" height="452" alt="Penn MEDIATED newsletter introducing the Center's faculty co-directors">
           </div>
           <span class="news-card__arrow" aria-hidden="true">↗</span>
           <div class="news-card__body">
@@ -158,10 +158,21 @@
         <p class="faculty-cta__lead">Our 25 affiliated faculty are distinguished by their rigorous empirical and computational research that advances the collective understanding of the information ecosystem.</p>
         <a href="https://infodem.upenn.edu/faculty/" class="faculty-cta__link">Learn More About Our Affiliated Faculty <span aria-hidden="true">⟶</span></a>
       </div>
-      <img src="assets/whats-new/affiliated-faculty.gif" width="1460" height="908" alt="Animated graphic of Penn's campus with icons overlaying research themes" class="faculty-cta__image">
+      <video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated graphic of Penn&#8217;s campus with icons overlaying research themes" class="faculty-cta__image"></video>
     </div>
   </section>
- 
+
+  <!-- The two animated cards are muted, looping <video> rather than GIF.
+       CSS can't stop autoplay, so honour prefers-reduced-motion here:
+       pause each one and rewind to its poster frame. -->
+  <script>
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('video[autoplay]').forEach(function (v) {
+        v.autoplay = false; v.pause(); v.currentTime = 0; v.removeAttribute('loop');
+      });
+    }
+  </script>
+
 </body>
 </html>
  

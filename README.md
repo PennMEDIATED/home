@@ -29,7 +29,7 @@ Once the image is in `assets/whats-new/`, give Claude Code this prompt:
 
 Example, filled in (this is the current front card, for reference):
 
-> Add a new What's New item: "**New Report on Monitoring LLMs**" — In a new Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal monitoring to understand how LLMs impact politics. Link it to https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research. Use the image I uploaded at `assets/whats-new/llm-monitoring-report.png`. Use this image alt text: "Carnegie Endowment report on monitoring large language models". Remove the item in the bottom-right position to make room for it.
+> Add a new What's New item: "**New Report on Monitoring LLMs**" — In a new Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal monitoring to understand how LLMs impact politics. Link it to https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research. Use the image I uploaded at `assets/whats-new/llm-monitoring-report.webp`. Use this image alt text: "Carnegie Endowment report on monitoring large language models". Remove the item in the bottom-right position to make room for it.
 
 What Claude Code will do:
 1. Confirm that the named image already exists in `assets/whats-new/`.
@@ -57,6 +57,25 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 | Research CTA / Faculty CTA screenshots | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | Export already cropped to the shape you want, at least 1050px wide for a sharp retina image |
 
 The two "cropped" rows above will center-crop whatever you upload, so keep the subject centered in the frame. Everything else displays uncropped at its native aspect ratio, so crop the image yourself before uploading rather than relying on the page to do it.
+
+### Image and video weight
+
+Every `<img>` and `<video>` on the page carries explicit `width`/`height` attributes. They don't set the display size — CSS does — they give the browser the aspect ratio before the file arrives so it can reserve a correctly shaped box instead of shoving the page down as each image lands. **When you add a card image, put its real pixel dimensions on the tag.**
+
+Two conventions keep this page from ballooning:
+
+**Stills ship as WebP, sized to what they actually display.** A regular card renders at ~319 CSS px and the featured card at ~640, so 640px and 1280px wide respectively are enough for a sharp 2× retina image — anything beyond that is bytes the browser downloads and immediately throws away. Upload whatever you have; it gets resized and converted on the way in. (`gni-membership.png` was once an 8000px-wide, 470KB PNG rendering into a 319px box; as a 640px WebP it is 33KB.)
+
+**Animations ship as muted MP4, never GIF.** GIF is catastrophic for screen recordings — `research-compendium.gif` was 11.3MB for 290 frames; the same recording as H.264 is 1.2MB, visually identical. These cards use:
+
+```html
+<video src="…/name.mp4" poster="…/name-poster.webp" width="…" height="…"
+       autoplay muted loop playsinline preload="metadata" aria-label="…"></video>
+```
+
+`muted` is what allows autoplay; `playsinline` stops iOS opening it fullscreen; `aria-label` replaces `alt`. The `poster` is the first frame, so the card is never empty. CSS can't stop autoplay, so a short script at the end of `index.html` pauses these and rewinds them to the poster when the visitor has asked their OS to reduce motion — **keep that script if you add another video.**
+
+Together these took `assets/` from 19MB to 3.3MB with no visible change. Original full-resolution files aren't kept in the working tree; they're in git history at the commit before the conversion.
 
 ## Typography
 
