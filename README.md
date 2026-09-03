@@ -156,16 +156,24 @@ One taxonomy, five categories, shared by every page repo. Pick the category by w
 
 | ground | text | underline | hover |
 | --- | --- | --- | --- |
-| white / light | `--c-red` | none | fade to `opacity: 0.7` |
+| white / light | `--c-red-dark` | none | fade to `opacity: 0.7` |
 | colour / gradient | `--c-white` | `border-bottom: 1px solid rgba(255, 255, 255, 0.5)` | fade to `opacity: 0.7` |
 
 Both grounds use `font-weight: 500` and `transition: opacity 0.15s`, and both fade rather than change hue. On a white ground **colour is the affordance** — no underline; the underline is category 2's job. On a coloured ground the red is invisible, so the link goes white and takes the hairline rule instead. Where an underline is used it is a `border-bottom`, never `text-decoration`.
+
+#### Why link text uses `--c-red-dark`, not `--c-red`
+
+`--c-red-dark` (`#df3611`) is the closing stop of `--c-gradient`, promoted to a token of its own and declared in all twelve repos.
+
+Link text on a white ground gets it because `--c-red` (`#f03d1f`) measures roughly **3.9:1** against white — under the 4.5:1 WCAG AA threshold for body text. That was tolerable while the link also carried an underline, but once colour became the only cue the ratio had to carry the whole affordance on its own. `--c-red-dark` measures about **4.5:1** and clears it. The two are near-indistinguishable at text sizes, so this is a contrast fix, not a visual change.
+
+The rule is scoped to **link text**, not to red generally. `--c-red` remains the brand accent everywhere else — fills, borders, icons, tags, eyebrow labels, section headings, and control hovers — where it is either not body text, not the sole affordance, or sits on a tinted rather than white ground. Red *link* text on white, in any category and in any state, uses `--c-red-dark`.
 
 **2. Independent links** — a standalone text link that isn't inside a sentence ("Learn More About the Center", "Download the Full Schedule"). Unlike category 1 these carry the underline and are set in the body colour, so they read as a control rather than as emphasis inside a sentence:
 
 | ground | text | underline | hover |
 | --- | --- | --- | --- |
-| white / light | `--c-dark`, `font-weight: 600` | `border-bottom: 1px solid rgba(13, 13, 12, 0.35)` | text and underline both turn `--c-red` (`transition: color 0.15s, border-color 0.15s`) |
+| white / light | `--c-dark`, `font-weight: 600` | `border-bottom: 1px solid rgba(13, 13, 12, 0.35)` | text and underline both turn `--c-red-dark` (`transition: color 0.15s, border-color 0.15s`) |
 | colour / gradient | `--c-white`, `font-weight: 600` | `border-bottom: 1px solid rgba(255, 255, 255, 0.5)` | fade to `opacity: 0.7` |
 
 Plus a **thin arrow** `⟶` after the text. Use `⟶` (`&#10230;`), not the `↗` badge from category 4.
@@ -183,7 +191,7 @@ Hover is **movement, not colour** — a lift or nudge. Do not darken or recolour
 
 **Exception:** a link to a research paper is category 2, not this — thin arrow, no badge.
 
-**5. Hyperlinked headings** — a heading that is itself a link (a post title, a card title). Colour shift on hover per the ground rules above, and **no arrow and no underline**.
+**5. Hyperlinked headings** — a heading that is itself a link (a post title, a card title). Sits in the body colour and shifts to `--c-red-dark` on hover (or fades, on a coloured ground), with **no arrow and no underline**.
 
 ### Dropdowns and disclosures
 

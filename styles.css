@@ -25,6 +25,11 @@
   --c-light-bg:   #f8f7f4;          /* rgb(248,247,244)*/
   --c-accent:     #5533ee;          /* rgb(85,51,238)  */
   --c-red:        #f03d1f;          /* rgb(240,61,31)  */
+  /* Deeper red-orange — the gradient's closing stop, promoted to a token
+     of its own. Link text on a white/light ground uses this: --c-red
+     only reaches ~3.9:1 against white, this clears 4.5:1. --c-red stays
+     the brand accent for fills, borders, icons, tags and labels. */
+  --c-red-dark:   #df3611;
   --c-gray:       #888680;          /* rgb(136,134,128)*/
   --c-gray-dark:  #54534f;          /* rgb(84,83,79) — opaque body copy, ~8:1 contrast on white */
   --c-muted:      #c8c6c0;          /* rgb(200,198,192) date/meta text */
@@ -32,7 +37,7 @@
 
   /* Brand gradient — used on the hero, matches /about's orbital section
      and newsletter/supporters block exactly: 150deg #5533ee 0% → #df3611 81% */
-  --c-gradient: linear-gradient(150deg, #5533ee 0%, #df3611 81%);
+  --c-gradient: linear-gradient(150deg, #5533ee 0%, var(--c-red-dark) 81%);
 
   /* ── Figma typography tokens ── */
   --f-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
@@ -680,8 +685,8 @@ button { font: inherit; cursor: pointer; }
 }
 
 .about-center__link:hover {
-  color: var(--c-red);
-  border-color: var(--c-red);
+  color: var(--c-red-dark);
+  border-color: var(--c-red-dark);
 }
 
 @media (max-width: 760px) {
