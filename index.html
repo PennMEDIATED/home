@@ -173,6 +173,24 @@
     }
   </script>
 
+
+  <!-- Auto-resize when embedded: posts this page's height to the parent so an
+       <iframe> can size itself to the content instead of guessing a fixed
+       height. No-op when the page is opened directly. Every Penn MEDIATED repo
+       sends the same { frameHeight } message — see the README. -->
+  <script>
+    (function () {
+      if (window.self === window.top) return;
+      function sendHeight() {
+        var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+        window.parent.postMessage({ frameHeight: Math.ceil(h) }, '*');
+      }
+      window.addEventListener('load', sendHeight);
+      window.addEventListener('resize', sendHeight);
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sendHeight); }
+      if (window.ResizeObserver) { new ResizeObserver(sendHeight).observe(document.body); }
+    })();
+  </script>
 </body>
 </html>
  
