@@ -150,6 +150,21 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 
 `home` does not have a newsletter or "Supported by" section — those were removed. The `about` repo still has both (`.newsletter`, `.supporters`, the shared `.cta-block` gradient wrapper); if you're porting a component between the two repos, don't reintroduce them here without being asked.
 
+## Embedding this page
+
+WordPress renders the real site; this repo is the source. The launch plan is direct-to-disk deployment, which needs no iframe — but iframe embedding still works and is the documented fallback, so keep this snippet accurate if you rename the repo or change its Pages URL.
+
+Paste into a WordPress Code block (or Divi Code module) as one line:
+
+```html
+<iframe id="pm-home" src="https://pennmediated.github.io/home/" title="Home — Penn MEDIATED" loading="lazy" style="width:100%;height:4300px;border:0;display:block"></iframe><script>(function(){var f=document.getElementById('pm-home');window.addEventListener('message',function(e){if(e.source!==f.contentWindow)return;var d=e.data||{},h=d.frameHeight||(d.type==='partners-page-resize'?d.height:0);if(h)f.style.height=h+'px';});})();</script>
+```
+
+The `height` in the snippet is only the starting value. Every Penn MEDIATED page posts its real height to the parent as `{{ frameHeight: <int> }}` — on load, on resize, once webfonts settle, and on any `ResizeObserver` change, so reveal animations, expanding cards and `<details>` toggles all resize the frame. The listener in the snippet applies it. `grants-rfp` also emits an older `{{ type: 'partners-page-resize', height }}` message; the snippet accepts both.
+
+The page checks `window.self === window.top` before posting, so opening it directly does nothing. If you add a new page repo, copy the script from the bottom of this `index.html` so it behaves the same way.
+
+
 ## Images and video
 
 This applies to every image, GIF and video added to any Penn MEDIATED repo. It is written to be followed directly — by a person or by a Claude session — without further instruction.
