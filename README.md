@@ -49,33 +49,16 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 
 ### Image sizes
 
-| Image | How it displays | Recommended file |
+| Image | How it displays | Give it |
 |---|---|---|
-| **What's New** — featured card (newest item, spans 2 columns) | Cropped to a 2:1 wide rectangle with `object-fit: cover` | 1200×600px or larger, roughly 2:1 |
-| **What's New** — regular card | Cropped to a 1:1 square with `object-fit: cover` | 800×800px or larger, square |
-| **What's New** — logo/lockup card (use the `news-card__image--contain` class, e.g. partner logos) | Not cropped — letterboxed inside the square tile with `object-fit: contain` | Any size; a transparent-background PNG looks cleanest |
-| Research CTA / Faculty CTA screenshots | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | Export already cropped to the shape you want, at least 1050px wide for a sharp retina image |
+| **What's New** — featured card (newest item, spans 2 columns) | Cropped to a 2:1 wide rectangle with `object-fit: cover` | ~1280×640 |
+| **What's New** — regular card | Cropped to a 1:1 square with `object-fit: cover` | ~640×640 |
+| **What's New** — logo/lockup card (use the `news-card__image--contain` class, e.g. partner logos) | Not cropped — letterboxed inside the square tile with `object-fit: contain` | ~640px wide, transparent background |
+| Research CTA / Faculty CTA screenshots | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
 
-The two "cropped" rows above will center-crop whatever you upload, so keep the subject centered in the frame. Everything else displays uncropped at its native aspect ratio, so crop the image yourself before uploading rather than relying on the page to do it.
+Those figures are 2× the CSS box, which is what a retina screen needs; going bigger just makes the visitor download pixels the browser throws away. The two "cropped" rows center-crop whatever you upload, so keep the subject centred. Everything else displays at its native aspect ratio, so crop it yourself rather than relying on the page to do it.
 
-### Image and video weight
-
-Every `<img>` and `<video>` on the page carries explicit `width`/`height` attributes. They don't set the display size — CSS does — they give the browser the aspect ratio before the file arrives so it can reserve a correctly shaped box instead of shoving the page down as each image lands. **When you add a card image, put its real pixel dimensions on the tag.**
-
-Two conventions keep this page from ballooning:
-
-**Stills ship as WebP, sized to what they actually display.** A regular card renders at ~319 CSS px and the featured card at ~640, so 640px and 1280px wide respectively are enough for a sharp 2× retina image — anything beyond that is bytes the browser downloads and immediately throws away. Upload whatever you have; it gets resized and converted on the way in. (`gni-membership.png` was once an 8000px-wide, 470KB PNG rendering into a 319px box; as a 640px WebP it is 33KB.)
-
-**Animations ship as muted MP4, never GIF.** GIF is catastrophic for screen recordings — `research-compendium.gif` was 11.3MB for 290 frames; the same recording as H.264 is 1.2MB, visually identical. These cards use:
-
-```html
-<video src="…/name.mp4" poster="…/name-poster.webp" width="…" height="…"
-       autoplay muted loop playsinline preload="metadata" aria-label="…"></video>
-```
-
-`muted` is what allows autoplay; `playsinline` stops iOS opening it fullscreen; `aria-label` replaces `alt`. The `poster` is the first frame, so the card is never empty. CSS can't stop autoplay, so a short script at the end of `index.html` pauses these and rewinds them to the poster when the visitor has asked their OS to reduce motion — **keep that script if you add another video.**
-
-Together these took `assets/` from 19MB to 3.3MB with no visible change. Original full-resolution files aren't kept in the working tree; they're in git history at the commit before the conversion.
+**See "Images and video" below before adding anything** — it covers the required `width`/`height` attributes, WebP and MP4 conversion, and the commands to do it.
 
 ## Typography
 
@@ -166,6 +149,111 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 - **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` media queries).
 
 `home` does not have a newsletter or "Supported by" section — those were removed. The `about` repo still has both (`.newsletter`, `.supporters`, the shared `.cta-block` gradient wrapper); if you're porting a component between the two repos, don't reintroduce them here without being asked.
+
+## Images and video
+
+This applies to every image, GIF and video added to any Penn MEDIATED repo. It is written to be followed directly — by a person or by a Claude session — without further instruction.
+
+### The one rule that is never optional
+
+**Every `<img>` and `<video>` carries explicit `width` and `height` attributes, holding the file's real intrinsic pixel dimensions.**
+
+```html
+<img src="assets/example.webp" width="640" height="334" alt="…">
+```
+
+They do not set the display size — CSS does. They give the browser the aspect ratio *before* the file downloads, so it reserves a correctly shaped box instead of collapsing to nothing and shoving everything below it down the page as each file lands. That shift is measured by search engines (Cumulative Layout Shift) and is worse for a reader, who loses their place or clicks a link that just moved.
+
+Every repo has a global `img, video { max-width: 100%; height: auto; display: block; }` reset, so the CSS keeps winning and the attributes only ever contribute the ratio. **Never guess the numbers** — read them off the file.
+
+### Pick the format by what the file is
+
+| Content | Format | Never use |
+| --- | --- | --- |
+| Photo, screenshot, artwork | **WebP**, quality 88 | PNG or JPEG at full camera resolution |
+| Logo, wordmark, icon | **SVG** if you have it, else WebP | — |
+| Anything that moves | **MP4** (H.264) + a WebP poster | **GIF, ever** |
+
+GIF is the big one. It has no interframe compression, so a screen recording is roughly ten times the size it needs to be: `research-compendium.gif` was 11.3MB for 290 frames; the identical recording as H.264 is 1.2MB.
+
+### Size it to the box it displays in, not to what you were sent
+
+Find the CSS box the image renders into, then export at **2×** that width for retina. Anything beyond that is bytes the browser downloads and immediately throws away. (`gni-membership.png` was 7992px wide, rendering into a 319px box — a 470KB file doing a 33KB job.)
+
+In this repo:
+
+| Where | CSS box at 1440px | Export at |
+| --- | --- | --- |
+| What's New — featured card (first child, spans 2 columns) | 640×320, cropped 2:1 | ~1280px wide |
+| What's New — regular card | 319×319, cropped square | ~640px square |
+| What's New — logo card (`.news-card__image--contain`) | 319px square, letterboxed | ~640px, transparent background |
+| Research / Faculty CTA (`.faculty-cta__image`) | up to 523px wide | ~1046px |
+
+Keep the subject centred in cropped slots — the card center-crops whatever you give it.
+
+If you are adding an image somewhere not listed, measure the box first (`getBoundingClientRect().width` in the browser, at a 1440px viewport) and double it.
+
+### Commands
+
+Stills — resize and convert in one pass:
+
+```python
+from PIL import Image
+TARGET = 640                      # 2x the CSS box
+im = Image.open('source.png')
+w, h = im.size
+if w > TARGET:
+    im = im.resize((TARGET, round(h * TARGET / w)), Image.LANCZOS)
+im.save('out.webp', quality=88, method=6)
+print(im.size)                    # <- these are the width/height attributes
+```
+
+Animation — MP4 plus a poster frame:
+
+```bash
+ffmpeg -i source.gif -movflags +faststart -pix_fmt yuv420p \
+       -vf "scale=1280:-2:flags=lanczos" -crf 24 out.mp4
+ffmpeg -i source.gif -frames:v 1 -vf "scale=1280:-2:flags=lanczos" poster.png
+python3 -c "from PIL import Image; Image.open('poster.png').convert('RGB').save('out-poster.webp', quality=80, method=6)"
+ffprobe -v error -show_entries stream=width,height -of default=nw=1 out.mp4
+```
+
+`-crf 24` is a good default; raise it toward 30 for a smaller file, lower it toward 20 for a sharper one. `-pix_fmt yuv420p` is required for Safari and iOS.
+
+### Markup for video
+
+```html
+<video src="assets/name.mp4" poster="assets/name-poster.webp" width="1280" height="622"
+       autoplay muted loop playsinline preload="metadata" aria-label="…"></video>
+```
+
+Each attribute earns its place: `muted` is what permits autoplay at all, `playsinline` stops iOS opening it fullscreen, `poster` means the slot is never empty while the video loads, and `aria-label` replaces `alt` (a `<video>` has no `alt`).
+
+CSS cannot stop autoplay, so **a page with video needs the reduced-motion script** at the end of `<body>`. If the page already has one, leave it alone; if you are adding the first video to a page, add it:
+
+```html
+<script>
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('video[autoplay]').forEach(function (v) {
+      v.autoplay = false; v.pause(); v.currentTime = 0; v.removeAttribute('loop');
+    });
+  }
+</script>
+```
+
+Also check the CSS: any rule that sizes or crops an image needs to name `video` too, or the video slot will not match the image slot it replaced (`.card__image img` becomes `.card__image img, .card__image video`).
+
+### Before you call it done
+
+- [ ] File is WebP, SVG or MP4 — no GIF, no full-resolution PNG or JPEG
+- [ ] Its width is about 2× the CSS box it renders into
+- [ ] `width`/`height` attributes match the file's real dimensions
+- [ ] Real `alt` text (or `aria-label` on a video) that describes the image; empty `alt=""` only if it is purely decorative
+- [ ] Lives in this repo's `assets/`, not hotlinked from another site
+- [ ] Page opened in a browser at 1440px and ~400px — nothing overflows, nothing jumps on load
+- [ ] Originals are not committed alongside the optimised file; git history is the backup
+
+Do not commit an unoptimised original "just in case" — the previous commit already holds it, and a duplicate in the working tree also ships to the server.
 
 ## Hyperlinks
 
