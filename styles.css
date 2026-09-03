@@ -198,17 +198,6 @@ button { font: inherit; cursor: pointer; }
   gap: var(--space-500);   /* 40px between nav items */
 }
 
-.nav__links a {
-  font-family: var(--f-sans);
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 17.25px;
-  color: var(--c-white);
-  transition: opacity 0.15s;
-}
-
-.nav__links a:hover { opacity: 0.7; }
-
 .nav__subscribe {
   display: inline-flex;
   align-items: center;
@@ -319,15 +308,13 @@ button { font: inherit; cursor: pointer; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
   max-width: 480px;
   margin-inline: auto;
-  text-decoration: none;
-  transition: opacity 0.15s ease;
 }
 
-.hero__subtitle:hover,
-.hero__subtitle:focus-visible {
-  opacity: 0.8;
-  text-decoration: underline;
-}
+/* Not a link. It used to be a white, un-underlined <a> to /about — the
+   one treatment on the site that matched none of the five hyperlink
+   categories (see README -> Hyperlinks), so it was demoted to plain
+   hero copy rather than given an underline it was never designed for.
+   The About page is reachable from the nav. */
 
 /* Full-bleed layer: sits above the gradient wash but behind the text, so
    the graphic's dissipating particles can drift across the whole hero
