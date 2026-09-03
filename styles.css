@@ -40,6 +40,14 @@
   --c-gradient: linear-gradient(150deg, #5533ee 0%, var(--c-red-dark) 81%);
 
   /* ── Figma typography tokens ── */
+  /* Two families, no third — and the split is by what the text IS, not by
+     heading level. --f-serif: page titles, and titles of works or names of
+     people (a post title, a paper title, a person's name), plus pull-quote
+     copy. --f-sans: section headings, card and UI labels, running prose,
+     metadata, controls and uppercase micro-labels.
+     The one that trips people up: a SECTION HEADING IS NOT SERIF. Serif
+     marks a thing that has its own name; sans marks the furniture around
+     it. See README -> Typography. */
   --f-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
   --f-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
   /* ── Type scale (sitewide — see README) ──
