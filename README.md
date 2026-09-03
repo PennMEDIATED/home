@@ -154,7 +154,7 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 
 WordPress renders the real site; this repo is the source. The launch plan is direct-to-disk deployment, which needs no iframe — but iframe embedding still works and is the documented fallback, so keep this snippet accurate if you rename the repo or change its Pages URL.
 
-Paste into a **Custom HTML block** as one line. The site runs a WordPress block theme (Twenty Twenty-Four / Twenty Twenty-Five), so a Custom HTML block has no width control of its own — wrap it in a **Group block set to Full width** if the page should run edge to edge, otherwise the theme constrains it to the `contentSize` from `theme.json` and the page renders in a narrow column:
+Paste into a **Custom HTML block** as one line. The site runs **Twenty Twenty-Five**, a block theme, and a Custom HTML block has no width control of its own — so wrap it in a **Group block set to Full width**. This is not optional for these pages: Twenty Twenty-Five's `theme.json` sets `contentSize: 645px` (`wideSize: 1340px`), so an unwrapped embed renders in a 645px column, and every full-bleed colour band in the design collapses with it:
 
 ```html
 <iframe id="pm-home" src="https://pennmediated.github.io/home/" title="Home — Penn MEDIATED" loading="lazy" style="width:100%;height:4300px;border:0;display:block"></iframe><script>(function(){var f=document.getElementById('pm-home');window.addEventListener('message',function(e){if(e.source!==f.contentWindow)return;var d=e.data||{},h=d.frameHeight||(d.type==='partners-page-resize'?d.height:0);if(h)f.style.height=h+'px';});})();</script>
