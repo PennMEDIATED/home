@@ -296,12 +296,15 @@ button { font: inherit; cursor: pointer; }
   text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-/* h1: EB Garamond Medium ~96px (scaled down from Figma's 115px for web),
+/* h1: EB Garamond ~96px (scaled down from Figma's 115px for web),
    ls=-2.7%, lh tight. A tight shadow (not a big blur) keeps it legible
-   without smudging into a haze over the gradient. */
+   without smudging into a haze over the gradient.
+   Weight 600 per the sitewide serif-title rule. Figma specified Medium
+   (500); at --fs-display over a gradient the extra weight also helps it
+   hold up, so the two reasons point the same way. */
 .hero__title {
   font-family: var(--f-serif);
-  font-weight: 500;
+  font-weight: 600;
   font-size: var(--fs-display);
   line-height: var(--lh-display);
   letter-spacing: -0.028em;
@@ -658,7 +661,7 @@ button { font: inherit; cursor: pointer; }
   max-width: 520px;
   font-family: var(--f-serif);
   font-size: var(--fs-h1);
-  font-weight: 500;
+  font-weight: 600;
   line-height: var(--lh-display);
   letter-spacing: -0.025em;
   color: var(--c-dark);

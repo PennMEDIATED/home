@@ -73,9 +73,11 @@ The one that trips people up: **a section heading is not serif.** "Past Events",
 
 So two `--fs-h3` card titles can legitimately differ: a post title is serif because it names a work, an event card title is sans because it labels an event. That is the rule, not an inconsistency.
 
-Weight is **not** yet standardised across serif titles — 500, 600 and 700 are all in use. Treat 600 as the default for a new one and raise it if we settle the rest.
+**Serif titles are weight 600**, sitewide and without exception — page titles, post and paper titles, people's names. (Serif *body* copy is a different thing: pull-quotes and blockquotes stay at their own weights.)
 
 There is no monospace face.
+
+**Measure is capped per container, and the numbers differ on purpose.** A `max-width` on body copy is a reading-comfort cap (~65-75 characters), not a layout width — so it depends on how wide the container already is. `events`' `.event-card__desc` caps at **560px** because `.past-events__grid` is two columns and a card is half the row; `blog`'s `.post-excerpt` caps at **720px** because the feed is a single full-width column. Both land the same line length. **Do not "align" these two numbers** — matching them would make one of the two pages read wrong.
 
 **Sizes come from tokens, never raw px.**
 
