@@ -167,21 +167,27 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 
 WordPress renders the real site; this repo is the source. The launch plan is direct-to-disk deployment, which needs no iframe — but iframe embedding still works and is the documented fallback, so keep this snippet accurate if you rename the repo or change its Pages URL.
 
-Paste into a **Code module** — not a Text module, which mangles iframes and scripts. The site runs **Divi 5**, where width belongs to the row, not to the module. A Divi 5 row ships at **width 80%, max-width 1080px**, so an untouched embed renders in a narrow column and every full-bleed colour band in the design collapses with it. Fix it at Row → Design → Sizing → **Width 100%** and **Max Width `none`** — `none`, not 100%.
+Paste into a **Code module** — not a Text module, which mangles iframes and scripts. Two things have to be set, and they deliberately live in different places.
 
-Then zero the spacing. Divi adds section and row padding by default, which reads as unexplained whitespace above and below the frame. Divi 5 has no CSS ID & Classes fields, so don't go looking for them — put this in the **section's** Advanced → Custom CSS → **Free Form CSS**, where the keyword `selector` stands for the section itself and scopes the rules without needing a class:
+**Per page, in the builder.** The site runs **Divi 5**, where width belongs to the row, not to the module. A Divi 5 row ships at **width 80%, max-width 1080px**, so an untouched embed renders in a narrow column and every full-bleed colour band in the design collapses with it. Set:
+
+- Row → Design → Sizing → **Width 100%** and **Max Width `none`** — `none`, not 100%
+- Section → Design → Spacing → **padding 0** top and bottom
+- Row → Design → Spacing → **padding 0** top and bottom
+
+These are design settings, so they belong where the next person will look for them. Putting the width in CSS instead leaves the builder showing 80% / 1080px while the page renders full width, and that mismatch costs someone an afternoon eventually.
+
+**Once, sitewide.** Divi has no setting for the last problem: an `<iframe>` is `display: inline` by default, so it sits on a text baseline and leaves a 4–6px gap underneath that nothing in the builder accounts for. Add this once under Divi → Theme Options → Custom CSS and no page needs it again:
 
 ```css
-selector            { padding-top: 0; padding-bottom: 0; }
-selector .et_pb_row { padding: 0; width: 100%; max-width: none; }
-selector iframe     { display: block; width: 100%; border: 0; }
+.et_pb_code iframe { display: block; width: 100%; border: 0; }
 ```
 
-The **Module Elements** fields beside Free Form CSS accept bare property declarations only (`color: red;`) — no selectors and no `selector` keyword — so Free Form is the field you want. If you need a reusable class instead, Divi 5 moved that to Advanced → **Attributes** → Add Attribute, with the attribute name set to `class`.
+It is keyed to `.et_pb_code` rather than a per-section class on purpose — every iframe on this site sits in a Code module, so there is no hook to add and nothing to remember when page fourteen arrives. Divi's own Video and Map modules don't use Code modules, so a collision is unlikely; if someone does add a Code-module embed that shouldn't be full width, give that one its own override rather than reintroducing a class here.
 
 Divi caches its compiled CSS to a static file, so clear that cache (Divi → Theme Options → Builder → "Clear Divi Static CSS File Cache") after editing Custom CSS, or the change will not show for visitors.
 
-On Divi 4 this was all different: a **Fullwidth Section** holding a **Fullwidth Code** module, with separate CSS ID and CSS Class fields on the Advanced tab. Divi 5 removed the section-type chooser (the add-section button offers flex and grid layout options now) and folded the ID/class fields into Attributes, so ignore Divi 4 tutorials on both points. The embed snippet itself:
+On Divi 4 this was all different: a **Fullwidth Section** holding a **Fullwidth Code** module, with separate CSS ID and CSS Class fields on the Advanced tab. Divi 5 removed the section-type chooser (the add-section button offers flex and grid layout options now) and folded ID and class into Advanced → **Attributes**, so ignore Divi 4 tutorials on both points. The embed snippet itself:
 
 ```html
 <iframe id="pm-home" src="https://pennmediated.github.io/home/" title="Home — Penn MEDIATED" loading="lazy" style="width:100%;height:4300px;border:0;display:block"></iframe><script>(function(){var f=document.getElementById('pm-home');window.addEventListener('message',function(e){if(e.source!==f.contentWindow)return;var d=e.data||{},h=d.frameHeight||(d.type==='partners-page-resize'?d.height:0);if(h)f.style.height=h+'px';});})();</script>
