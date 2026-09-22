@@ -433,7 +433,7 @@ button { font: inherit; cursor: pointer; }
   }
 
   .news-card:first-child .news-card__image {
-    aspect-ratio: 1;
+    aspect-ratio: 16 / 9;
   }
 }
 
@@ -441,17 +441,19 @@ button { font: inherit; cursor: pointer; }
 .news-card--purple { background: var(--c-accent); color: var(--c-white); }
 .news-card--red    { background: var(--c-red); color: var(--c-white); }
 
-/* Image is its own square (aspect-ratio: 1) sitting above the text, not
-   filling the whole tile — the text body below is a plain rectangle that
-   sizes to its (clamped) content instead of being forced into the square.
-   EVERY card image fills that square edge to edge (object-fit: cover) —
-   photos, videos and logo/brand graphics alike — so the grid reads as one
-   consistent set of tiles rather than a mix of full-bleed and letterboxed
-   ones. Wide lockups get center-cropped, so upload them pre-cropped to a
-   square (see the README image-size table). */
+/* Image is a landscape 16:9 rectangle sitting above the text, not filling
+   the whole tile — the text body below is a plain rectangle that sizes to
+   its (clamped) content instead of being forced into the image box. 16:9
+   is deliberately landscape: the What's New sources are almost all wide
+   images (~2:1), so a landscape tile conforms to them and crops far less
+   than the old square did. EVERY card image fills that box edge to edge
+   (object-fit: cover) — photos, videos and logo/brand graphics alike — so
+   the grid reads as one consistent set of tiles. Very wide lockups still
+   get their sides cropped, so upload at the 16:9 size in the README
+   image-size table. */
 .news-card__image {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
 }
 
