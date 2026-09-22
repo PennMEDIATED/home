@@ -872,3 +872,11 @@ button { font: inherit; cursor: pointer; }
 }
 
 .footer__bottom-mediated { font-style: italic; }
+
+/* ── Trailing gap before the site footer ──────────────────────────────
+   This page ends on a full-width colour band, whose own --space-1000
+   padding is internal to the band. Without this rule the band's colour
+   runs straight into the footer, while every white-ending page repo
+   shows 80px of white first. This makes the gap consistent sitewide.
+   ------------------------------------------------------------------ */
+body { padding-bottom: var(--space-1000); }
