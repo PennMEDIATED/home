@@ -183,15 +183,16 @@
       if (window.self === window.top) return;
       var lastSentHeight = 0;
       function sendHeight() {
-        /* Measure with scrollHeight and NEVER add slack. Once the frame is at
-           least as tall as the content, html and body both report the FRAME's
-           height, not the content's — so any pixel added here returns as a
-           taller frame on the next ResizeObserver tick, and the iframe grows
-           without bound. That is what made the page bounce and drift with a
-           growing band of white. The guard below stops a sub-pixel wobble from
-           starting the same loop; wheel capture is handled by scrolling="no"
-           on the iframe, not by padding the height. */
-        var h = Math.ceil(Math.max(document.documentElement.scrollHeight, document.body.scrollHeight));
+        /* MEASURE THE BODY, NEVER documentElement. <html> stretches to fill the
+           frame, so documentElement.scrollHeight can never report LESS than the
+           frame's current height — feeding it back pins the iframe at whatever
+           it already is and it can never shrink. Anything that inflates it once
+           during load (webfonts settling, the reveal transforms) is then
+           permanent, which is what left a tall band of white above the footer.
+           body.scrollHeight is content-driven and can go down as well as up.
+           Verified 2026-09: at 1512px wide home's real content is 3879px while
+           documentElement.scrollHeight reported 4766px, the frame's own height. */
+        var h = Math.ceil(Math.max(document.body.scrollHeight, document.body.offsetHeight));
         if (Math.abs(h - lastSentHeight) < 2) return;
         lastSentHeight = h;
         window.parent.postMessage({ frameHeight: h }, '*');
