@@ -591,17 +591,6 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__copy { max-width: 500px; }
 
-.research-cta__eyebrow {
-  display: block;
-  font-family: var(--f-sans);
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  letter-spacing: 1.44px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: var(--space-300);
-}
-
 .research-cta__lead {
   font-family: var(--f-sans);
   font-size: var(--fs-h2);
