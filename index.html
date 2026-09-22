@@ -182,8 +182,19 @@
     (function () {
       if (window.self === window.top) return;
       function sendHeight() {
-        var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
-        window.parent.postMessage({ frameHeight: Math.ceil(h) }, '*');
+        /* Measure with getBoundingClientRect(), not scrollHeight. scrollHeight is
+           rounded to a whole pixel while real layout heights are fractional, so it
+           can report a fraction of a pixel SHORT of the content. The parent then
+           sizes the frame just under what it holds, this document becomes
+           scrollable by that fraction, and it swallows every wheel event over the
+           iframe — the page looks frozen unless you drag the scrollbar. Round up
+           and add 1px of slack so the frame is never shorter than its content. */
+        var h = Math.max(
+          document.documentElement.getBoundingClientRect().height,
+          document.body.getBoundingClientRect().height,
+          document.documentElement.scrollHeight
+        );
+        window.parent.postMessage({ frameHeight: Math.ceil(h) + 1 }, '*');
       }
       window.addEventListener('load', sendHeight);
       window.addEventListener('resize', sendHeight);
