@@ -182,20 +182,20 @@
   <script>
     (function () {
       if (window.self === window.top) return;
+      var lastSentHeight = 0;
       function sendHeight() {
-        /* Measure with getBoundingClientRect(), not scrollHeight. scrollHeight is
-           rounded to a whole pixel while real layout heights are fractional, so it
-           can report a fraction of a pixel SHORT of the content. The parent then
-           sizes the frame just under what it holds, this document becomes
-           scrollable by that fraction, and it swallows every wheel event over the
-           iframe — the page looks frozen unless you drag the scrollbar. Round up
-           and add 1px of slack so the frame is never shorter than its content. */
-        var h = Math.max(
-          document.documentElement.getBoundingClientRect().height,
-          document.body.getBoundingClientRect().height,
-          document.documentElement.scrollHeight
-        );
-        window.parent.postMessage({ frameHeight: Math.ceil(h) + 1 }, '*');
+        /* Measure with scrollHeight and NEVER add slack. Once the frame is at
+           least as tall as the content, html and body both report the FRAME's
+           height, not the content's — so any pixel added here returns as a
+           taller frame on the next ResizeObserver tick, and the iframe grows
+           without bound. That is what made the page bounce and drift with a
+           growing band of white. The guard below stops a sub-pixel wobble from
+           starting the same loop; wheel capture is handled by scrolling="no"
+           on the iframe, not by padding the height. */
+        var h = Math.ceil(Math.max(document.documentElement.scrollHeight, document.body.scrollHeight));
+        if (Math.abs(h - lastSentHeight) < 2) return;
+        lastSentHeight = h;
+        window.parent.postMessage({ frameHeight: h }, '*');
       }
       window.addEventListener('load', sendHeight);
       window.addEventListener('resize', sendHeight);
