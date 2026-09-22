@@ -52,11 +52,10 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 | Image | How it displays | Give it |
 |---|---|---|
 | **What's New** — featured card (newest item, spans 2 columns) | Cropped to a 2:1 wide rectangle with `object-fit: cover` | ~1280×640 |
-| **What's New** — regular card | Cropped to a 1:1 square with `object-fit: cover` | ~640×640 |
-| **What's New** — logo/lockup card (use the `news-card__image--contain` class, e.g. partner logos) | Not cropped — letterboxed inside the square tile with `object-fit: contain` | ~640px wide, transparent background |
-| Research CTA / Faculty CTA screenshots | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
+| **What's New** — regular card (photos, videos **and** logo/brand graphics alike) | Cropped to a 1:1 square with `object-fit: cover` | ~640×640 |
+| Research CTA / Faculty CTA image or gif | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
 
-Those figures are 2× the CSS box, which is what a retina screen needs; going bigger just makes the visitor download pixels the browser throws away. The two "cropped" rows center-crop whatever you upload, so keep the subject centred. Everything else displays at its native aspect ratio, so crop it yourself rather than relying on the page to do it.
+Those figures are 2× the CSS box, which is what a retina screen needs; going bigger just makes the visitor download pixels the browser throws away. **Every What's New card fills its tile edge to edge — there is no letterboxed/"contain" treatment**, so all the tiles read as one consistent set rather than a mix of full-bleed photos and shrunken logos. The "cropped" rows center-crop whatever you upload, so keep the subject centred; a wide logo or lockup will lose its edges in a square, so pre-crop it to a square (or set it on a square canvas) before uploading rather than sending a wide wordmark. The CTA rows display at their native aspect ratio, so crop those yourself rather than relying on the page to do it.
 
 **See "Images and video" below before adding anything** — it covers the required `width`/`height` attributes, WebP and MP4 conversion, and the commands to do it.
 
@@ -153,12 +152,12 @@ Both repos are static HTML/CSS built off the same design system. If you're addin
 
 - Every section's content wrapper is named `.<section>__inner` and shares one rule (`width:100%; max-width:var(--max-w); margin-inline:auto; padding-inline:var(--pad-x);`). Add new sections to that shared selector list instead of writing a one-off inner container.
 - Section-to-section vertical rhythm uses `--space-1000` (80px) for generous breaks (e.g. before a new heading like "What's New") and `--space-600` (48px) between a heading row and the content below it.
-- BEM-ish naming: `.block__element`, modifiers as `.block--variant` or `.block__element--variant` (e.g. `.news-card--dark`, `.news-card__image--contain`).
+- BEM-ish naming: `.block__element`, modifiers as `.block--variant` or `.block__element--variant` (e.g. `.news-card--dark`, `.news-card__body--bottom`).
 
 ### Shared components
 
 - **Section header pattern** (`What's New` / etc.): a heading (24px, weight 600, `--c-dark`) and a "view all" link (14px, weight 500) in a `flex` row with `align-items:baseline` and a bottom border. Keep any new listing section (a future "Publications" grid, say) on this exact pattern rather than inventing a new header style.
-- **Cards** (`news-card`): the first card automatically spans two columns as one wide card, with a `2 / 1` image above a full-width text body. All other cards place a square image (`aspect-ratio: 1`, `object-fit:cover`) above a plain-rectangle text body. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length stays controlled. Brand-lockup logos that lose their wordmark under a center-crop use `.news-card__image--contain` to letterbox instead of cropping.
+- **Cards** (`news-card`): the first card automatically spans two columns as one wide card, with a `2 / 1` image above a full-width text body. All other cards place a square image (`aspect-ratio: 1`, `object-fit:cover`) above a plain-rectangle text body. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length stays controlled. **Every card image fills its tile the same way** — photos, videos and logo/brand graphics all use `object-fit:cover`, with no letterboxed/"contain" variant — so the grid stays visually consistent. A wide lockup gets center-cropped like anything else, so pre-crop such logos to a square before uploading rather than relying on a padded "contain" treatment.
 - **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` media queries).
 
 `home` does not have a newsletter or "Supported by" section — those were removed. The `about` repo still has both (`.newsletter`, `.supporters`, the shared `.cta-block` gradient wrapper); if you're porting a component between the two repos, don't reintroduce them here without being asked.
@@ -233,9 +232,8 @@ In this repo:
 | Where | CSS box at 1440px | Export at |
 | --- | --- | --- |
 | What's New — featured card (first child, spans 2 columns) | 640×320, cropped 2:1 | ~1280px wide |
-| What's New — regular card | 319×319, cropped square | ~640px square |
-| What's New — logo card (`.news-card__image--contain`) | 319px square, letterboxed | ~640px, transparent background |
-| Research / Faculty CTA (`.faculty-cta__image`) | up to 523px wide | ~1046px |
+| What's New — regular card (photos, videos and logos alike) | 319×319, cropped square | ~640px square |
+| Research / Faculty CTA (`.research-cta__image` / `.faculty-cta__image`) | up to 523px wide | ~1046px |
 
 Keep the subject centred in cropped slots — the card center-crops whatever you give it.
 

@@ -443,7 +443,12 @@ button { font: inherit; cursor: pointer; }
 
 /* Image is its own square (aspect-ratio: 1) sitting above the text, not
    filling the whole tile — the text body below is a plain rectangle that
-   sizes to its (clamped) content instead of being forced into the square. */
+   sizes to its (clamped) content instead of being forced into the square.
+   EVERY card image fills that square edge to edge (object-fit: cover) —
+   photos, videos and logo/brand graphics alike — so the grid reads as one
+   consistent set of tiles rather than a mix of full-bleed and letterboxed
+   ones. Wide lockups get center-cropped, so upload them pre-cropped to a
+   square (see the README image-size table). */
 .news-card__image {
   width: 100%;
   aspect-ratio: 1;
@@ -452,18 +457,6 @@ button { font: inherit; cursor: pointer; }
 
 .news-card__image img,
 .news-card__image video { width: 100%; height: 100%; object-fit: cover; }
-
-/* Wide brand lockups (logos with a wordmark) lose the wordmark entirely
-   when center-cropped to a square — letterbox those instead of cropping. */
-.news-card__image--contain {
-  background: var(--c-light-bg);
-}
-
-.news-card__image--contain img,
-.news-card__image--contain video {
-  object-fit: contain;
-  padding: var(--space-400);
-}
 
 .news-card__arrow {
   position: absolute;
@@ -598,6 +591,17 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__copy { max-width: 500px; }
 
+.research-cta__eyebrow {
+  display: block;
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 1.44px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: var(--space-300);
+}
+
 .research-cta__lead {
   font-family: var(--f-sans);
   font-size: var(--fs-h2);
@@ -625,7 +629,9 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__image {
   flex-shrink: 0;
+  display: block;
   width: min(38vw, 523px);
+  height: auto;
   border-radius: var(--space-100);
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
 }
@@ -764,6 +770,7 @@ button { font: inherit; cursor: pointer; }
    them; this rule just makes sure the poster is what shows. */
 @media (prefers-reduced-motion: reduce) {
   .news-card__image video,
+  video.research-cta__image,
   video.faculty-cta__image { animation: none; }
 }
 
