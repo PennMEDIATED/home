@@ -13,24 +13,40 @@
  
   <!-- ── Hero ───────────────────────────────────────────────────── -->
   <section class="hero">
-    <div class="hero__visual">
-      <iframe
-        class="hero__visual-frame"
-        src="assets/broadcast-tower.html"
-        title="Interactive ASCII broadcast tower graphic"
-        loading="lazy"
-        scrolling="no"
-      ></iframe>
+
+    <!-- Sparkle field only, full-bleed behind the whole gradient. The rings
+         and tower stay in .hero__visual's own column. -->
+    <div class="hero__dots" aria-hidden="true">
+      <iframe class="hero__dots-frame" src="assets/broadcast-tower.html?layer=dots" title="" tabindex="-1" loading="lazy" scrolling="no"></iframe>
     </div>
+
     <div class="hero__inner">
+
       <div class="hero__content">
         <p class="hero__eyebrow">
           <span class="hero__eyebrow-brand">Penn MEDIATED</span>
         </p>
         <h1 class="hero__title">Center on Media, Technology and Democracy</h1>
-        <span class="hero__subtitle">At Penn MEDIATED, we work to better understand the information ecosystem through cutting-edge science.</span>
+        <p class="hero__subtitle">At Penn MEDIATED, we work to better understand the information ecosystem through cutting-edge science.</p>
       </div>
+
+      <!-- The ASCII broadcast tower sits in its own column rather than behind
+           the copy, so the dots never run through the text. -->
+      <div class="hero__visual" aria-hidden="true">
+        <iframe
+          class="hero__visual-frame"
+          src="assets/broadcast-tower.html"
+          title="Interactive ASCII broadcast tower graphic"
+          loading="lazy"
+          scrolling="no"
+        ></iframe>
+      </div>
+
     </div>
+
+    <a class="hero__scroll" href="#whats-new-heading" aria-label="Skip to What&#8217;s New">
+      <span aria-hidden="true">&#8595;</span>
+    </a>
   </section>
  
   <!-- ── What's New ─────────────────────────────────────────────── -->
@@ -42,84 +58,67 @@
       </div>
  
       <div class="whats-new__grid">
- 
-        <a href="https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research" class="news-card" target="_blank" rel="noopener">
-          <div class="news-card__image">
-            <img src="assets/whats-new/llm-monitoring-report.webp" width="1141" height="515" alt="Carnegie Endowment report on monitoring large language models">
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
+
+        <a href="https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research" class="news-card news-card--feature news-card--white">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__media"><img src="assets/whats-new/llm-monitoring-report.webp" width="1141" height="515" alt="Carnegie Endowment report on monitoring large language models"></div>
+          <div class="news-card__body news-card__body--bottom">
             <h3 class="news-card__title">New Report on Monitoring LLMs</h3>
             <p class="news-card__desc">In a new Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal monitoring to understand how LLMs impact politics.</p>
           </div>
         </a>
- 
-        <a href="https://mediated.upenn.edu/blog/#gni-membership" class="news-card">
-          <div class="news-card__image">
-            <img src="assets/whats-new/gni-membership.webp" width="640" height="360" alt="Global Network Initiative logo">
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
+
+        <a href="https://mediated.upenn.edu/blog/#gni-membership" class="news-card news-card--square news-card--purple">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__media"><img src="assets/whats-new/gni-membership.webp" width="640" height="360" alt="Global Network Initiative logo"></div>
+          <div class="news-card__body news-card__body--bottom">
             <h3 class="news-card__title">MEDIATED Membership with GNI</h3>
             <p class="news-card__desc">Penn MEDIATED is delighted to announce our membership with the Global Network Initiative — a diverse community of institutions and experts working to advance a free and democratic technological future.</p>
           </div>
         </a>
- 
-        <a href="https://mediated.upenn.edu/team-faculty/" class="news-card">
-          <div class="news-card__image">
-            <video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated graphic of Penn&#8217;s campus with icons overlaying research themes"></video>
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
-            <h3 class="news-card__title">Announcing our Affiliated Faculty</h3>
-            <p class="news-card__desc">We are proud to welcome affiliated faculty across Penn's schools whose research explores how media and technology shape political attitudes and the information ecosystem.</p>
+
+        <a href="https://mediated.upenn.edu/blog/#knight-fellows" class="news-card news-card--square news-card--orange">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__body news-card__body--bottom">
+            <h3 class="news-card__title">Welcoming New Knight Fellows</h3>
+            <p class="news-card__desc">Three new Knight Fellows join Penn MEDIATED, expanding our community of researchers studying the information ecosystem.</p>
           </div>
         </a>
- 
-        <a href="https://mediated.upenn.edu/research-compendium/" class="news-card">
-          <div class="news-card__image">
-            <video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Research Compendium dashboard"></video>
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
+
+        <a href="https://mediated.upenn.edu/research-compendium/" class="news-card news-card--wide news-card--peach">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__media"><video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Research Compendium dashboard"></div>
+          <div class="news-card__body news-card__body--bottom">
             <h3 class="news-card__title">Launching the Research Compendium</h3>
             <p class="news-card__desc">Our redesigned research compendium is a one-stop shop for Penn research on the quantitative study of the information ecosystem.</p>
           </div>
         </a>
- 
-        <a href="https://mediated.upenn.edu/blog/#knight-fellows" class="news-card">
-          <div class="news-card__image">
-            <img src="assets/whats-new/knight-fellows.webp" width="640" height="334" alt="&quot;Welcoming Our Newest Knight Fellows&quot; graphic with Penn MEDIATED and Knight Foundation logos">
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
-            <h3 class="news-card__title">Welcoming New Knight Fellow</h3>
-            <p class="news-card__desc">We're excited to welcome three new Knight Fellows — Thomas Chamberlain, Jacky Liang, and Burak Ozturan — to Penn MEDIATED.</p>
-          </div>
-        </a>
- 
-        <a href="https://mediated.upenn.edu/blog/#dfrlab-partnership" class="news-card">
-          <div class="news-card__image">
-            <img src="assets/whats-new/dfr-lab-partnership.webp" width="640" height="308" alt="Penn MEDIATED and DFRLab logos above a &quot;Digital Sherlocks&quot; graphic">
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
-            <h3 class="news-card__title">Partnering with Digital Forensics Lab</h3>
-            <p class="news-card__desc">Penn MEDIATED faculty will contribute trainings to DFRLab's Digital Sherlocks program, informing practitioners on the front lines of information integrity.</p>
-          </div>
-        </a>
- 
-        <a href="https://t.e2ma.net/webview/1odgwu/d30c49ebf9bccf8f52c4d5cb2f85b22b" class="news-card" target="_blank" rel="noopener">
-          <div class="news-card__image">
-            <img src="assets/whats-new/directors-welcome.webp" width="640" height="452" alt="Penn MEDIATED newsletter introducing the Center's faculty co-directors">
-          </div>
-          <span class="news-card__arrow" aria-hidden="true">↗</span>
-          <div class="news-card__body">
-            <h3 class="news-card__title">An Intro from our Co-Directors</h3>
+
+        <a href="https://t.e2ma.net/webview/1odgwu/d30c49ebf9bccf8f52c4d5cb2f85b22b" class="news-card news-card--square news-card--orange">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__body news-card__body--bottom">
+            <h3 class="news-card__title">An Intro from our Co‑Directors</h3>
             <p class="news-card__desc">Read an introduction from faculty co-directors Duncan Watts and Christopher Yoo.</p>
           </div>
         </a>
- 
+
+        <a href="https://mediated.upenn.edu/blog/#dfrlab-partnership" class="news-card news-card--square news-card--purple">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__body news-card__body--bottom">
+            <h3 class="news-card__title">Partnering with Digital Forensics Lab</h3>
+            <p class="news-card__desc">A joint effort with the Atlantic Council&#8217;s DFRLab on the Digital Sherlocks programme.</p>
+          </div>
+        </a>
+
+        <a href="https://mediated.upenn.edu/team-faculty/" class="news-card news-card--wide news-card--reverse news-card--white">
+          <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
+          <div class="news-card__media"><video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated graphic of Penn&#8217;s campus with icons overlaying research themes"></div>
+          <div class="news-card__body news-card__body--bottom">
+            <h3 class="news-card__title">Announcing our Affiliated Faculty</h3>
+            <p class="news-card__desc">We are proud to welcome affiliated faculty across Penn's schools whose research explores how media and technology shape political attitudes and the information ecosystem.</p>
+          </div>
+        </a>
+
       </div>
     </div>
   </section>
@@ -163,6 +162,16 @@
     </div>
   </section>
 
+  <!-- ── Signal band ────────────────────────────────────────────────
+       Occupies the deliberate gap before the footer so a colour section
+       never butts straight into the footer gradient. Reacts to the
+       cursor, not to scroll — this page is embedded at its full height
+       so it never scrolls, and scroll-driven effects cannot fire. -->
+  <div class="signal-band" aria-hidden="true">
+    <canvas class="signal-band__canvas" id="signal-band-canvas"></canvas>
+  </div>
+
+
   <!-- The two animated cards are muted, looping <video> rather than GIF.
        CSS can't stop autoplay, so honour prefers-reduced-motion here:
        pause each one and rewind to its poster frame. -->
@@ -203,6 +212,108 @@
       if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sendHeight); }
       if (window.ResizeObserver) { new ResizeObserver(sendHeight).observe(document.body); }
     })();
+  </script>
+
+  <script>
+  /* Signal band: a field of glyphs that scatters and washes through the accent
+     palette toward the pointer,
+     echoing the broadcast-tower motif in the hero so the page is bookended.
+     Only animates while the pointer is near, so an idle page costs nothing.
+     Honours prefers-reduced-motion by drawing a single static field. */
+  (function () {
+    var canvas = document.getElementById('signal-band-canvas');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    var GLYPHS = ['\u00b7', '\u2219', '\u2022', '\u25e6', '+', '\u00d7'];
+    /* Accent-palette solids. Colour is chosen by distance from the pointer and
+       advanced by how far the pointer has travelled, so the field washes through
+       the palette as the cursor moves and holds still when it stops. */
+    var PALETTE = [
+      [85, 51, 238],   /* accent purple  #5533ee */
+      [240, 61, 31],   /* red            #f03d1f */
+      [43, 204, 180],  /* teal           #2bccb4 */
+      [209, 32, 169],  /* magenta        #d120a9 */
+      [134, 29, 119],  /* plum           #861d77 */
+      [38, 139, 252],  /* blue           #268bfc */
+      [27, 146, 71],   /* green          #1b9247 */
+      [183, 160, 251]  /* lilac          #b7a0fb */
+    ];
+    var BAND = 34;    /* px between colour bands */
+    var FLOW = 0.012; /* palette steps per px of pointer travel */
+    var STEP = 20, RADIUS = 150, PUSH = 9;
+    var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var px = -9999, py = -9999, tx = -9999, ty = -9999, raf = null, idle = 0;
+    var travel = 0, lx = null, ly = null;
+
+    function size() {
+      w = canvas.clientWidth; h = canvas.clientHeight;
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '12px ' + (getComputedStyle(document.body).fontFamily || 'sans-serif');
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, w, h);
+      for (var x = STEP / 2; x < w; x += STEP) {
+        for (var y = STEP / 2; y < h; y += STEP) {
+          var dx = x - px, dy = y - py;
+          var d = Math.sqrt(dx * dx + dy * dy);
+          var near = d < RADIUS ? 1 - d / RADIUS : 0;
+          near = near * near;
+          var ox = d > 0.01 ? (dx / d) * near * PUSH : 0;
+          var oy = d > 0.01 ? (dy / d) * near * PUSH : 0;
+          if (near > 0.30) {
+            var band = d / BAND - travel * FLOW;
+            var lo = Math.floor(band), f = band - lo;
+            var a = PALETTE[((lo % PALETTE.length) + PALETTE.length) % PALETTE.length];
+            var b = PALETTE[(((lo + 1) % PALETTE.length) + PALETTE.length) % PALETTE.length];
+            ctx.fillStyle = 'rgba(' +
+              Math.round(a[0] + (b[0] - a[0]) * f) + ',' +
+              Math.round(a[1] + (b[1] - a[1]) * f) + ',' +
+              Math.round(a[2] + (b[2] - a[2]) * f) + ',' +
+              (0.35 + near * 0.6).toFixed(3) + ')';
+          } else {
+            ctx.fillStyle = 'rgba(13,13,12,' + (0.13 + near * 0.35).toFixed(3) + ')';
+          }
+          var i = (Math.round(x / STEP) * 3 + Math.round(y / STEP)) % GLYPHS.length;
+          ctx.fillText(GLYPHS[i], x + ox, y + oy);
+        }
+      }
+    }
+
+    function loop() {
+      px += (tx - px) * 0.16; py += (ty - py) * 0.16;
+      draw();
+      if (Math.abs(tx - px) < 0.4 && Math.abs(ty - py) < 0.4) { idle++; } else { idle = 0; }
+      if (idle > 40) { raf = null; return; }
+      raf = requestAnimationFrame(loop);
+    }
+
+    function wake() { idle = 0; if (!raf && !reduce) raf = requestAnimationFrame(loop); }
+
+    size();
+    draw();
+    if (reduce) return;
+
+    window.addEventListener('resize', function () { size(); draw(); wake(); });
+    document.addEventListener('pointermove', function (e) {
+      var r = canvas.getBoundingClientRect();
+      if (e.clientY < r.top - RADIUS || e.clientY > r.bottom + RADIUS) { tx = -9999; ty = -9999; lx = null; ly = null; }
+      else {
+        tx = e.clientX - r.left; ty = e.clientY - r.top;
+        if (lx !== null) {
+          var mx = tx - lx, my = ty - ly;
+          travel += Math.sqrt(mx * mx + my * my);
+        }
+        lx = tx; ly = ty;
+      }
+      wake();
+    }, { passive: true });
+    document.addEventListener('pointerleave', function () { tx = -9999; ty = -9999; lx = null; ly = null; wake(); });
+  })();
   </script>
 </body>
 </html>

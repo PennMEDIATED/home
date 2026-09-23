@@ -30,6 +30,12 @@
      only reaches ~3.9:1 against white, this clears 4.5:1. --c-red stays
      the brand accent for fills, borders, icons, tags and labels. */
   --c-red-dark:   #df3611;
+
+  /* Orange-red at 12% on white, from the sitewide accent palette (slot 2).
+     A light tile colour for the grid — replaces the near-black tile.
+     --c-peach-ink is the palette's "text on tint" value; it clears 7:1. */
+  --c-peach:      #fce4dc;
+  --c-peach-ink:  #7b2719;
   --c-gray:       #888680;          /* rgb(136,134,128)*/
   --c-gray-dark:  #54534f;          /* rgb(84,83,79) — opaque body copy, ~8:1 contrast on white */
   --c-muted:      #c8c6c0;          /* rgb(200,198,192) date/meta text */
@@ -258,31 +264,31 @@ button { font: inherit; cursor: pointer; }
 .hero__inner {
   position: relative;
   z-index: 2;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
+  gap: var(--space-800);
   padding-block: var(--space-1000) var(--space-800);
-  min-height: 900px;
-  pointer-events: none;
+  /* Fixed px, never vh: this page is embedded in an iframe sized to its own
+     content, so viewport units are circular here. */
+  min-height: 760px;
 }
 
-.hero__inner * { pointer-events: auto; }
 
 /* Centered composition: text sits directly over the circle's own center.
    A text-shadow (not a panel) keeps it legible against the graphic. */
 .hero__content {
   position: relative;
   z-index: 2;
-  max-width: 720px;
-  margin-inline: auto;
-  text-align: center;
+  max-width: 620px;
+  text-align: left;
 }
 
 /* Reads as the center's formal name rather than a decorative section kicker. */
 .hero__eyebrow {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--space-400);
 }
 
@@ -293,7 +299,6 @@ button { font: inherit; cursor: pointer; }
   font-weight: 700;
   letter-spacing: 0.3px;
   color: var(--c-white);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
 /* h1: EB Garamond ~96px (scaled down from Figma's 115px for web),
@@ -309,9 +314,10 @@ button { font: inherit; cursor: pointer; }
   line-height: var(--lh-display);
   letter-spacing: -0.028em;
   color: var(--c-white);
-  margin-inline: auto;
   margin-bottom: var(--space-500);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.4);
+  /* Back, and heavier than before: the tower now runs full width behind the
+     copy, so the title needs to sit clearly in front of it. */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.45), 0 8px 28px rgba(0,0,0,0.38);
 }
 
 .hero__subtitle {
@@ -321,9 +327,8 @@ button { font: inherit; cursor: pointer; }
   font-weight: 500;
   line-height: var(--lh-lede);
   color: var(--c-white);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-  max-width: 480px;
-  margin-inline: auto;
+  max-width: 520px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.45), 0 4px 14px rgba(0,0,0,0.30);
 }
 
 /* Not a link. It used to be a white, un-underlined <a> to /about — the
@@ -335,10 +340,30 @@ button { font: inherit; cursor: pointer; }
 /* Full-bleed layer: sits above the gradient wash but behind the text, so
    the graphic's dissipating particles can drift across the whole hero
    instead of being boxed into a corner. */
-.hero__visual {
+/* Full-bleed sparkle field, behind the copy and the tower alike. Inert to
+   the pointer so it never steals a click or a text selection. */
+.hero__dots {
   position: absolute;
   inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero__dots-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* The tower has its own column rather than sitting behind the copy, so the
+   two never fight for the same space. */
+.hero__visual {
+  position: relative;
   z-index: 1;
+  min-height: 460px;
+  align-self: stretch;
 }
 
 /* Interactive ASCII graphic (assets/broadcast-tower.html) — background is
@@ -478,9 +503,10 @@ button { font: inherit; cursor: pointer; }
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.news-card--dark .news-card__arrow,
-.news-card--purple .news-card__arrow,
-.news-card--red .news-card__arrow { background: rgba(255,255,255,0.14); }
+/* Every grid arrow is the standard black circle with a white arrow, except on
+   the black tiles, where black would vanish: there it stays a translucent
+   grey circle. All of them run the gradient on hover (below). */
+.news-card--dark .news-card__arrow { background: rgba(255,255,255,0.14); }
 
 /* Hover affordance: arrow pops and slides through an animated brand
    gradient (matches the person-card arrow treatment on the
@@ -498,13 +524,6 @@ button { font: inherit; cursor: pointer; }
   100% { background-position: 200% 50%; }
 }
 
-.news-card--dark:hover .news-card__arrow,
-.news-card--purple:hover .news-card__arrow,
-.news-card--red:hover .news-card__arrow {
-  background: var(--c-white);
-  color: var(--c-dark);
-  animation: none;
-}
 
 .news-card__body {
   display: flex;
@@ -515,18 +534,7 @@ button { font: inherit; cursor: pointer; }
 
 .news-card__body--bottom { margin-top: auto; }
 
-.news-card__tag {
-  font-family: var(--f-sans);
-  font-size: var(--fs-micro);
-  font-weight: 600;
-  letter-spacing: 1.44px;
-  text-transform: uppercase;
-  color: var(--c-red);
-}
 
-.news-card__tag--purple { color: var(--c-accent); }
-.news-card__tag--muted  { color: rgba(255,255,255,0.38); }
-.news-card__tag--muted-light { color: rgba(255,255,255,0.48); }
 
 .news-card__title {
   font-family: var(--f-sans);
@@ -889,10 +897,224 @@ button { font: inherit; cursor: pointer; }
 
 .footer__bottom-mediated { font-style: italic; }
 
-/* ── Trailing gap before the site footer ──────────────────────────────
-   This page ends on a full-width colour band, whose own --space-1000
-   padding is internal to the band. Without this rule the band's colour
-   runs straight into the footer, while every white-ending page repo
-   shows 80px of white first. This makes the gap consistent sitewide.
-   ------------------------------------------------------------------ */
-body { padding-bottom: var(--space-1000); }
+/* The trailing white gap before the footer is now the .signal-band element
+   rather than padding on <body> — the band occupies that space and fills it
+   with something, so body padding here would double it. */
+
+
+/* =============================================================================
+   REDESIGN TRIAL — hero actions, scroll cue, bento grid, signal band
+   ========================================================================== */
+
+
+
+.hero__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-400);
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.45);
+  color: var(--c-white);
+  font-size: var(--fs-body);
+  animation: hero-scroll-bob 2.4s ease-in-out infinite;
+}
+@keyframes hero-scroll-bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
+@media (prefers-reduced-motion: reduce) { .hero__scroll { animation: none; } }
+
+@media (max-width: 900px) {
+  .hero__inner { grid-template-columns: 1fr; gap: var(--space-600); min-height: 0; }
+  .hero__visual { min-height: 300px; order: 2; }
+  .hero__content { max-width: none; }
+}
+
+/* ── Bento grid, v2 ──────────────────────────────────────────────────────
+   Every tile carries a colour (white / dark / purple / orange); the colour is
+   the frame. Images sit INSIDE the tile at a fixed box rather than bleeding
+   edge to edge, so a source image's aspect ratio stops mattering —
+   object-fit: cover centre-crops anything into the same box.
+
+   TWO IMAGE SHAPES, and only two:
+     SQUARE 1:1 — the feature tile (232px) and the four small tiles (132px).
+       Same shape, two scales, so ONE source file drops into either slot and
+       just scales up or down. Export square art at 600x600 and it is sharp
+       in both.
+     WIDE 16:9 — the two rectangular tiles (256x144). Export at 800x450.
+
+   Layout is 4 columns x 3 rows = 12 cells, filled exactly:
+   1 feature (2x2) + 4 squares (1x1) + 2 wides (2x1).
+   Change the card count and this stops packing cleanly — 6 or 8 are the
+   other numbers that work.
+   -------------------------------------------------------------------- */
+.whats-new__grid {
+  gap: var(--space-200);
+  background: transparent;
+  grid-auto-flow: dense;
+}
+
+.news-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  padding: var(--space-300);
+  /* Taller than wide-ish: at the 4-column layout this makes the small tiles
+     read as near-squares rather than letterboxes, and the feature (2 rows)
+     scales with them automatically. */
+  min-height: 286px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.news-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(13,13,12,0.12); }
+
+/* Size tiers */
+.news-card--feature { grid-column: span 2; grid-row: span 2; min-height: 592px; }
+.news-card--wide    { grid-column: span 2; }
+.news-card--square  { grid-column: span 1; }
+
+/* Colour tiles. Text-on-solid follows the accent palette: white on purple and
+   on near-black, but DARK on orange — white on #f03d1f is only ~3.9:1. */
+.news-card--white  { background: var(--c-white);  border: 1px solid rgba(13,13,12,0.12); }
+.news-card--dark   { background: var(--c-dark);   border: 1px solid transparent; }
+.news-card--purple { background: var(--c-accent); border: 1px solid transparent; }
+.news-card--orange { background: var(--c-red);    border: 1px solid transparent; }
+.news-card--peach  { background: var(--c-peach);  border: 1px solid rgba(240,61,31,0.20); color: var(--c-peach-ink); }
+
+.news-card--white  .news-card__title { color: var(--c-dark); }
+.news-card--white  .news-card__desc  { color: var(--c-gray-dark); }
+
+.news-card--dark   .news-card__title,
+.news-card--purple .news-card__title { color: var(--c-white); }
+.news-card--dark   .news-card__desc,
+.news-card--purple .news-card__desc  { color: rgba(255,255,255,0.62); }
+
+.news-card--orange .news-card__title { color: var(--c-dark); }
+.news-card--orange .news-card__desc  { color: rgba(13,13,12,0.74); }
+
+.news-card--peach  .news-card__title { color: var(--c-peach-ink); }
+.news-card--peach  .news-card__desc  { color: rgba(123,39,25,0.80); }
+
+/* (1) Texture — the hero/footer glyph motif as a dot field. currentColor
+   means each tile tints it with its own text colour automatically. */
+.news-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.news-card--white::before { opacity: 0.10; }
+
+
+/* Fixed media box — the whole point: any source image, same result.
+   Base is the SQUARE family at small scale (the four 1x1 tiles). */
+.news-card__media {
+  position: relative;
+  z-index: 1;
+  width: 132px;
+  height: 132px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(13,13,12,0.06);
+}
+/* Same 1:1 shape as the small tiles, just blown up — swap the same file in.
+   Sized as a fraction of the tile rather than a fixed px so it keeps its
+   proportion as the column width changes. */
+.news-card--feature .news-card__media { width: 66%; height: auto; aspect-ratio: 1 / 1; }
+/* The only other shape on the page: 16:9 for the two rectangular tiles.
+   These run side-by-side — image in one column, text in the other — so the
+   image can be much larger than it was stacked, and the title can grow with
+   it. The two rectangles mirror each other: add news-card--reverse to flip
+   which side the image sits on. */
+.news-card--wide {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-400);
+}
+.news-card--wide.news-card--reverse { flex-direction: row-reverse; }
+.news-card--wide .news-card__media {
+  flex: 0 0 auto;
+  width: 46%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.news-card--wide .news-card__body,
+.news-card--wide .news-card__body--bottom { flex: 1 1 auto; margin-top: 0; }
+.news-card--wide .news-card__title { font-size: var(--fs-h3); -webkit-line-clamp: 3; }
+.news-card--wide .news-card__desc  { -webkit-line-clamp: 3; }
+.news-card__media img,
+.news-card__media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* (3) Bottom-anchored content — the gap sits in the middle as deliberate
+   negative space instead of trailing off the end of short copy. */
+.news-card__body {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+  gap: var(--space-100);
+}
+.news-card__body--bottom { margin-top: auto; }
+
+.news-card--feature .news-card__title { font-size: var(--fs-h3); -webkit-line-clamp: 3; }
+.news-card--feature .news-card__desc  { -webkit-line-clamp: 4; }
+
+/* Text-only tile: no image, so the title has to carry the card. This is
+   AUTOMATIC — :has() detects the missing media box, so removing an <img>
+   from a card is all it takes to get the larger title. The hover underline
+   makes it read as the link the whole tile already is. */
+.news-card:not(:has(.news-card__media)) .news-card__title { font-size: var(--fs-h3); -webkit-line-clamp: 4; }
+.news-card:not(:has(.news-card__media)) .news-card__desc  { -webkit-line-clamp: 4; }
+.news-card:not(:has(.news-card__media)):hover .news-card__title { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Never break a hyphenated word across lines (“Co‑Directors”). The markup
+   uses U+2011 NON-BREAKING HYPHEN for those; this stops auto-hyphenation from
+   adding its own break points. */
+.news-card__title { hyphens: manual; overflow-wrap: normal; }
+
+/* Above the tile texture and the category mark. Colour is set once, up with
+   the base .news-card__arrow rule — deliberately NOT per tile, so white,
+   purple and orange all get the same black circle and the black tiles keep
+   their translucent grey. Every one of them runs the gradient on hover. */
+.news-card__arrow { z-index: 2; }
+
+@media (max-width: 900px) {
+  .news-card--feature { grid-column: span 2; grid-row: span 1; min-height: 320px; }
+  .news-card--wide    { grid-column: span 2; }
+  .news-card--feature .news-card__media { width: 180px; height: 180px; aspect-ratio: auto; }
+}
+@media (max-width: 480px) {
+  .whats-new__grid { gap: var(--space-250); }
+  .news-card--feature,
+  .news-card--wide,
+  .news-card--square { grid-column: span 1; }
+  .news-card--feature { min-height: 280px; }
+  .news-card__media { width: 120px; height: 120px; }
+  .news-card--feature .news-card__media { width: 168px; height: 168px; aspect-ratio: auto; }
+  .news-card--wide,
+  .news-card--wide.news-card--reverse { flex-direction: column; gap: 0; }
+  .news-card--wide .news-card__media { width: 224px; height: 126px; aspect-ratio: auto; flex: none; }
+  .news-card--wide .news-card__body--bottom { margin-top: auto; }
+}
+
+/* ── Signal band ──────────────────────────────────────────────────────────
+   Fills the gap between the last section and the footer so a colour band is
+   never flush against the footer gradient. Cursor-reactive rather than
+   scroll-reactive: this page is iframed at full height, so it never scrolls
+   and scroll-driven effects cannot fire — but pointer events work fine.
+   Glyphs are positioned on a computed grid in canvas, so this needs no
+   monospace face and stays inside the two-family rule. */
+.signal-band {
+  position: relative;
+  background: var(--c-bg);
+  height: 132px;
+  overflow: hidden;
+}
+.signal-band__canvas { display: block; width: 100%; height: 100%; }
+
+@media (max-width: 480px) { .signal-band { height: 96px; } }

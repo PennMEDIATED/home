@@ -47,17 +47,74 @@ The newest card spans two columns on desktop and tablet. Its image uses a wide `
 - If you want more than one new item added, or a different number of oldest items removed, just say so explicitly (the default is "one in, one out").
 - After any content update, open `index.html` in a browser to confirm the new card looks right before considering it done.
 
+### Tile colours
+
+**No two tiles of the same colour may share an edge — at any width.** The grid
+reflows from 4 columns to 2 to 1, so neighbours change: a pair that is fine on
+desktop can end up stacked on a phone. Check all three layouts before calling a
+recolour done.
+
+Current assignment, which satisfies the rule at every width:
+
+| Position | Card | Colour |
+|---|---|---|
+| Feature (2×2) | New Report on Monitoring LLMs | white |
+| Square | MEDIATED Membership with GNI | purple |
+| Square | Welcoming New Knight Fellows | orange |
+| Wide | Launching the Research Compendium | peach (`#fce4dc`) |
+| Square | An Intro from our Co-Directors | orange |
+| Square | Partnering with Digital Forensics Lab | purple |
+| Wide | Announcing our Affiliated Faculty | white |
+
+Tile colours are `--white`, `--purple`, `--orange` and `--peach` (the accent
+palette's orange-red tint at 12%, with `--c-peach-ink` text). There is no
+near-black tile.
+
+Two constraints make this tighter than it looks. The feature tile borders five
+other tiles across the three layouts, so **its colour has to be unique** — that
+is why it is white. And the last wide tile borders the two squares above it and
+the wide above them, which uses up all three of peach/purple/orange; it has to be
+white too. The one place two same-colour tiles meet is the feature and that last
+wide tile, **diagonally, across the grid gap** on desktop only. Corner contact
+across a gap is not an edge, and with four colours there is no arrangement that
+avoids it.
+
+If you add a fifth colour from the accent palette, this gets easier. Until then,
+recolouring one tile usually forces a second — re-check, don't eyeball it.
+
+### Rectangle tiles
+
+The two 2×1 tiles run their image and text **side by side**, not stacked, so the
+image is much larger (46% of the tile, 16:9) and the title sits at `--fs-h3`
+next to it. The two mirror each other: the first has its image on the left, the
+second carries `news-card--reverse` to put the image on the right. Keep them
+opposite. Below 480px both stack, image on top.
+
+Titles grow automatically on any card with no image — a `:has()` rule detects
+the missing media box, so deleting an `<img>` is all it takes. Hyphenated words
+in titles use U+2011 (non-breaking hyphen) so they never split across lines;
+write "Co‑Directors", not "Co-Directors".
+
 ### Image sizes
 
-**What's New tiles are landscape 16:9.** Upload every What's New image at one of these two sizes (they're the standard — match them and nothing is stretched or badly cropped):
+**There are exactly two What's New image shapes: square and wide.** Match one of them and nothing is stretched or badly cropped.
 
 | Image | Shape | **Upload at** |
 |---|---|---|
-| **What's New** — featured card (newest item, spans 2 columns) | Landscape **2:1**, cropped with `object-fit: cover` | **1280 × 640** |
-| **What's New** — regular card (photos, videos **and** logo/brand graphics alike) | Landscape **16:9**, cropped with `object-fit: cover` | **640 × 360** |
+| **What's New** — feature tile (top-left, 2×2) | **Square 1:1**, cropped with `object-fit: cover` | **800 × 800** |
+| **What's New** — the four small tiles (1×1) | **Square 1:1** — the *same shape* as the feature | **800 × 800** |
+| **What's New** — the two rectangular tiles (2×1) | **Wide 16:9**, cropped with `object-fit: cover` | **800 × 450** |
 | Research CTA / Faculty CTA image or gif | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
 
-Those figures are 2× the CSS box, which is what a retina screen needs; going bigger just makes the visitor download pixels the browser throws away. **Every What's New card fills its tile edge to edge — there is no letterboxed/"contain" treatment** — so all the tiles read as one consistent set. The tiles are landscape (16:9) rather than square because the What's New sources are almost all wide images, so a landscape tile conforms to them and crops far less. The card still center-crops whatever you upload, so keep the subject centred and match the target ratio: a much wider graphic (e.g. a 3:1 wordmark logo) will still lose its left/right edges, so crop or lay it out to **16:9** (or **2:1** for the featured slot) before uploading. The CTA rows display at their native aspect ratio, so crop those yourself rather than relying on the page to do it.
+The feature tile and the four small tiles share one shape on purpose. The image box is two-thirds of the feature tile (~385px at full width) and 132px on a small tile, so **a single 800×800 file drops into either slot** and just scales — 800px covers the larger box at 2× for retina and downscales cleanly to the small one.
+
+**The rotation this is built for:** the newest item goes in the feature tile; when the next item arrives it is demoted to a small square tile. That move is a **class swap only** — change `news-card--feature` to `news-card--square` on the `<a>` (and pick a tile colour). The `<img>` and its `width`/`height` attributes do not change, because both boxes are 1:1 and `object-fit: cover` does the rest. No re-crop, no re-export, no second file.
+
+**Motion belongs in the two rectangular tiles.** GIFs, MP4 loops and screen recordings are almost always landscape, so they fit 16:9 without losing their sides — and a motion asset that never moves between slots does not need to satisfy the square rule. Keep the square tiles for stills.
+
+Those upload figures are ~2× the largest CSS box, which is what a retina screen needs; going bigger just makes the visitor download pixels the browser throws away.
+
+Images sit **inside** the tile at that fixed box — they do not bleed to the tile's edges. The tile's colour is the frame, so a source image whose aspect ratio is a little off still lands in the same box as everything else. It is still centre-cropped, so keep the subject centred: a 3:1 wordmark dropped into a square box loses its left and right ends. The CTA rows display at their native aspect ratio, so crop those yourself rather than relying on the page to do it.
 
 **See "Images and video" below before adding anything** — it covers the required `width`/`height` attributes, WebP and MP4 conversion, and the commands to do it.
 

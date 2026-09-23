@@ -22,6 +22,13 @@ pre{font-family:'Courier New',Courier,monospace;font-size:8px;line-height:1.32;l
 const el=document.getElementById('out');
 const stage=document.getElementById('stage');
 const W=260,H=150;
+
+// ?layer=dots renders ONLY the ambient twinkle field — no rings, no tower,
+// no waves, no cursor trail. The hero loads two copies of this file: one in
+// dots mode running full-bleed behind everything, and the normal one in its
+// own column, so the sparkle spreads across the whole gradient while the
+// circles and tower stay put.
+const DOTS = new URLSearchParams(location.search).get('layer') === 'dots';
 const CX=Math.floor(W/2),CY=Math.floor(H/2);
 let mx=0.5,my=0.5,amx=0.5,amy=0.5,vx=0,vy=0,svx=0,svy=0,lastT=0;
 let held=false,holdStart=0,charge=0,dCharge=0;
@@ -128,6 +135,17 @@ function render(t){
 
   const G=[];for(let y=0;y<H;y++){G.push([]);for(let x=0;x<W;x++)G[y].push(' ');}
   const P=(x,y,c)=>{const xi=Math.round(x),yi=Math.round(y);if(xi>=0&&xi<W&&yi>=0&&yi<H)G[yi][xi]=c;};
+
+  if(DOTS){
+    // Same two-sine twinkle as the idle field further down, run across the
+    // whole grid and always on (nothing hovers this layer to wake it).
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const w=Math.sin(x*0.38+t*0.00035)*Math.sin(y*0.55+t*0.00028);
+      if(w>0.9)G[y][x]='.';
+    }
+    el.textContent=G.map(r=>r.join('')).join('\n');
+    return;
+  }
 
   const breathScale=1+idle*breath*0.14;
   for(const ring of RINGS){
@@ -252,6 +270,12 @@ function loop(t){
   dCharge+=(charge-dCharge)*0.1;
   if(t>=nextWave){waves.push({born:t});nextWave=t+3800+Math.random()*2200;if(waves.length>3)waves.shift();}
   render(t);requestAnimationFrame(loop);
+}
+if(DOTS){
+  // No vignette in dots mode — the field should reach the edges of the band.
+  el.style.webkitMaskImage='none';
+  el.style.maskImage='none';
+  stage.style.cursor='default';
 }
 requestAnimationFrame(loop);
 
