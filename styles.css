@@ -1095,3 +1095,23 @@ button { font: inherit; cursor: pointer; }
   .news-card--wide .news-card__body--bottom { margin-top: auto; }
 }
 
+
+/* ── Trailing-margin guard ─────────────────────────────────────────────────
+   These pages are embedded in an iframe that is resized to the height this
+   page reports, and that height is measured from document.body.
+
+   A bottom margin on the last element COLLAPSES THROUGH body and out to
+   <html>. It never appears in body.scrollHeight, but it does extend
+   documentElement.scrollHeight — so the frame gets sized short of the real
+   document, the embedded page is left with a few px it can scroll, and it
+   swallows the visitor's wheel events: the outer page then only scrolls when
+   the cursor is over its scrollbar. It has bitten twice (home, 64px;
+   grants-overview, 80px) and it is invisible in the builder.
+
+   display: flow-root makes body a block formatting context, so descendant
+   margins can no longer escape it and the measured height is always the whole
+   document. Cheap, and it removes a whole class of bug rather than one
+   instance. If a page grows here, something was relying on a margin escaping
+   — convert that margin to padding rather than removing this.
+   ====================================================================== */
+body { display: flow-root; }
