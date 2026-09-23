@@ -1058,8 +1058,21 @@ button { font: inherit; cursor: pointer; }
 }
 .news-card__body--bottom { margin-top: auto; }
 
-.news-card--feature .news-card__title { font-size: var(--fs-h3); -webkit-line-clamp: 3; }
+/* The feature is a 2x2 tile — roughly four times the area of a square — so it
+   carries the page's largest card type. --fs-h2 rather than --fs-h3: at h3 it
+   read the same size as the small tiles' no-image titles, which made the
+   biggest card look like an enlarged version of a small one instead of the
+   lead. Clamped to 2 lines at this size; 3 lines of 40px type would crowd the
+   image above it. */
+.news-card--feature .news-card__title { font-size: var(--fs-h2); -webkit-line-clamp: 2; }
 .news-card--feature .news-card__desc  { -webkit-line-clamp: 4; }
+
+/* An image-bearing square is the tightest box on the page: 132px of it is the
+   media, and the title runs at 16px. Two lines is enough at 1440px but not at
+   1024, where the four columns are narrower and both "MEDIATED Membership with
+   GNI" and "Partnering with Digital Forensics Lab" were cut mid-phrase. Three
+   lines clears them at every width. */
+.news-card--square:has(.news-card__media) .news-card__title { -webkit-line-clamp: 3; }
 
 /* Text-only tile: no image, so the title has to carry the card. This is
    AUTOMATIC — :has() detects the missing media box, so removing an <img>

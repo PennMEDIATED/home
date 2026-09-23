@@ -121,9 +121,19 @@ confident title reads better than a tile with a smudge in it.
 - Include alt text that describes the image for someone who cannot see it.
 - If you don't have a good image, add the item without one rather than using a
   fabricated stock image — see above.
-- Titles clamp to 2 lines (3 on the feature, 4 with no image) and descriptions to
-  2 (3 on a rectangle, 4 on the feature). Keep both short; anything longer is
-  truncated, not wrapped.
+- Title sizes are set by the slot, not by you:
+
+  | Slot | Title | Lines |
+  |---|---|---|
+  | Feature | `--fs-h2` (40px at 1440, 26px at 320) | 2 |
+  | Rectangle | `--fs-h3` (24px) | 3 |
+  | Square **with** an image | `--fs-body` (16px) | 3 |
+  | Any card **without** an image | `--fs-h3` (24px) | 4 |
+
+  Descriptions clamp to 2 lines, 3 on a rectangle, 4 on the feature or any
+  card with no image. Anything longer is truncated, not wrapped — so keep
+  both short, and shortest of all on a square that carries an image, which is
+  the tightest box on the page.
 - After any content update, open `index.html` in a browser and check it at a
   narrow width too — the grid reflows 4 columns → 2 → 1, and the tile-colour rule
   has to hold at all three.
@@ -140,8 +150,8 @@ Current assignment, which satisfies the rule at every width:
 | Position | Card | Colour |
 |---|---|---|
 | Feature (2×2) | New Report on Monitoring LLMs | white |
-| Square | MEDIATED Membership with GNI | purple |
-| Square | Welcoming New Knight Fellows | orange |
+| Square | Welcoming New Knight Fellows | purple |
+| Square | MEDIATED Membership with GNI | orange |
 | Wide | Launching the Research Compendium | peach (`#fce4dc`) |
 | Square | An Intro from our Co-Directors | orange |
 | Square | Partnering with Digital Forensics Lab | purple |
