@@ -142,10 +142,10 @@ Current assignment, which satisfies the rule at every width:
 | Feature (2×2) | New Report on Monitoring LLMs | white |
 | Square | MEDIATED Membership with GNI | purple |
 | Square | Welcoming New Knight Fellows | orange |
-| Wide | Announcing our Affiliated Faculty | peach (`#fce4dc`) |
+| Wide | Launching the Research Compendium | peach (`#fce4dc`) |
 | Square | An Intro from our Co-Directors | orange |
 | Square | Partnering with Digital Forensics Lab | purple |
-| Wide | Launching the Research Compendium | white |
+| Wide | Announcing our Affiliated Faculty | white |
 
 Tile colours are `--white`, `--purple`, `--orange` and `--peach` (the accent
 palette's orange-red tint at 12%). Text on peach is `--c-dark`, not the
@@ -164,6 +164,18 @@ avoids it.
 
 If you add a fifth colour from the accent palette, this gets easier. Until then,
 recolouring one tile usually forces a second — re-check, don't eyeball it.
+
+### What sits directly below the grid
+
+The section immediately after the grid is the **Research Compendium** CTA. The
+last card in the markup lands directly above it at every width — bottom-right on
+desktop, and literally the previous block once the grid stacks to one column.
+
+**So the Compendium card must not be last.** Two cards in a row both headed
+"Research Compendium" reads as a duplication rather than as a lead-in, and it is
+worst on a phone, where they are stacked one on top of the other with nothing
+else in view. The same applies to any future card that points at whatever section
+follows the grid.
 
 ### Rectangle tiles
 
