@@ -183,43 +183,6 @@
     (function () {
       if (window.self === window.top) return;
       var lastSentHeight = 0;
-      /* The global footer opens with a glyph band that blends the page into the
-         footer gradient. It needs to know what colour this page ENDS on, and it
-         cannot read it: this page is a cross-origin iframe. So we measure the
-         closing block's background here and send it along with the height. The
-         footer listens for the same message the resize snippet already posts,
-         so the embed code does not change.
-
-         "Closing block" = the last top-level element that actually paints a
-         background. Walking from the end skips trailing <script> tags and any
-         transparent wrapper. */
-      var edgeColor = null;
-      function readEdgeColor() {
-        /* The lowest element on the page that actually paints a background.
-           Not simply the last child of <body>: a React root, an app shell or
-           any transparent wrapper would answer "transparent" and tell the
-           footer nothing. Falls back to the page's own background. */
-        function opaque(bg) {
-          return bg && bg !== 'transparent' && !/rgba\(\s*0,\s*0,\s*0,\s*0\s*\)/.test(bg);
-        }
-        var best = null, bestBottom = -1;
-        var all = document.body.querySelectorAll('*');
-        for (var i = 0; i < all.length; i++) {
-          var el = all[i];
-          var cs = getComputedStyle(el);
-          if (cs.position === 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') continue;
-          if (!opaque(cs.backgroundColor)) continue;
-          var r = el.getBoundingClientRect();
-          if (r.height < 8 || r.width < 8) continue;
-          if (r.bottom > bestBottom) { bestBottom = r.bottom; best = cs.backgroundColor; }
-        }
-        if (best) return best;
-        var b = getComputedStyle(document.body).backgroundColor;
-        if (opaque(b)) return b;
-        var h = getComputedStyle(document.documentElement).backgroundColor;
-        return opaque(h) ? h : null;
-      }
-
       function sendHeight() {
         /* MEASURE THE BODY, NEVER documentElement. <html> stretches to fill the
            frame, so documentElement.scrollHeight can never report LESS than the
@@ -233,8 +196,7 @@
         var h = Math.ceil(Math.max(document.body.scrollHeight, document.body.offsetHeight));
         if (Math.abs(h - lastSentHeight) < 2) return;
         lastSentHeight = h;
-        if (edgeColor === null) edgeColor = readEdgeColor();
-        window.parent.postMessage({ frameHeight: h, edgeColor: edgeColor }, '*');
+        window.parent.postMessage({ frameHeight: h }, '*');
       }
       window.addEventListener('load', sendHeight);
       window.addEventListener('resize', sendHeight);
