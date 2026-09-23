@@ -33,9 +33,10 @@
 
   /* Orange-red at 12% on white, from the sitewide accent palette (slot 2).
      A light tile colour for the grid — replaces the near-black tile.
-     --c-peach-ink is the palette's "text on tint" value; it clears 7:1. */
+     Text on it is --c-dark rather than the palette's brown text-on-tint
+     (#7b2719): the tint is light enough that black clears contrast easily
+     and reads cleaner beside the solid-orange tile. */
   --c-peach:      #fce4dc;
-  --c-peach-ink:  #7b2719;
   --c-gray:       #888680;          /* rgb(136,134,128)*/
   --c-gray-dark:  #54534f;          /* rgb(84,83,79) — opaque body copy, ~8:1 contrast on white */
   --c-muted:      #c8c6c0;          /* rgb(200,198,192) date/meta text */
@@ -975,7 +976,7 @@ button { font: inherit; cursor: pointer; }
 .news-card--dark   { background: var(--c-dark);   border: 1px solid transparent; }
 .news-card--purple { background: var(--c-accent); border: 1px solid transparent; }
 .news-card--orange { background: var(--c-red);    border: 1px solid transparent; }
-.news-card--peach  { background: var(--c-peach);  border: 1px solid rgba(240,61,31,0.20); color: var(--c-peach-ink); }
+.news-card--peach  { background: var(--c-peach);  border: 1px solid rgba(240,61,31,0.20); color: var(--c-dark); }
 
 .news-card--white  .news-card__title { color: var(--c-dark); }
 .news-card--white  .news-card__desc  { color: var(--c-gray-dark); }
@@ -988,8 +989,11 @@ button { font: inherit; cursor: pointer; }
 .news-card--orange .news-card__title { color: var(--c-dark); }
 .news-card--orange .news-card__desc  { color: rgba(13,13,12,0.74); }
 
-.news-card--peach  .news-card__title { color: var(--c-peach-ink); }
-.news-card--peach  .news-card__desc  { color: rgba(123,39,25,0.80); }
+/* Black, not the palette's brown text-on-tint. On a tint this light the
+   brown reads as washed-out rather than as a considered colour, and the
+   orange tile next to it already sets dark text on a warm ground. */
+.news-card--peach  .news-card__title { color: var(--c-dark); }
+.news-card--peach  .news-card__desc  { color: rgba(13,13,12,0.74); }
 
 /* (1) Texture — the hero/footer glyph motif as a dot field. currentColor
    means each tile tints it with its own text colour automatically. */

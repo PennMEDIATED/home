@@ -61,13 +61,15 @@ Current assignment, which satisfies the rule at every width:
 | Feature (2×2) | New Report on Monitoring LLMs | white |
 | Square | MEDIATED Membership with GNI | purple |
 | Square | Welcoming New Knight Fellows | orange |
-| Wide | Launching the Research Compendium | peach (`#fce4dc`) |
+| Wide | Announcing our Affiliated Faculty | peach (`#fce4dc`) |
 | Square | An Intro from our Co-Directors | orange |
 | Square | Partnering with Digital Forensics Lab | purple |
-| Wide | Announcing our Affiliated Faculty | white |
+| Wide | Launching the Research Compendium | white |
 
 Tile colours are `--white`, `--purple`, `--orange` and `--peach` (the accent
-palette's orange-red tint at 12%, with `--c-peach-ink` text). There is no
+palette's orange-red tint at 12%). Text on peach is `--c-dark`, not the
+palette's brown text-on-tint — the tint is light enough that black clears
+contrast easily and reads cleaner beside the solid-orange tile. There is no
 near-black tile.
 
 Two constraints make this tighter than it looks. The feature tile borders five
