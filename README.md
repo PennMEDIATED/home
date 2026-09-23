@@ -8,44 +8,125 @@ The homepage for the [Center on Media, Technology and Democracy](https://mediate
 
 ## Updating content
 
-The **What's New** grid is meant to stay current. It's fixed-size — when you add something new, the card in the bottom-right position comes out so the count stays at 7 cards (a full two rows of 4). The newest card automatically spans two columns as one wide card, always appearing largest in the top-left position; its image and text both use the card's full width. The remaining cards use one column each and automatically flow into the next available grid position. You don't need to touch any CSS to do this; just describe the update and hand it to Claude Code (or edit `index.html` directly following the same pattern).
+The **What's New** grid is a fixed bento layout: **4 columns × 3 rows = 12 cells,
+filled exactly by 7 cards.**
 
-### Updating "What's New"
+| Cards | Class | Spans | Image box |
+|---|---|---|---|
+| 1 feature | `news-card--feature` | 2×2 | square, 2/3 of the tile (~385px at full width) |
+| 4 squares | `news-card--square` | 1×1 | square, 132px |
+| 2 rectangles | `news-card--wide` | 2×1 | 16:9, 46% of the tile |
 
-First, upload the image directly to `assets/whats-new/` in this repository:
+**Change the card count and it stops packing cleanly.** 7 is the number. (6 and 8
+are the only other counts that work, and both need the span classes rearranged.)
+So adding an item means removing one — one in, one out.
+
+Every card also carries a colour class: `--white`, `--purple`, `--orange` or
+`--peach`. See **Tile colours** below; the rule there is not optional and it is
+easy to break by accident.
+
+### Image sizes — the short version
+
+**Two shapes. Square for the feature and the four small tiles, 16:9 for the two
+rectangles.**
+
+| Slot | Shape | Upload at |
+|---|---|---|
+| Feature + the four squares | **1:1** | **800 × 800** |
+| The two rectangles | **16:9** | **800 × 450** |
+
+The feature and the small tiles share one shape deliberately, so **a single
+800×800 file works in either** — see "The rotation this is built for" below.
+Full detail, including why 800px and not 600px, is in the **Image sizes** section
+further down.
+
+Images are centre-cropped with `object-fit: cover` into a fixed box, and the box
+has `border-radius: 4px` with `overflow: hidden` — so **corners are rounded
+automatically**. Supply square-cornered artwork.
+
+### Adding a new What's New item
+
+**1. Prepare the image.**
+
+Crop it to the shape of the slot it is going into — square for a square slot,
+16:9 for a rectangle — before uploading. Do not rely on the page to crop it for
+you: it centre-crops, so anything with type near the edges loses it. A 4:3 poster
+dropped into a square tile is the classic failure; the DFRLab announcement lockup
+had to be replaced with its emblem alone for exactly this reason.
+
+Export as WebP if you can (see "Images and video" below for the command). Use a
+short, lowercase, hyphenated filename: `podcast-series-launch.webp`.
+
+**2. Upload it to `assets/whats-new/` in this repository.**
 
 1. Open the `assets/whats-new/` folder on GitHub.
-2. Select **Add file**, then **Upload files**.
-3. Choose the image and commit it to the repository.
-4. Copy its filename for the prompt below.
+2. **Add file** → **Upload files**.
+3. Choose the image and commit it.
+4. Copy the filename.
 
-Use a short, descriptive filename with lowercase letters and hyphens, such as
-`podcast-series-launch.jpg`. The image must be stored in the repository before the
-update is requested; do not submit an external image link.
+The image must be in the repo before the update is requested. External image URLs
+are not part of this workflow.
 
-Once the image is in `assets/whats-new/`, give Claude Code this prompt:
+**3. Ask for the update.** Give Claude Code this prompt:
 
-> Add a new What's New item: "**[Title]**" — [one or two sentence description]. Link it to [destination URL]. Use the image I uploaded at `assets/whats-new/[image-filename]`. Use this image alt text: "[brief description of the image]". Remove the item in the bottom-right position to make room for it.
+> Add a new What's New item: "**[Title]**" — [one or two sentence description].
+> Link it to [destination URL]. Use the image I uploaded at
+> `assets/whats-new/[filename]`. Use this image alt text: "[what the image
+> shows]". Put it in the feature tile and demote the current feature to a square
+> tile. Remove [which existing card] to make room.
 
-Example, filled in (this is the current front card, for reference):
+Filled in, for reference:
 
-> Add a new What's New item: "**New Report on Monitoring LLMs**" — In a new Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal monitoring to understand how LLMs impact politics. Link it to https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research. Use the image I uploaded at `assets/whats-new/llm-monitoring-report.webp`. Use this image alt text: "Carnegie Endowment report on monitoring large language models". Remove the item in the bottom-right position to make room for it.
+> Add a new What's New item: "**New Report on Monitoring LLMs**" — In a new
+> Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal
+> monitoring to understand how LLMs impact politics. Link it to
+> https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research.
+> Use the image I uploaded at `assets/whats-new/llm-monitoring-report.webp`. Use
+> this image alt text: "Carnegie Endowment report on monitoring large language
+> models". Put it in the feature tile and demote the current feature to a square
+> tile. Remove the DFRLab card to make room.
 
-What Claude Code will do:
-1. Confirm that the named image already exists in `assets/whats-new/`.
-2. Add a new card at the **front** of `.whats-new__grid` in `index.html` (newest items lead). It automatically becomes the largest card, spanning two columns in the top-left position.
-3. Use the uploaded image and supplied alt text in the new card. Because the featured layout is applied with `.news-card:first-child`, placing the card first automatically makes it span two columns and shifts every existing card to the next grid position; do not add a special featured class or manually position the other cards.
-4. Remove the card in the **bottom-right** position (currently the last card in the grid, since 7 cards exactly fill two full rows) to keep the total at 7.
+**Say which card comes out.** There is no automatic "oldest" — the grid is
+positional, not chronological, and the markup order drives the packing. If you do
+not name one, you will be asked.
 
-The newest card spans two columns on desktop and tablet. Its image uses a wide `2 / 1` ratio and its text sits below it across the full card width. At the phone breakpoint (480px), it drops to a single column and its image becomes the same landscape `16 / 9` as every other card. Titles clamp to 2 lines and descriptions to 2 lines, so keep both short; anything longer gets truncated rather than overflowing the card.
+### The rotation this is built for
+
+The newest item goes in the feature tile. When the next one arrives it is demoted
+to a small square tile. **That move is a class swap only** — change
+`news-card--feature` to `news-card--square` on the `<a>` and pick a tile colour.
+The `<img>` and its `width`/`height` attributes do not change, because both boxes
+are 1:1 and `object-fit: cover` does the rest. No re-crop, no re-export, no second
+file.
+
+**Motion belongs in the two rectangular tiles.** GIFs, MP4 loops and screen
+recordings are almost always landscape, so they fit 16:9 without losing their
+sides — and a motion asset that never moves between slots does not need to
+satisfy the square rule. Keep the square tiles for stills.
+
+### A card with no image
+
+A card can run without one. A `:has()` rule detects the missing media box and
+gives the title `--fs-h3` (24px) with more room, so the title carries the card
+instead of a picture — and the whole tile is still the link. **Deleting the
+`<div class="news-card__media">…</div>` is the entire operation**; adding one
+back reverts it. Two of the seven cards run this way at the moment.
+
+Prefer this over using a weak or badly cropped image. An empty tile with a
+confident title reads better than a tile with a smudge in it.
 
 ### General tips
 
-- Upload the image before sending the prompt. The prompt should point to its exact path inside `assets/whats-new/`; external image URLs are not part of this workflow.
-- Include useful alt text that describes the image for someone who cannot see it.
-- If you don't have an image yet, wait to add the update rather than using a fabricated stock image.
-- If you want more than one new item added, or a different number of oldest items removed, just say so explicitly (the default is "one in, one out").
-- After any content update, open `index.html` in a browser to confirm the new card looks right before considering it done.
+- Upload the image before sending the prompt.
+- Include alt text that describes the image for someone who cannot see it.
+- If you don't have a good image, add the item without one rather than using a
+  fabricated stock image — see above.
+- Titles clamp to 2 lines (3 on the feature, 4 with no image) and descriptions to
+  2 (3 on a rectangle, 4 on the feature). Keep both short; anything longer is
+  truncated, not wrapped.
+- After any content update, open `index.html` in a browser and check it at a
+  narrow width too — the grid reflows 4 columns → 2 → 1, and the tile-colour rule
+  has to hold at all three.
 
 ### Tile colours
 
@@ -99,26 +180,46 @@ write "Co‑Directors", not "Co-Directors".
 
 ### Image sizes
 
-**There are exactly two What's New image shapes: square and wide.** Match one of them and nothing is stretched or badly cropped.
+The full reference. The short version is up in **Updating content**; this is the
+same rule with the reasoning and the odd cases.
 
 | Image | Shape | **Upload at** |
 |---|---|---|
-| **What's New** — feature tile (top-left, 2×2) | **Square 1:1**, cropped with `object-fit: cover` | **800 × 800** |
+| **What's New** — feature tile (top-left, 2×2) | **Square 1:1**, centre-cropped | **800 × 800** |
 | **What's New** — the four small tiles (1×1) | **Square 1:1** — the *same shape* as the feature | **800 × 800** |
-| **What's New** — the two rectangular tiles (2×1) | **Wide 16:9**, cropped with `object-fit: cover` | **800 × 450** |
+| **What's New** — the two rectangular tiles (2×1) | **Wide 16:9**, centre-cropped | **800 × 450** |
 | Research CTA / Faculty CTA image or gif | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
 
-The feature tile and the four small tiles share one shape on purpose. The image box is two-thirds of the feature tile (~385px at full width) and 132px on a small tile, so **a single 800×800 file drops into either slot** and just scales — 800px covers the larger box at 2× for retina and downscales cleanly to the small one.
+**Why 800 and not 600.** The feature's image box is two-thirds of the tile,
+~385px at full width. 800px covers that at 2×, which is what a retina screen
+needs, and downscales cleanly to the 132px small box. 600px would be only ~1.5×
+and looks soft on the feature. Going past 800 just makes the visitor download
+pixels the browser throws away.
 
-**The rotation this is built for:** the newest item goes in the feature tile; when the next item arrives it is demoted to a small square tile. That move is a **class swap only** — change `news-card--feature` to `news-card--square` on the `<a>` (and pick a tile colour). The `<img>` and its `width`/`height` attributes do not change, because both boxes are 1:1 and `object-fit: cover` does the rest. No re-crop, no re-export, no second file.
+**Images sit inside the tile, not edge to edge.** The box is fixed and the tile's
+colour is the frame, so a source whose ratio is a little off still lands in the
+same box as everything else. The box has `border-radius: 4px` and
+`overflow: hidden`, so **corners round automatically** — supply square-cornered
+artwork.
 
-**Motion belongs in the two rectangular tiles.** GIFs, MP4 loops and screen recordings are almost always landscape, so they fit 16:9 without losing their sides — and a motion asset that never moves between slots does not need to satisfy the square rule. Keep the square tiles for stills.
+**But it centre-crops, so crop before you upload.** `object-fit: cover` fills the
+box and throws away the overflow, evenly from both sides. The failure this
+produces is specific and ugly: a 4:3 poster in a square tile loses ~13% from each
+edge, which is enough to cut the ends off a wordmark. The Digital Sherlocks
+announcement lockup is the worked example — centre-cropped to square,
+"SHERLOCKS" renders as "HERLOCK", so the card uses the emblem alone instead. A
+3:1 lockup loses its ends entirely.
 
-Those upload figures are ~2× the largest CSS box, which is what a retina screen needs; going bigger just makes the visitor download pixels the browser throws away.
+If an image can't survive a square crop, the options in order are: crop to an
+element of it that can (a logo, an emblem, a figure), put the card in a rectangle
+where 16:9 fits it, ask for a square version, or run the card with no image at
+all (see **A card with no image**).
 
-Images sit **inside** the tile at that fixed box — they do not bleed to the tile's edges. The tile's colour is the frame, so a source image whose aspect ratio is a little off still lands in the same box as everything else. It is still centre-cropped, so keep the subject centred: a 3:1 wordmark dropped into a square box loses its left and right ends. The CTA rows display at their native aspect ratio, so crop those yourself rather than relying on the page to do it.
+**The CTA rows are different** — they display at their native aspect ratio and
+are not cropped, so crop those yourself to the shape you want.
 
-**See "Images and video" below before adding anything** — it covers the required `width`/`height` attributes, WebP and MP4 conversion, and the commands to do it.
+**See "Images and video" below before adding anything** — it covers the required
+`width`/`height` attributes, WebP and MP4 conversion, and the commands to do it.
 
 ## Typography
 
