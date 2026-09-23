@@ -162,14 +162,6 @@
     </div>
   </section>
 
-  <!-- ── Signal band ────────────────────────────────────────────────
-       Occupies the deliberate gap before the footer so a colour section
-       never butts straight into the footer gradient. Reacts to the
-       cursor, not to scroll — this page is embedded at its full height
-       so it never scrolls, and scroll-driven effects cannot fire. -->
-  <div class="signal-band" aria-hidden="true">
-    <canvas class="signal-band__canvas" id="signal-band-canvas"></canvas>
-  </div>
 
 
   <!-- The two animated cards are muted, looping <video> rather than GIF.
@@ -211,110 +203,16 @@
       window.addEventListener('resize', sendHeight);
       if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sendHeight); }
       if (window.ResizeObserver) { new ResizeObserver(sendHeight).observe(document.body); }
+      /* Late-settling layout: webfonts swapping in, images decoding, a lazy
+         iframe resolving. ResizeObserver catches most of it, but a change that
+         lands between the last observed tick and paint can leave the frame a
+         few px short of the content. Two cheap re-measures after load close
+         that window; sendHeight's hysteresis makes a no-op re-post free. */
+      setTimeout(sendHeight, 300);
+      setTimeout(sendHeight, 1200);
     })();
   </script>
 
-  <script>
-  /* Signal band: a field of glyphs that scatters and washes through the accent
-     palette toward the pointer,
-     echoing the broadcast-tower motif in the hero so the page is bookended.
-     Only animates while the pointer is near, so an idle page costs nothing.
-     Honours prefers-reduced-motion by drawing a single static field. */
-  (function () {
-    var canvas = document.getElementById('signal-band-canvas');
-    if (!canvas || !canvas.getContext) return;
-    var ctx = canvas.getContext('2d');
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    var GLYPHS = ['\u00b7', '\u2219', '\u2022', '\u25e6', '+', '\u00d7'];
-    /* Accent-palette solids. Colour is chosen by distance from the pointer and
-       advanced by how far the pointer has travelled, so the field washes through
-       the palette as the cursor moves and holds still when it stops. */
-    var PALETTE = [
-      [85, 51, 238],   /* accent purple  #5533ee */
-      [240, 61, 31],   /* red            #f03d1f */
-      [43, 204, 180],  /* teal           #2bccb4 */
-      [209, 32, 169],  /* magenta        #d120a9 */
-      [134, 29, 119],  /* plum           #861d77 */
-      [38, 139, 252],  /* blue           #268bfc */
-      [27, 146, 71],   /* green          #1b9247 */
-      [183, 160, 251]  /* lilac          #b7a0fb */
-    ];
-    var BAND = 34;    /* px between colour bands */
-    var FLOW = 0.012; /* palette steps per px of pointer travel */
-    var STEP = 20, RADIUS = 150, PUSH = 9;
-    var w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var px = -9999, py = -9999, tx = -9999, ty = -9999, raf = null, idle = 0;
-    var travel = 0, lx = null, ly = null;
-
-    function size() {
-      w = canvas.clientWidth; h = canvas.clientHeight;
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.font = '12px ' + (getComputedStyle(document.body).fontFamily || 'sans-serif');
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, w, h);
-      for (var x = STEP / 2; x < w; x += STEP) {
-        for (var y = STEP / 2; y < h; y += STEP) {
-          var dx = x - px, dy = y - py;
-          var d = Math.sqrt(dx * dx + dy * dy);
-          var near = d < RADIUS ? 1 - d / RADIUS : 0;
-          near = near * near;
-          var ox = d > 0.01 ? (dx / d) * near * PUSH : 0;
-          var oy = d > 0.01 ? (dy / d) * near * PUSH : 0;
-          if (near > 0.30) {
-            var band = d / BAND - travel * FLOW;
-            var lo = Math.floor(band), f = band - lo;
-            var a = PALETTE[((lo % PALETTE.length) + PALETTE.length) % PALETTE.length];
-            var b = PALETTE[(((lo + 1) % PALETTE.length) + PALETTE.length) % PALETTE.length];
-            ctx.fillStyle = 'rgba(' +
-              Math.round(a[0] + (b[0] - a[0]) * f) + ',' +
-              Math.round(a[1] + (b[1] - a[1]) * f) + ',' +
-              Math.round(a[2] + (b[2] - a[2]) * f) + ',' +
-              (0.35 + near * 0.6).toFixed(3) + ')';
-          } else {
-            ctx.fillStyle = 'rgba(13,13,12,' + (0.13 + near * 0.35).toFixed(3) + ')';
-          }
-          var i = (Math.round(x / STEP) * 3 + Math.round(y / STEP)) % GLYPHS.length;
-          ctx.fillText(GLYPHS[i], x + ox, y + oy);
-        }
-      }
-    }
-
-    function loop() {
-      px += (tx - px) * 0.16; py += (ty - py) * 0.16;
-      draw();
-      if (Math.abs(tx - px) < 0.4 && Math.abs(ty - py) < 0.4) { idle++; } else { idle = 0; }
-      if (idle > 40) { raf = null; return; }
-      raf = requestAnimationFrame(loop);
-    }
-
-    function wake() { idle = 0; if (!raf && !reduce) raf = requestAnimationFrame(loop); }
-
-    size();
-    draw();
-    if (reduce) return;
-
-    window.addEventListener('resize', function () { size(); draw(); wake(); });
-    document.addEventListener('pointermove', function (e) {
-      var r = canvas.getBoundingClientRect();
-      if (e.clientY < r.top - RADIUS || e.clientY > r.bottom + RADIUS) { tx = -9999; ty = -9999; lx = null; ly = null; }
-      else {
-        tx = e.clientX - r.left; ty = e.clientY - r.top;
-        if (lx !== null) {
-          var mx = tx - lx, my = ty - ly;
-          travel += Math.sqrt(mx * mx + my * my);
-        }
-        lx = tx; ly = ty;
-      }
-      wake();
-    }, { passive: true });
-    document.addEventListener('pointerleave', function () { tx = -9999; ty = -9999; lx = null; ly = null; wake(); });
-  })();
-  </script>
 </body>
 </html>
  

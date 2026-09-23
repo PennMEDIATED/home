@@ -897,13 +897,14 @@ button { font: inherit; cursor: pointer; }
 
 .footer__bottom-mediated { font-style: italic; }
 
-/* The trailing white gap before the footer is now the .signal-band element
-   rather than padding on <body> — the band occupies that space and fills it
-   with something, so body padding here would double it. */
+/* No trailing padding on <body>: the cursor-reactive signal band that fills
+   the gap before the footer now lives in the GLOBAL FOOTER (PennMEDIATED/footer
+   → the Divi Theme Builder Code module), so every page gets it, not just this
+   one. Adding body padding back here would double that space. */
 
 
 /* =============================================================================
-   REDESIGN TRIAL — hero actions, scroll cue, bento grid, signal band
+   REDESIGN TRIAL — hero actions, scroll cue, bento grid
    ========================================================================== */
 
 
@@ -1102,19 +1103,3 @@ button { font: inherit; cursor: pointer; }
   .news-card--wide .news-card__body--bottom { margin-top: auto; }
 }
 
-/* ── Signal band ──────────────────────────────────────────────────────────
-   Fills the gap between the last section and the footer so a colour band is
-   never flush against the footer gradient. Cursor-reactive rather than
-   scroll-reactive: this page is iframed at full height, so it never scrolls
-   and scroll-driven effects cannot fire — but pointer events work fine.
-   Glyphs are positioned on a computed grid in canvas, so this needs no
-   monospace face and stays inside the two-family rule. */
-.signal-band {
-  position: relative;
-  background: var(--c-bg);
-  height: 132px;
-  overflow: hidden;
-}
-.signal-band__canvas { display: block; width: 100%; height: 100%; }
-
-@media (max-width: 480px) { .signal-band { height: 96px; } }
