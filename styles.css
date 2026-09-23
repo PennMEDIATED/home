@@ -742,7 +742,13 @@ button { font: inherit; cursor: pointer; }
 .faculty-cta {
   background: var(--c-red);
   padding-block: var(--space-1000);
-  margin-bottom: var(--space-800);
+  /* No margin-bottom. This is the LAST section on the page, and the page is
+     embedded at its exact content height: a trailing margin is white space
+     between the orange block and the global footer's signal band, and it does
+     not even count toward body.scrollHeight (margins collapse out of it), so
+     the frame is sized 64px shorter than the document and the margin is
+     clipped in some browsers and painted in others. The gap before the footer
+     is the footer's own band now — it does not need help from here. */
 }
 
 .faculty-cta__inner {
@@ -904,30 +910,16 @@ button { font: inherit; cursor: pointer; }
 
 
 /* =============================================================================
-   REDESIGN TRIAL — hero actions, scroll cue, bento grid
+   REDESIGN TRIAL — hero, bento grid
    ========================================================================== */
 
 
 
-.hero__scroll {
-  position: absolute;
-  left: 50%;
-  bottom: var(--space-400);
-  transform: translateX(-50%);
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.45);
-  color: var(--c-white);
-  font-size: var(--fs-body);
-  animation: hero-scroll-bob 2.4s ease-in-out infinite;
-}
-@keyframes hero-scroll-bob { 0%,100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, 6px); } }
-@media (prefers-reduced-motion: reduce) { .hero__scroll { animation: none; } }
+/* The hero scroll cue was removed here. An in-page anchor cannot scroll the
+   PARENT page from inside a cross-origin iframe, and this page is embedded at
+   its full content height so it has nothing of its own to scroll — clicking it
+   did nothing on the live site. Bringing it back means teaching the parent's
+   embed snippet to listen for a scroll message from this page. */
 
 @media (max-width: 900px) {
   .hero__inner { grid-template-columns: 1fr; gap: var(--space-600); min-height: 0; }
