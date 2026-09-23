@@ -25,24 +25,37 @@ Every card also carries a colour class: `--white`, `--purple`, `--orange` or
 `--peach`. See **Tile colours** below; the rule there is not optional and it is
 easy to break by accident.
 
-### Image sizes — the short version
+### What each slot takes
 
-**Two shapes. Square for the feature and the four small tiles, 16:9 for the two
-rectangles.**
+Everything a slot dictates, in one place. **Image shape and upload size, type
+size, and how much copy fits** — all set by the slot, none of it by you.
 
-| Slot | Shape | Upload at |
-|---|---|---|
-| Feature + the four squares | **1:1** | **800 × 800** |
-| The two rectangles | **16:9** | **800 × 450** |
+| Slot | Image shape | Upload at | Title | Title lines | Desc lines |
+|---|---|---|---|---|---|
+| Feature (2×2) | **1:1** | **800 × 800** | `--fs-h2` — 40px at 1440, 26px at 320 | 2 | 4 |
+| Square (1×1) **with** an image | **1:1** | **800 × 800** | `--fs-body` — 16px | 3 | 2 |
+| Rectangle (2×1) | **16:9** | **800 × 450** | `--fs-h3` — 24px | 3 | 3 |
+| Any card **without** an image | — | — | `--fs-h3` — 24px | 4 | 4 |
 
-The feature and the small tiles share one shape deliberately, so **a single
-800×800 file works in either** — see "The rotation this is built for" below.
-Full detail, including why 800px and not 600px, is in the **Image sizes** section
-further down.
+**Two image shapes, and the square is shared on purpose.** The feature and the
+small tiles take the same 1:1 file, so one 800×800 export works in either — see
+"The rotation this is built for" below. Why 800 and not 600 is under
+**Image sizes — why those numbers**.
 
-Images are centre-cropped with `object-fit: cover` into a fixed box, and the box
-has `border-radius: 4px` with `overflow: hidden` — so **corners are rounded
-automatically**. Supply square-cornered artwork.
+**Corners round automatically** — the media box has `border-radius: 4px` with
+`overflow: hidden`. Supply square-cornered artwork.
+
+**Truncation is silent.** Copy past the line limit is cut mid-phrase — no
+ellipsis, nothing overflows visibly — so a title two words too long just loses
+its ending and looks fine until someone reads it.
+
+**The image-bearing square is the tightest box on the page**: 132px of it is the
+media box and the title runs at body size. Write the shortest copy there.
+"Partnering with Digital Forensics Lab" is about the limit at three lines.
+
+**Check 1024px.** Not only the extremes — titles clear at 1440 and at 390 but
+were being cut at 1024, where the grid is still four columns and each one is
+narrower.
 
 ### Adding a new What's New item
 
@@ -121,19 +134,8 @@ confident title reads better than a tile with a smudge in it.
 - Include alt text that describes the image for someone who cannot see it.
 - If you don't have a good image, add the item without one rather than using a
   fabricated stock image — see above.
-- Title sizes are set by the slot, not by you:
-
-  | Slot | Title | Lines |
-  |---|---|---|
-  | Feature | `--fs-h2` (40px at 1440, 26px at 320) | 2 |
-  | Rectangle | `--fs-h3` (24px) | 3 |
-  | Square **with** an image | `--fs-body` (16px) | 3 |
-  | Any card **without** an image | `--fs-h3` (24px) | 4 |
-
-  Descriptions clamp to 2 lines, 3 on a rectangle, 4 on the feature or any
-  card with no image. Anything longer is truncated, not wrapped — so keep
-  both short, and shortest of all on a square that carries an image, which is
-  the tightest box on the page.
+- Image shape, type size and how much copy fits are all set by the slot — see
+  **What each slot takes** above.
 - After any content update, open `index.html` in a browser and check it at a
   narrow width too — the grid reflows 4 columns → 2 → 1, and the tile-colour rule
   has to hold at all three.
@@ -200,16 +202,14 @@ the missing media box, so deleting an `<img>` is all it takes. Hyphenated words
 in titles use U+2011 (non-breaking hyphen) so they never split across lines;
 write "Co‑Directors", not "Co-Directors".
 
-### Image sizes
+### Image sizes — why those numbers
 
-The full reference. The short version is up in **Updating content**; this is the
-same rule with the reasoning and the odd cases.
+The What's New sizes live in **What each slot takes**, above, alongside the type
+and copy limits for the same slot. Stated once, there, so the two cannot drift
+apart. This section is the reasoning and the one image that is not a card.
 
 | Image | Shape | **Upload at** |
 |---|---|---|
-| **What's New** — feature tile (top-left, 2×2) | **Square 1:1**, centre-cropped | **800 × 800** |
-| **What's New** — the four small tiles (1×1) | **Square 1:1** — the *same shape* as the feature | **800 × 800** |
-| **What's New** — the two rectangular tiles (2×1) | **Wide 16:9**, centre-cropped | **800 × 450** |
 | Research CTA / Faculty CTA image or gif | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
 
 **Why 800 and not 600.** The feature's image box is two-thirds of the tile,
