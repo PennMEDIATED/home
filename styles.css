@@ -924,7 +924,9 @@ button { font: inherit; cursor: pointer; }
 
 @media (max-width: 900px) {
   .hero__inner { grid-template-columns: 1fr; gap: var(--space-600); min-height: 0; }
-  .hero__visual { min-height: 300px; order: 2; }
+  /* Grows with the width on tablets so the tower art keeps a usable
+     height instead of a thin 300px strip. */
+  .hero__visual { min-height: clamp(300px, 55vw, 460px); order: 2; }
   .hero__content { max-width: none; }
 }
 
