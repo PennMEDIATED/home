@@ -169,76 +169,119 @@
        CSS can't stop autoplay, so honour prefers-reduced-motion here:
        pause each one and rewind to its poster frame. -->
   <script>
-    /* Hero title animation. See "Hero title" in styles.css. */
+    /* Hero title animation. See "Hero title" in styles.css.
+       Timings are deliberately slow: the name should be read, not flashed. */
     (function () {
       var h1 = document.querySelector('.hero__title');
-      if (!h1 || !h1.querySelector('.ht')) return;
+      var ht = h1 && h1.querySelector('.ht');
+      if (!ht) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      try { if (sessionStorage.getItem('pm-title-played')) { finish(); return; } } catch (e) {}
       var phone = window.matchMedia('(max-width: 600px)').matches;
-      var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
-      ready.then(function () { setTimeout(run, 1400); });
+      var T = { delay: 2600, drop: 1600, slide: 2000, swap: 1200 };   // ms
+      var keeps = Array.prototype.slice.call(h1.querySelectorAll('.ht__keep'));
+      var f;
 
       function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
-
       function addFinal() {
-        var f = document.createElement('span');
+        f = document.createElement('span');
         f.className = 'ht__final';
         f.setAttribute('aria-hidden', 'true');
         f.textContent = 'Penn MEDIATED';
         h1.appendChild(f);
-        return f;
       }
 
-      // Skip straight to the end state (already played this session).
-      function finish() {
-        h1.classList.add('is-animating', 'is-final');
-        var f = addFinal();
-        f.style.transition = 'none';
-        h1.querySelector('.ht').style.display = 'none';
+      // End state: "Penn MEDIATED" shown, the full name hidden but ready.
+      function settle() {
+        ht.style.display = 'none';
+        ht.style.opacity = '';
+        ht.style.transition = '';
+        keeps.forEach(function (k) { k.style.transform = ''; });
+        h1.classList.remove('is-dropping', 'is-animating');
         f.style.position = 'static';
-        h1.classList.remove('is-animating');
+        f.style.transition = '';
+        f.style.opacity = '1';
+        h1.style.height = '';
+        bindReveal();
       }
+
+      // Rolling over the title (or tapping it, on touch screens) brings the
+      // full name back; moving away returns to "Penn MEDIATED".
+      function bindReveal() {
+        var token = 0;
+        function show(original) {
+          var id = ++token;
+          var out = original ? f : ht, inn = original ? ht : f;
+          var from = h1.offsetHeight;
+          h1.style.transition = 'height 0.6s ease';
+          h1.style.height = from + 'px';
+          out.style.transition = 'opacity 0.3s ease';
+          out.style.opacity = '0';
+          setTimeout(function () {
+            if (id !== token) return;
+            out.style.display = 'none';
+            inn.style.display = '';
+            inn.style.transition = 'opacity 0.5s ease';
+            inn.style.opacity = '0';
+            h1.style.height = 'auto';
+            var to = h1.offsetHeight;
+            h1.style.height = from + 'px';
+            void h1.offsetHeight;
+            h1.style.height = to + 'px';
+            requestAnimationFrame(function () { inn.style.opacity = '1'; });
+            setTimeout(function () { if (id === token) h1.style.height = ''; }, 650);
+          }, 300);
+        }
+        // Mouse: roll over / away. Touch or pen (no hover): tap to toggle.
+        var original = false, lastPointer = 'mouse';
+        h1.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { original = true; show(true); } });
+        h1.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { original = false; show(false); } });
+        h1.addEventListener('pointerdown', function (e) { lastPointer = e.pointerType; });
+        h1.addEventListener('click', function () {
+          if (lastPointer === 'mouse') return;
+          original = !original; show(original);
+        });
+      }
+
+      try {
+        if (sessionStorage.getItem('pm-title-played')) { addFinal(); settle(); return; }
+      } catch (e) {}
+
+      var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      ready.then(function () { return wait(T.delay); }).then(run);
 
       function run() {
         h1.classList.add('is-animating');
-        h1.style.height = h1.getBoundingClientRect().height + 'px';
-        var keeps = Array.prototype.slice.call(h1.querySelectorAll('.ht__keep'));
-        var f = addFinal();
+        h1.style.height = h1.offsetHeight + 'px';
+        addFinal();
         wait(50).then(function () {
-          h1.classList.add('is-dropping');
-          return wait(700);
+          h1.classList.add('is-dropping');            // the extra letters fade out
+          return wait(T.drop + 200);
         }).then(function () {
-          if (phone) {                     // phones: fade only, no sliding
-            h1.querySelector('.ht').style.transition = 'opacity 0.4s ease';
-            h1.querySelector('.ht').style.opacity = '0';
-            return wait(450);
+          if (phone) {                                 // phones: fade only, no sliding
+            ht.style.transition = 'opacity 1s ease';
+            ht.style.opacity = '0';
+            return wait(1100);
           }
-          // Slide the kept pieces to where "MediaTeD" would sit at the start
-          // of the first line, measured with a hidden copy of the same text.
-          var box = h1.getBoundingClientRect();
+          // Slide MEDIA + TE + D together to where "MediaTeD" would sit at the
+          // start of the first line (measured with a hidden copy).
           var probe = document.createElement('span');
           probe.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap';
           probe.innerHTML = '<span>Media</span><span>Te</span><span>D</span>';
           h1.appendChild(probe);
-          var parts = probe.children;
           keeps.forEach(function (k, i) {
-            var from = k.getBoundingClientRect(), to = parts[i].getBoundingClientRect();
-            k.style.transform = 'translate(' + (to.left - from.left) + 'px,' + (to.top - from.top) + 'px)';
+            var a = k.getBoundingClientRect(), b = probe.children[i].getBoundingClientRect();
+            k.style.transform = 'translate(' + (b.left - a.left) + 'px,' + (b.top - a.top) + 'px)';
           });
           h1.removeChild(probe);
-          return wait(1000);
+          return wait(T.slide + 500);                  // a beat on "MediaTeD" before the swap
         }).then(function () {
-          // Crossfade to "Penn MEDIATED" and let the heading shrink to one line.
-          h1.classList.add('is-final');
-          var end = f.getBoundingClientRect().height;
-          h1.style.height = end + 'px';
-          return wait(550);
+          ht.style.transition = 'opacity 1s ease';
+          ht.style.opacity = '0';
+          f.style.opacity = '1';
+          h1.style.height = f.offsetHeight + 'px';     // shrink to one line
+          return wait(T.swap + 100);
         }).then(function () {
-          h1.querySelector('.ht').style.display = 'none';
-          f.style.position = 'static';
-          h1.style.height = '';
-          h1.classList.remove('is-animating');
+          settle();
           try { sessionStorage.setItem('pm-title-played', '1'); } catch (e) {}
         });
       }

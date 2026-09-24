@@ -267,9 +267,12 @@ button { font: inherit; cursor: pointer; }
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  /* Copy starts at the top (80px below the site menu, the same on every
-     page); the tower column still stretches the full height. */
-  align-items: start;
+  /* Side by side, the copy is centred against the tower art, and stays
+     centred as the title turns into "Penn MEDIATED" (the heading's height
+     animates, so the block eases into its new centre rather than jumping).
+     This is the one page whose title is not 80px below the menu on desktop;
+     stacked (under 900px) it is, like every other page. */
+  align-items: center;
   gap: var(--space-800);
   padding-block: var(--space-1000) var(--space-800);
   /* Fixed px, never vh: this page is embedded in an iframe sized to its own
@@ -278,8 +281,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 
-/* Centered composition: text sits directly over the circle's own center.
-   A text-shadow (not a panel) keeps it legible against the graphic. */
+/* Copy column, beside the tower column (stacked above it under 900px). */
 .hero__content {
   position: relative;
   z-index: 2;
@@ -302,32 +304,32 @@ button { font: inherit; cursor: pointer; }
   letter-spacing: -0.028em;
   color: var(--c-white);
   margin-bottom: var(--space-500);
-  /* Back, and heavier than before: the tower now runs full width behind the
-     copy, so the title needs to sit clearly in front of it. */
-  text-shadow: 0 2px 4px rgba(0,0,0,0.45), 0 8px 28px rgba(0,0,0,0.38);
+  /* No text shadow (removed Sept 2026 by request): white on the gradient reads
+     cleanly on its own now that the tower sits in its own column. */
 }
 
 /* ── Hero title: "Center on Media, Technology and Democracy" becomes
    "Penn MEDIATED" ──────────────────────────────────────────────────────
    The name is spelled by MEDIA + TE(chnology) + D(emocracy). Once per
    browser session the rest of the title fades out, those pieces slide
-   together, and "Penn MEDIATED" takes their place. The h1's accessible
-   name stays the full name throughout (aria-label; the visible letters
-   are aria-hidden). Phones get a plain fade, no sliding. Reduced motion:
-   the full title simply stays. Script: end of index.html. */
+   together, and "Penn MEDIATED" takes their place, slowly (about eight
+   seconds end to end). Rolling over the title (tapping it on touch
+   screens) brings the full name back until the pointer leaves. The h1's
+   accessible name stays the full name throughout (aria-label; the visible
+   letters are aria-hidden). Phones get a plain fade, no sliding. Reduced
+   motion: the full title simply stays. Script: end of index.html. */
 .ht__keep, .ht__drop { display: inline; }
 .ht__word { white-space: nowrap; }          /* "Te|chnology" never splits across lines */
+.hero__title { position: relative; }
 .hero__title.is-animating .ht__keep { display: inline-block; }
-.ht__drop { transition: opacity 0.6s ease; }
+.ht__drop { transition: opacity 1.6s ease; }
 .hero__title.is-dropping .ht__drop { opacity: 0; }
-.ht__keep { transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.45s ease; }
-.hero__title.is-final .ht { opacity: 0; transition: opacity 0.45s ease; }
+.ht__keep { transition: transform 2s cubic-bezier(0.65, 0, 0.35, 1); }
 .ht__final {
   position: absolute; left: 0; top: 0;
-  white-space: nowrap; opacity: 0; transition: opacity 0.5s ease;
+  white-space: nowrap; opacity: 0; transition: opacity 1.2s ease;
 }
-.hero__title.is-final .ht__final { opacity: 1; }
-.hero__title.is-animating { position: relative; transition: height 0.5s ease; }
+.hero__title.is-animating { transition: height 1.2s ease; }
 
 .hero__subtitle {
   display: block;
