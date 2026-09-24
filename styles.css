@@ -339,7 +339,10 @@ button { font: inherit; cursor: pointer; }
   line-height: var(--lh-lede);
   color: var(--c-white);
   max-width: 520px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.45), 0 4px 14px rgba(0,0,0,0.30);
+  /* Italic, no shadow (Sept 2026). The DM Sans italic 500 face is loaded in
+     index.html's Google Fonts link, so this is the real italic, not a
+     slanted fake. */
+  font-style: italic;
 }
 
 /* Not a link. It used to be a white, un-underlined <a> to /about — the
