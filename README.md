@@ -22,7 +22,7 @@ are the only other counts that work, and both need the span classes rearranged.)
 So adding an item means removing one — one in, one out.
 
 Every card also carries a colour class: `--white`, `--purple`, `--orange` or
-`--dark`. See **Tile colours** below; the rule there is not optional and it is
+`--twinkle`. See **Tile colours** below; the rule there is not optional and it is
 easy to break by accident.
 
 ### What each slot takes
@@ -154,20 +154,23 @@ Current assignment, which satisfies the rule at every width:
 | Feature (2×2) | New Report on Monitoring LLMs | white |
 | Square | Welcoming New Knight Fellows | purple |
 | Square | MEDIATED Membership with GNI | orange |
-| Wide | Launching the Research Compendium | dark (`#0d0d0c`) |
+| Wide | Launching the Research Compendium | twinkle (light gray + gradient sparkle) |
 | Square | An Intro from our Co-Directors | orange |
 | Square | Partnering with Digital Forensics Research Lab | purple |
 | Wide | Announcing our Affiliated Faculty | white |
 
-Tile colours are `--white`, `--purple`, `--orange` and `--dark` (near-black,
-`--c-dark`; it replaced the light-orange peach tile). Text is white on purple
-and dark, and dark on orange (white on `#f03d1f` is only ~3.9:1). Only the
-white tiles carry the dot-field texture; the solid tiles are flat.
+Tile colours are `--white`, `--purple`, `--orange` and `--twinkle`: the site's
+light gray (`--c-light-bg`) with the hero's sparkle field drawn in the brand
+gradient and slowly twinkling (static for reduced-motion). It replaced the
+light-orange peach tile; black, light orange and light purple were all ruled
+out for this slot. Text is white on purple, dark on orange (white on `#f03d1f`
+is only ~3.9:1) and dark on twinkle. Only the white tiles carry the plain
+dot-field texture; purple and orange are flat.
 
 Two constraints make this tighter than it looks. The feature tile borders five
 other tiles across the three layouts, so **its colour has to be unique** — that
 is why it is white. And the last wide tile borders the two squares above it and
-the wide above them, which uses up all three of dark/purple/orange; it has to be
+the wide above them, which uses up all three of twinkle/purple/orange; it has to be
 white too. The one place two same-colour tiles meet is the feature and that last
 wide tile, **diagonally, across the grid gap** on desktop only. Corner contact
 across a gap is not an edge, and with four colours there is no arrangement that
@@ -283,7 +286,7 @@ The top five are `clamp()` values that interpolate across the viewport, so table
 
 **Line heights are tokens too** — `--lh-display` 1.05, `--lh-heading` 1.15, `--lh-lede` 1.26, `--lh-title` 1.3, `--lh-body` 1.55. Never set a line-height in px; it breaks the fluid sizes.
 
-**No kicker labels.** No small uppercase label above a heading anywhere on the page — the sitewide convention already documented in `about`, `team-leadership`, `data` and `grants`. The hero's `.hero__eyebrow-brand` ("Penn MEDIATED") is not one of these: it is white serif italic brand-name text, not a kicker, and it stays.
+**No kicker labels.** No small uppercase label above a heading anywhere on the page — the sitewide convention already documented in `about`, `team-leadership`, `data` and `grants`. (The hero used to carry a white serif italic "Penn MEDIATED" line above the title; it was removed in September 2026, and the name now sits in the subtitle.)
 
 **The one exception is the `.nav`/`.brand` component.** Its sizes (9.5px eyebrow, 15/18px wordmark, 16px links, 11px subscribe) come straight from the Figma nav frame and are deliberately left as raw px — see "Site nav" above for why those rules are kept at all. Its font families were moved off `--f-mono` with everything else, so the reference stays accurate for the header build; only the sizes are frozen.
 

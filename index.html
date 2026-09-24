@@ -23,11 +23,8 @@
     <div class="hero__inner">
 
       <div class="hero__content">
-        <p class="hero__eyebrow">
-          <span class="hero__eyebrow-brand">Penn MEDIATED</span>
-        </p>
-        <h1 class="hero__title">Center on Media, Technology and Democracy</h1>
-        <p class="hero__subtitle">At Penn MEDIATED, we work to better understand the information ecosystem through cutting-edge science.</p>
+        <h1 class="hero__title" aria-label="Center on Media, Technology and Democracy"><span class="ht" aria-hidden="true"><span class="ht__drop">Center on </span><span class="ht__keep">Media</span><span class="ht__drop">, </span><span class="ht__word"><span class="ht__keep">Te</span><span class="ht__drop">chnology</span></span><span class="ht__drop"> and </span><span class="ht__word"><span class="ht__keep">D</span><span class="ht__drop">emocracy</span></span></span></h1>
+        <p class="hero__subtitle">At Penn MEDIATED, we work to better understand the information ecosystem through cutting-edge science, then leverage that research to strengthen the foundations of democracy.</p>
       </div>
 
       <!-- The ASCII broadcast tower sits in its own column rather than behind
@@ -84,7 +81,7 @@
           </div>
         </a>
 
-        <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="news-card news-card--wide news-card--dark">
+        <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="news-card news-card--wide news-card--twinkle">
           <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
           <div class="news-card__media"><video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Research Compendium dashboard"></div>
           <div class="news-card__body news-card__body--bottom">
@@ -131,7 +128,10 @@
         <p class="research-cta__lead">Explore our catalog of Penn's cutting-edge research on information integrity, media ecosystems, political speech, democratic resilience, and much more.</p>
         <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="research-cta__link">Explore All Research <span aria-hidden="true">⟶</span></a>
       </div>
-      <video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Penn MEDIATED Research Compendium being used" class="research-cta__image"></video>
+      <!-- Same destination as "Explore All Research". Out of the tab order and
+           hidden from screen readers: the text link above is the accessible
+           one, so keyboard and screen-reader users don't meet it twice. -->
+      <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="research-cta__media" tabindex="-1" aria-hidden="true"><video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Penn MEDIATED Research Compendium being used" class="research-cta__image"></video></a>
     </div>
   </section>
  
@@ -158,7 +158,8 @@
         <p class="faculty-cta__lead">Our 25 affiliated faculty are distinguished by their rigorous empirical and computational research that advances the collective understanding of the information ecosystem.</p>
         <a href="https://mediated.upenn.edu/team-faculty/" target="_top" class="faculty-cta__link">Learn More About Our Affiliated Faculty <span aria-hidden="true">⟶</span></a>
       </div>
-      <video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated graphic of Penn&#8217;s campus with icons overlaying research themes" class="faculty-cta__image"></video>
+      <!-- Same destination as the link above; see the research CTA note. -->
+      <a href="https://mediated.upenn.edu/team-faculty/" target="_top" class="faculty-cta__media" tabindex="-1" aria-hidden="true"><video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated graphic of Penn&#8217;s campus with icons overlaying research themes" class="faculty-cta__image"></video></a>
     </div>
   </section>
 
@@ -167,6 +168,82 @@
   <!-- The two animated cards are muted, looping <video> rather than GIF.
        CSS can't stop autoplay, so honour prefers-reduced-motion here:
        pause each one and rewind to its poster frame. -->
+  <script>
+    /* Hero title animation. See "Hero title" in styles.css. */
+    (function () {
+      var h1 = document.querySelector('.hero__title');
+      if (!h1 || !h1.querySelector('.ht')) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      try { if (sessionStorage.getItem('pm-title-played')) { finish(); return; } } catch (e) {}
+      var phone = window.matchMedia('(max-width: 600px)').matches;
+      var ready = (document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      ready.then(function () { setTimeout(run, 1400); });
+
+      function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+      function addFinal() {
+        var f = document.createElement('span');
+        f.className = 'ht__final';
+        f.setAttribute('aria-hidden', 'true');
+        f.textContent = 'Penn MEDIATED';
+        h1.appendChild(f);
+        return f;
+      }
+
+      // Skip straight to the end state (already played this session).
+      function finish() {
+        h1.classList.add('is-animating', 'is-final');
+        var f = addFinal();
+        f.style.transition = 'none';
+        h1.querySelector('.ht').style.display = 'none';
+        f.style.position = 'static';
+        h1.classList.remove('is-animating');
+      }
+
+      function run() {
+        h1.classList.add('is-animating');
+        h1.style.height = h1.getBoundingClientRect().height + 'px';
+        var keeps = Array.prototype.slice.call(h1.querySelectorAll('.ht__keep'));
+        var f = addFinal();
+        wait(50).then(function () {
+          h1.classList.add('is-dropping');
+          return wait(700);
+        }).then(function () {
+          if (phone) {                     // phones: fade only, no sliding
+            h1.querySelector('.ht').style.transition = 'opacity 0.4s ease';
+            h1.querySelector('.ht').style.opacity = '0';
+            return wait(450);
+          }
+          // Slide the kept pieces to where "MediaTeD" would sit at the start
+          // of the first line, measured with a hidden copy of the same text.
+          var box = h1.getBoundingClientRect();
+          var probe = document.createElement('span');
+          probe.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap';
+          probe.innerHTML = '<span>Media</span><span>Te</span><span>D</span>';
+          h1.appendChild(probe);
+          var parts = probe.children;
+          keeps.forEach(function (k, i) {
+            var from = k.getBoundingClientRect(), to = parts[i].getBoundingClientRect();
+            k.style.transform = 'translate(' + (to.left - from.left) + 'px,' + (to.top - from.top) + 'px)';
+          });
+          h1.removeChild(probe);
+          return wait(1000);
+        }).then(function () {
+          // Crossfade to "Penn MEDIATED" and let the heading shrink to one line.
+          h1.classList.add('is-final');
+          var end = f.getBoundingClientRect().height;
+          h1.style.height = end + 'px';
+          return wait(550);
+        }).then(function () {
+          h1.querySelector('.ht').style.display = 'none';
+          f.style.position = 'static';
+          h1.style.height = '';
+          h1.classList.remove('is-animating');
+          try { sessionStorage.setItem('pm-title-played', '1'); } catch (e) {}
+        });
+      }
+    })();
+  </script>
   <script>
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       document.querySelectorAll('video[autoplay]').forEach(function (v) {

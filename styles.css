@@ -267,7 +267,9 @@ button { font: inherit; cursor: pointer; }
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-  align-items: center;
+  /* Copy starts at the top (80px below the site menu, the same on every
+     page); the tower column still stretches the full height. */
+  align-items: start;
   gap: var(--space-800);
   padding-block: var(--space-1000) var(--space-800);
   /* Fixed px, never vh: this page is embedded in an iframe sized to its own
@@ -285,22 +287,6 @@ button { font: inherit; cursor: pointer; }
   text-align: left;
 }
 
-/* Reads as the center's formal name rather than a decorative section kicker. */
-.hero__eyebrow {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: var(--space-400);
-}
-
-.hero__eyebrow-brand {
-  font-family: var(--f-serif);
-  font-style: italic;
-  font-size: var(--fs-h3);
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  color: var(--c-white);
-}
 
 /* h1: EB Garamond ~96px (scaled down from Figma's 115px for web),
    ls=-2.7%, lh tight. A tight shadow (not a big blur) keeps it legible
@@ -320,6 +306,28 @@ button { font: inherit; cursor: pointer; }
      copy, so the title needs to sit clearly in front of it. */
   text-shadow: 0 2px 4px rgba(0,0,0,0.45), 0 8px 28px rgba(0,0,0,0.38);
 }
+
+/* ── Hero title: "Center on Media, Technology and Democracy" becomes
+   "Penn MEDIATED" ──────────────────────────────────────────────────────
+   The name is spelled by MEDIA + TE(chnology) + D(emocracy). Once per
+   browser session the rest of the title fades out, those pieces slide
+   together, and "Penn MEDIATED" takes their place. The h1's accessible
+   name stays the full name throughout (aria-label; the visible letters
+   are aria-hidden). Phones get a plain fade, no sliding. Reduced motion:
+   the full title simply stays. Script: end of index.html. */
+.ht__keep, .ht__drop { display: inline; }
+.ht__word { white-space: nowrap; }          /* "Te|chnology" never splits across lines */
+.hero__title.is-animating .ht__keep { display: inline-block; }
+.ht__drop { transition: opacity 0.6s ease; }
+.hero__title.is-dropping .ht__drop { opacity: 0; }
+.ht__keep { transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.45s ease; }
+.hero__title.is-final .ht { opacity: 0; transition: opacity 0.45s ease; }
+.ht__final {
+  position: absolute; left: 0; top: 0;
+  white-space: nowrap; opacity: 0; transition: opacity 0.5s ease;
+}
+.hero__title.is-final .ht__final { opacity: 1; }
+.hero__title.is-animating { position: relative; transition: height 0.5s ease; }
 
 .hero__subtitle {
   display: block;
@@ -370,6 +378,12 @@ button { font: inherit; cursor: pointer; }
 /* Interactive ASCII graphic (assets/broadcast-tower.html) — background is
    transparent so the hero's own gradient shows through underneath it. */
 .hero__visual-frame {
+  /* Absolutely filled rather than height: 100%. Once the hero stacks to one
+     column, .hero__visual has only a min-height, and Safari then resolves a
+     percentage height to nothing and falls back to an iframe's default
+     150px: the tower art was drawn into a 150px strip and came out tiny. */
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -808,6 +822,17 @@ button { font: inherit; cursor: pointer; }
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
 }
 
+/* The screen recordings are links too (same destination as each band's text
+   link). A small lift on hover, like the What's New cards, says so. */
+.research-cta__media,
+.faculty-cta__media {
+  display: block;
+  border-radius: var(--space-100);
+  transition: transform 0.2s ease;
+}
+.research-cta__media:hover,
+.faculty-cta__media:hover { transform: translateY(-4px); }
+
 /* Both colour bands, narrow screens: one column, with the copy and the
    screen recording sharing one reading width so neither is stranded in a
    corner of the band. 640px keeps the lines readable on tablets; on phones
@@ -1041,6 +1066,46 @@ button { font: inherit; cursor: pointer; }
 .news-card--purple::before,
 .news-card--orange::before,
 .news-card--dark::before { content: none; }
+
+/* Twinkle tile — the hero's sparkle field, in the brand gradient.
+   The dots sit where the hero's dot layer puts them (the same two-sine
+   interference pattern, see assets/broadcast-tower.html ?layer=dots), with a
+   few four-point stars mixed in. Two offset layers fade in and out of step so
+   the field twinkles; the gradient shows only through the dots (mask). On
+   the site's light gray, with dark text. Reduced-motion: static. */
+.news-card--twinkle { background: var(--c-light-bg); border: 1px solid rgba(13,13,12,0.08); }
+.news-card--twinkle .news-card__title { color: var(--c-dark); }
+.news-card--twinkle .news-card__desc  { color: var(--c-gray-dark); }
+.news-card--twinkle::before,
+.news-card--twinkle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: var(--c-gradient);
+  -webkit-mask-size: 192px 192px;
+          mask-size: 192px 192px;
+  animation: news-card-twinkle 3.6s ease-in-out infinite alternate;
+}
+.news-card--twinkle::before {
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><circle cx='28.0' cy='20.0' r='1.4'/><circle cx='124.0' cy='20.0' r='1.4'/><circle cx='76.0' cy='52.0' r='1.4'/><circle cx='172.0' cy='52.0' r='1.4'/><path d='M28.0 81.4L28.7 83.3L30.6 84.0L28.7 84.7L28.0 86.6L27.3 84.7L25.4 84.0L27.3 83.3Z'/><circle cx='124.0' cy='84.0' r='1.4'/><circle cx='76.0' cy='116.0' r='1.4'/><circle cx='172.0' cy='116.0' r='1.4'/><circle cx='28.0' cy='148.0' r='1.4'/><path d='M124.0 145.4L124.7 147.3L126.6 148.0L124.7 148.7L124.0 150.6L123.3 148.7L121.4 148.0L123.3 147.3Z'/><circle cx='76.0' cy='180.0' r='1.4'/><circle cx='172.0' cy='180.0' r='1.4'/></svg>");
+          mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><circle cx='28.0' cy='20.0' r='1.4'/><circle cx='124.0' cy='20.0' r='1.4'/><circle cx='76.0' cy='52.0' r='1.4'/><circle cx='172.0' cy='52.0' r='1.4'/><path d='M28.0 81.4L28.7 83.3L30.6 84.0L28.7 84.7L28.0 86.6L27.3 84.7L25.4 84.0L27.3 83.3Z'/><circle cx='124.0' cy='84.0' r='1.4'/><circle cx='76.0' cy='116.0' r='1.4'/><circle cx='172.0' cy='116.0' r='1.4'/><circle cx='28.0' cy='148.0' r='1.4'/><path d='M124.0 145.4L124.7 147.3L126.6 148.0L124.7 148.7L124.0 150.6L123.3 148.7L121.4 148.0L123.3 147.3Z'/><circle cx='76.0' cy='180.0' r='1.4'/><circle cx='172.0' cy='180.0' r='1.4'/></svg>");
+}
+.news-card--twinkle::after {
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><circle cx='4.0' cy='4.0' r='1.4'/><circle cx='100.0' cy='4.0' r='1.4'/><circle cx='52.0' cy='36.0' r='1.4'/><path d='M148.0 33.4L148.7 35.3L150.6 36.0L148.7 36.7L148.0 38.6L147.3 36.7L145.4 36.0L147.3 35.3Z'/><circle cx='4.0' cy='68.0' r='1.4'/><circle cx='100.0' cy='68.0' r='1.4'/><circle cx='52.0' cy='100.0' r='1.4'/><path d='M148.0 97.4L148.7 99.3L150.6 100.0L148.7 100.7L148.0 102.6L147.3 100.7L145.4 100.0L147.3 99.3Z'/><circle cx='4.0' cy='132.0' r='1.4'/><circle cx='100.0' cy='132.0' r='1.4'/><circle cx='52.0' cy='164.0' r='1.4'/><path d='M148.0 161.4L148.7 163.3L150.6 164.0L148.7 164.7L148.0 166.6L147.3 164.7L145.4 164.0L147.3 163.3Z'/></svg>");
+          mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192'><circle cx='4.0' cy='4.0' r='1.4'/><circle cx='100.0' cy='4.0' r='1.4'/><circle cx='52.0' cy='36.0' r='1.4'/><path d='M148.0 33.4L148.7 35.3L150.6 36.0L148.7 36.7L148.0 38.6L147.3 36.7L145.4 36.0L147.3 35.3Z'/><circle cx='4.0' cy='68.0' r='1.4'/><circle cx='100.0' cy='68.0' r='1.4'/><circle cx='52.0' cy='100.0' r='1.4'/><path d='M148.0 97.4L148.7 99.3L150.6 100.0L148.7 100.7L148.0 102.6L147.3 100.7L145.4 100.0L147.3 99.3Z'/><circle cx='4.0' cy='132.0' r='1.4'/><circle cx='100.0' cy='132.0' r='1.4'/><circle cx='52.0' cy='164.0' r='1.4'/><path d='M148.0 161.4L148.7 163.3L150.6 164.0L148.7 164.7L148.0 166.6L147.3 164.7L145.4 164.0L147.3 163.3Z'/></svg>");
+  animation-delay: -1.8s;
+}
+@keyframes news-card-twinkle {
+  from { opacity: 0.25; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .news-card--twinkle::before,
+  .news-card--twinkle::after { animation: none; opacity: 0.5; }
+}
 
 
 /* Fixed media box — the whole point: any source image, same result.

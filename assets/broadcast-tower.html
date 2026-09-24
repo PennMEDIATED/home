@@ -313,6 +313,9 @@ function fit(){
 }
 requestAnimationFrame(()=>requestAnimationFrame(fit));
 window.addEventListener('resize',()=>{clearTimeout(window._fitT);window._fitT=setTimeout(fit,120);});
+// Also refit when the stage itself changes size; a nested frame does not
+// always get a resize event when its parent's layout changes.
+if(window.ResizeObserver){new ResizeObserver(()=>{clearTimeout(window._fitT);window._fitT=setTimeout(fit,60);}).observe(stage);}
 })();
 </script>
 </body>
