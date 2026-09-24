@@ -593,10 +593,13 @@ button { font: inherit; cursor: pointer; }
 }
 
 .research-cta__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  /* Two columns that shrink together, rather than a flex row that wrapped
+     at ~1100px and left a half-width column of text, a small image and a
+     wide empty band. Stacked layout: see the 900px rule under FACULTY CTA. */
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 523px);
   justify-content: space-between;
+  align-items: center;
   gap: var(--space-800);
 }
 
@@ -646,9 +649,8 @@ button { font: inherit; cursor: pointer; }
 .research-cta__link:hover { opacity: 0.75; }
 
 .research-cta__image {
-  flex-shrink: 0;
   display: block;
-  width: min(38vw, 523px);
+  width: 100%;
   height: auto;
   border-radius: var(--space-100);
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
@@ -753,10 +755,11 @@ button { font: inherit; cursor: pointer; }
 }
 
 .faculty-cta__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  /* Same two-column grid as .research-cta__inner. */
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 523px);
   justify-content: space-between;
+  align-items: center;
   gap: var(--space-800);
 }
 
@@ -799,10 +802,34 @@ button { font: inherit; cursor: pointer; }
 }
 
 .faculty-cta__image {
-  flex-shrink: 0;
-  width: min(38vw, 523px);
+  display: block;
+  width: 100%;
   border-radius: var(--space-100);
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+
+/* Both colour bands, narrow screens: one column, with the copy and the
+   screen recording sharing one reading width so neither is stranded in a
+   corner of the band. 640px keeps the lines readable on tablets; on phones
+   the width is simply the screen. Less vertical padding so the band is
+   mostly content rather than colour. */
+@media (max-width: 900px) {
+  .research-cta__inner,
+  .faculty-cta__inner {
+    grid-template-columns: minmax(0, 640px);
+    justify-content: start;
+    gap: var(--space-600);
+  }
+  .research-cta__copy,
+  .faculty-cta__copy { max-width: none; }
+  .research-cta,
+  .faculty-cta { padding-block: var(--space-800); }
+}
+@media (max-width: 480px) {
+  .research-cta,
+  .faculty-cta { padding-block: var(--space-600); }
+  .research-cta__inner,
+  .faculty-cta__inner { gap: var(--space-500); }
 }
 
 /* FOOTER */
@@ -1009,6 +1036,11 @@ button { font: inherit; cursor: pointer; }
   pointer-events: none;
 }
 .news-card--white::before { opacity: 0.10; }
+/* Solid colour tiles stay flat: the dot field read as noise on purple,
+   orange and black, so only the white tiles keep it. */
+.news-card--purple::before,
+.news-card--orange::before,
+.news-card--dark::before { content: none; }
 
 
 /* Fixed media box — the whole point: any source image, same result.

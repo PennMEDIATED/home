@@ -22,7 +22,7 @@ are the only other counts that work, and both need the span classes rearranged.)
 So adding an item means removing one — one in, one out.
 
 Every card also carries a colour class: `--white`, `--purple`, `--orange` or
-`--peach`. See **Tile colours** below; the rule there is not optional and it is
+`--dark`. See **Tile colours** below; the rule there is not optional and it is
 easy to break by accident.
 
 ### What each slot takes
@@ -51,7 +51,7 @@ its ending and looks fine until someone reads it.
 
 **The image-bearing square is the tightest box on the page**: 132px of it is the
 media box and the title runs at body size. Write the shortest copy there.
-"Partnering with Digital Forensics Lab" is about the limit at three lines.
+"Partnering with Digital Forensics Research Lab" is about the limit at three lines.
 
 **Check 1024px.** Not only the extremes — titles clear at 1440 and at 390 but
 were being cut at 1024, where the grid is still four columns and each one is
@@ -154,21 +154,20 @@ Current assignment, which satisfies the rule at every width:
 | Feature (2×2) | New Report on Monitoring LLMs | white |
 | Square | Welcoming New Knight Fellows | purple |
 | Square | MEDIATED Membership with GNI | orange |
-| Wide | Launching the Research Compendium | peach (`#fce4dc`) |
+| Wide | Launching the Research Compendium | dark (`#0d0d0c`) |
 | Square | An Intro from our Co-Directors | orange |
-| Square | Partnering with Digital Forensics Lab | purple |
+| Square | Partnering with Digital Forensics Research Lab | purple |
 | Wide | Announcing our Affiliated Faculty | white |
 
-Tile colours are `--white`, `--purple`, `--orange` and `--peach` (the accent
-palette's orange-red tint at 12%). Text on peach is `--c-dark`, not the
-palette's brown text-on-tint — the tint is light enough that black clears
-contrast easily and reads cleaner beside the solid-orange tile. There is no
-near-black tile.
+Tile colours are `--white`, `--purple`, `--orange` and `--dark` (near-black,
+`--c-dark`; it replaced the light-orange peach tile). Text is white on purple
+and dark, and dark on orange (white on `#f03d1f` is only ~3.9:1). Only the
+white tiles carry the dot-field texture; the solid tiles are flat.
 
 Two constraints make this tighter than it looks. The feature tile borders five
 other tiles across the three layouts, so **its colour has to be unique** — that
 is why it is white. And the last wide tile borders the two squares above it and
-the wide above them, which uses up all three of peach/purple/orange; it has to be
+the wide above them, which uses up all three of dark/purple/orange; it has to be
 white too. The one place two same-colour tiles meet is the feature and that last
 wide tile, **diagonally, across the grid gap** on desktop only. Corner contact
 across a gap is not an edge, and with four colours there is no arrangement that
