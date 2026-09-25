@@ -333,16 +333,17 @@ button { font: inherit; cursor: pointer; }
 
 .hero__subtitle {
   display: block;
-  font-family: var(--f-sans);
-  font-size: var(--fs-lede);
-  font-weight: 500;
-  line-height: var(--lh-lede);
-  color: var(--c-white);
-  max-width: 520px;
-  /* Italic, no shadow (Sept 2026). The DM Sans italic 500 face is loaded in
-     index.html's Google Fonts link, so this is the real italic, not a
-     slanted fake. */
+  /* EB Garamond italic, no shadow (Sept 2026), a deliberate exception to
+     "running prose is sans": it reads as the title's companion line. One
+     step up from --fs-lede (Garamond runs small for its size) and weight
+     400, the italic weight loaded in index.html's Google Fonts link. */
+  font-family: var(--f-serif);
   font-style: italic;
+  font-size: var(--fs-h3);
+  font-weight: 400;
+  line-height: var(--lh-title);
+  color: var(--c-white);
+  max-width: 540px;
 }
 
 /* Not a link. It used to be a white, un-underlined <a> to /about — the
