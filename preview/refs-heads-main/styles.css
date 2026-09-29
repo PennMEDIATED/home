@@ -1,0 +1,1212 @@
+/* =============================================================================
+   Atlassian Spacing Tokens — 8px base unit
+   https://atlassian.design/foundations/spacing
+   Shared conventions with the Penn MEDIATED /about repo for brand consistency.
+   ============================================================================= */
+:root {
+  --space-025:   2px;
+  --space-050:   4px;
+  --space-075:   6px;
+  --space-100:   8px;
+  --space-150:  12px;
+  --space-200:  16px;
+  --space-250:  20px;
+  --space-300:  24px;
+  --space-400:  32px;
+  --space-500:  40px;
+  --space-600:  48px;
+  --space-800:  64px;
+  --space-1000: 80px;
+
+  /* ── Figma colour tokens ── */
+  --c-bg:         #ffffff;
+  --c-dark:       #0d0d0c;          /* rgb(13,13,12)   */
+  --c-nav-bg:     rgba(13,13,12,0.92);
+  --c-light-bg:   #f8f7f4;          /* rgb(248,247,244)*/
+  --c-accent:     #5533ee;          /* rgb(85,51,238)  */
+  --c-red:        #f03d1f;          /* rgb(240,61,31)  */
+  /* Deeper red-orange — the gradient's closing stop, promoted to a token
+     of its own. Link text on a white/light ground uses this: --c-red
+     only reaches ~3.9:1 against white, this clears 4.5:1. --c-red stays
+     the brand accent for fills, borders, icons, tags and labels. */
+  --c-red-dark:   #df3611;
+
+  /* Orange-red at 12% on white, from the sitewide accent palette (slot 2).
+     A light tile colour for the grid — replaces the near-black tile.
+     Text on it is --c-dark rather than the palette's brown text-on-tint
+     (#7b2719): the tint is light enough that black clears contrast easily
+     and reads cleaner beside the solid-orange tile. */
+  --c-peach:      #fce4dc;
+  --c-gray:       #888680;          /* rgb(136,134,128)*/
+  --c-gray-dark:  #54534f;          /* rgb(84,83,79) — opaque body copy, ~8:1 contrast on white */
+  --c-muted:      #c8c6c0;          /* rgb(200,198,192) date/meta text */
+  --c-white:      #ffffff;
+
+  /* Brand gradient — used on the hero, matches /about's orbital section
+     and newsletter/supporters block exactly: 150deg #5533ee 0% → #df3611 81% */
+  --c-gradient: linear-gradient(150deg, #5533ee 0%, var(--c-red-dark) 81%);
+
+  /* ── Figma typography tokens ── */
+  /* Two families, no third — and the split is by what the text IS, not by
+     heading level. --f-serif: page titles, and titles of works or names of
+     people (a post title, a paper title, a person's name), plus pull-quote
+     copy. --f-sans: section headings, card and UI labels, running prose,
+     metadata, controls and uppercase micro-labels.
+     The one that trips people up: a SECTION HEADING IS NOT SERIF. Serif
+     marks a thing that has its own name; sans marks the furniture around
+     it. See README -> Typography. */
+  --f-serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+  --f-sans:  'DM Sans', system-ui, -apple-system, sans-serif;
+  /* ── Type scale (sitewide — see README) ──
+     Fluid clamps interpolate across the viewport, so tablet needs no
+     separate breakpoint. 12px is the floor for page copy; the .nav/.brand
+     component keeps its own Figma-spec'd sizes (see README). */
+  --fs-display:     clamp(36px, 22.7px + 3.70vw, 76px);
+  --fs-h1:          clamp(36px, 29.3px + 1.85vw, 56px);
+  --fs-h2:          clamp(26px, 21.3px + 1.30vw, 40px);
+  --fs-h3:          clamp(20px, 18.7px + 0.37vw, 24px);
+  --fs-lede:        clamp(18px, 17.3px + 0.19vw, 20px);
+  --fs-body:        16px;
+  --fs-small:       14px;
+  --fs-small-serif: 15px;
+  --fs-micro:       12px;
+
+  --lh-display: 1.05;
+  --lh-heading: 1.15;
+  --lh-lede:    1.26;
+  --lh-title:   1.3;
+  --lh-body:    1.55;
+
+  /* ── Page layout ── */
+  --max-w: 1440px;
+  --pad-x: var(--space-1000);   /* 80px side padding — page-level rhythm */
+  --nav-h: 52px;
+}
+
+/* Side padding scales down on smaller screens — 80px fixed padding eats
+   ~43% of a 375px phone width otherwise. */
+@media (max-width: 900px) {
+  :root { --pad-x: var(--space-400); }  /* 32px */
+}
+@media (max-width: 480px) {
+  :root { --pad-x: var(--space-250); }  /* 20px */
+}
+
+/* =============================================================================
+   Reset
+   ============================================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--f-sans);
+  color: var(--c-dark);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+ul, ol { list-style: none; }
+a { color: inherit; text-decoration: none; }
+img, video { max-width: 100%; height: auto; display: block; }
+button { font: inherit; cursor: pointer; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border-width: 0;
+}
+
+/* =============================================================================
+   Shared inner container
+   ============================================================================= */
+.nav__inner,
+.hero__inner,
+.whats-new__inner,
+.research-cta__inner,
+.about-center__inner,
+.faculty-cta__inner,
+.footer__inner,
+.footer__bottom {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: var(--pad-x);
+}
+
+/* =============================================================================
+   NAV
+   Figma: 1434×52, fill rgba(13,13,12,.92), sticky over the hero
+   ============================================================================= */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  background: var(--c-nav-bg);
+  backdrop-filter: blur(12px);
+}
+
+.nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Brand lockup: concentric red ring mark + PENN/MEDIATED wordmark.
+   Nav = PENN caption above italic-mixed MEDIATED; footer reverses the
+   stack and drops the italic, per Figma's two distinct treatments. */
+.brand { display: flex; align-items: center; gap: var(--space-150); }
+
+.brand__mark {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-red);
+}
+
+.brand__mark::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-red);
+  opacity: 0.6;
+}
+
+.brand__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-red);
+  transform: translate(-50%, -50%);
+}
+
+.brand__text { display: flex; flex-direction: column; }
+
+.brand__eyebrow {
+  font-family: var(--f-sans);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.brand__word {
+  font-family: var(--f-serif);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.13px;
+  color: var(--c-white);
+}
+
+.brand__word em { font-style: italic; }
+.brand__word--upright { font-style: normal; font-size: 18px; }
+
+.brand--footer .brand__mark { width: 26px; height: 26px; }
+.brand--footer .brand__text { gap: var(--space-025); }
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-500);   /* 40px between nav items */
+}
+
+.nav__subscribe {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  padding-inline: var(--space-200);
+  font-family: var(--f-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.44px;
+  color: var(--c-white);
+  background: var(--c-red-dark);
+  border-radius: 100px;
+  transition: opacity 0.15s;
+}
+
+.nav__subscribe:hover { opacity: 0.85; }
+
+/* =============================================================================
+   HERO
+   Figma "HorizontalBorder": dark bg + subtle grid texture + gradient wash,
+   giant EB Garamond headline (115px), visualization graphic right, ticker foot
+   ============================================================================= */
+.hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--c-dark);
+  background-image: url(assets/hero-bg.png);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* Fully opaque gradient overlay, same as /about's .orbital::before —
+   covers the background texture entirely, matching that section's
+   brighter, cleaner depth instead of a darker/translucent wash. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--c-gradient);
+  pointer-events: none;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  /* Side by side, the copy is centred against the tower art, and stays
+     centred as the title turns into "Penn MEDIATED" (the heading's height
+     animates, so the block eases into its new centre rather than jumping).
+     This is the one page whose title is not 80px below the menu on desktop;
+     stacked (under 900px) it is, like every other page. */
+  align-items: center;
+  gap: var(--space-800);
+  padding-block: var(--space-1000) var(--space-800);
+  /* Fixed px, never vh: this page is embedded in an iframe sized to its own
+     content, so viewport units are circular here. */
+  min-height: 760px;
+}
+
+
+/* Copy column, beside the tower column (stacked above it under 900px). */
+.hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 620px;
+  text-align: left;
+}
+
+
+/* h1: EB Garamond ~96px (scaled down from Figma's 115px for web),
+   ls=-2.7%, lh tight. A tight shadow (not a big blur) keeps it legible
+   without smudging into a haze over the gradient.
+   Weight 600 per the sitewide serif-title rule. Figma specified Medium
+   (500); at --fs-display over a gradient the extra weight also helps it
+   hold up, so the two reasons point the same way. */
+.hero__title {
+  font-family: var(--f-serif);
+  font-weight: 600;
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: -0.028em;
+  color: var(--c-white);
+  margin-bottom: var(--space-500);
+  /* No text shadow (removed Sept 2026 by request): white on the gradient reads
+     cleanly on its own now that the tower sits in its own column. */
+}
+
+.hero__subtitle {
+  display: block;
+  /* EB Garamond italic, no shadow (Sept 2026), a deliberate exception to
+     "running prose is sans": it reads as the title's companion line. One
+     step up from --fs-lede (Garamond runs small for its size) and weight
+     400, the italic weight loaded in index.html's Google Fonts link. */
+  font-family: var(--f-serif);
+  font-style: italic;
+  font-size: var(--fs-h3);
+  font-weight: 400;
+  line-height: var(--lh-title);
+  color: var(--c-white);
+  max-width: 540px;
+}
+
+/* Not a link. It used to be a white, un-underlined <a> to /about — the
+   one treatment on the site that matched none of the five hyperlink
+   categories (see README -> Hyperlinks), so it was demoted to plain
+   hero copy rather than given an underline it was never designed for.
+   The About page is reachable from the nav. */
+
+/* Full-bleed layer: sits above the gradient wash but behind the text, so
+   the graphic's dissipating particles can drift across the whole hero
+   instead of being boxed into a corner. */
+/* Full-bleed sparkle field, behind the copy and the tower alike. Inert to
+   the pointer so it never steals a click or a text selection. */
+.hero__dots {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.hero__dots-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* The tower has its own column rather than sitting behind the copy, so the
+   two never fight for the same space. */
+.hero__visual {
+  position: relative;
+  z-index: 1;
+  min-height: 460px;
+  align-self: stretch;
+}
+
+/* Interactive ASCII graphic (assets/broadcast-tower.html) — background is
+   transparent so the hero's own gradient shows through underneath it. */
+.hero__visual-frame {
+  /* Absolutely filled rather than height: 100%. Once the hero stacks to one
+     column, .hero__visual has only a min-height, and Safari then resolves a
+     percentage height to nothing and falls back to an iframe's default
+     150px: the tower art was drawn into a 150px strip and came out tiny. */
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* =============================================================================
+   WHAT'S NEW  —  bento article grid, 6-unit column system
+   Figma "Imported HTML": row 1 = 3+1+2 units, row 2 = 2+2+1+1 units
+   ============================================================================= */
+/* Standard section spacing: generous top breathing room before a new
+   section's heading, per common web UX rhythm (section gap > element gap). */
+/* padding-bottom gives breathing room before the hard color transition
+   into the Research CTA section below. */
+.whats-new { background: var(--c-white); padding-top: var(--space-1000); padding-bottom: var(--space-800); }
+
+.whats-new__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  row-gap: var(--space-100);
+  padding-bottom: var(--space-300);
+  border-bottom: 1px solid rgba(13,13,12,0.08);
+}
+
+.whats-new__label {
+  font-family: var(--f-sans);
+  font-size: var(--fs-h3);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--c-dark);
+}
+
+.whats-new__all {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--c-dark);
+  transition: opacity 0.15s;
+}
+
+.whats-new__all:hover { opacity: 0.6; }
+
+/* Four-column tile grid. The first card is automatically featured across
+   two columns; all remaining cards occupy one column each. */
+.whats-new__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: var(--space-600);
+  background: rgba(13,13,12,0.1);   /* shows through the 1px gaps as hairlines */
+}
+
+@media (max-width: 900px) {
+  .whats-new__grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .whats-new__grid { grid-template-columns: 1fr; }
+}
+
+.news-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-white);
+  overflow: hidden;
+}
+
+/* The newest update always leads the markup, so :first-child makes the
+   featured treatment automatic whenever the grid is refreshed. It occupies
+   two grid positions as one wide card; later cards flow into the next open
+   position without needing manual placement. */
+.news-card:first-child {
+  grid-column: span 2;
+}
+
+.news-card:first-child .news-card__image {
+  aspect-ratio: 2 / 1;
+}
+
+@media (max-width: 480px) {
+  .news-card:first-child {
+    grid-column: span 1;
+  }
+
+  .news-card:first-child .news-card__image {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.news-card--dark   { background: var(--c-dark); color: var(--c-white); }
+.news-card--purple { background: var(--c-accent); color: var(--c-white); }
+.news-card--red    { background: var(--c-red); color: var(--c-white); }
+
+/* Image is a landscape 16:9 rectangle sitting above the text, not filling
+   the whole tile — the text body below is a plain rectangle that sizes to
+   its (clamped) content instead of being forced into the image box. 16:9
+   is deliberately landscape: the What's New sources are almost all wide
+   images (~2:1), so a landscape tile conforms to them and crops far less
+   than the old square did. EVERY card image fills that box edge to edge
+   (object-fit: cover) — photos, videos and logo/brand graphics alike — so
+   the grid reads as one consistent set of tiles. Very wide lockups still
+   get their sides cropped, so upload at the 16:9 size in the README
+   image-size table. */
+.news-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.news-card__image img,
+.news-card__image video { width: 100%; height: 100%; object-fit: cover; }
+
+.news-card__arrow {
+  position: absolute;
+  top: var(--space-250);
+  right: var(--space-250);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--c-dark);
+  color: var(--c-white);
+  font-size: var(--fs-micro);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+/* Every grid arrow is the standard black circle with a white arrow, except on
+   the black tiles, where black would vanish: there it stays a translucent
+   grey circle. All of them run the gradient on hover (below). */
+.news-card--dark .news-card__arrow { background: rgba(255,255,255,0.14); }
+
+/* Hover affordance: arrow pops and slides through an animated brand
+   gradient (matches the person-card arrow treatment on the
+   team-leadership site) instead of a flat color, same transition/size
+   on every card regardless of variant. */
+.news-card:hover .news-card__arrow {
+  transform: scale(1.15) translate(2px, -2px);
+  background: linear-gradient(100deg, var(--c-accent), var(--c-red), var(--c-accent));
+  background-size: 220% 100%;
+  animation: news-card-arrow-slide 1.2s linear infinite;
+}
+
+@keyframes news-card-arrow-slide {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+
+.news-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-100);
+  padding: var(--space-300);
+}
+
+.news-card__body--bottom { margin-top: auto; }
+
+
+
+.news-card__title {
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  letter-spacing: -0.152px;
+  line-height: var(--lh-title);
+  color: var(--c-dark);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.news-card__desc {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  font-weight: 300;
+  line-height: var(--lh-body);
+  color: var(--c-gray-dark);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.news-card--dark .news-card__title,
+.news-card--purple .news-card__title,
+.news-card--red .news-card__title { color: var(--c-white); }
+
+.news-card--dark .news-card__desc,
+.news-card--purple .news-card__desc,
+.news-card--red .news-card__desc { color: rgba(255,255,255,0.55); }
+
+.news-card__date {
+  margin-top: var(--space-100);
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
+  font-weight: 400;
+  letter-spacing: 0.336px;
+  color: var(--c-muted);
+}
+
+.news-card--dark .news-card__date,
+.news-card--purple .news-card__date,
+.news-card--red .news-card__date { color: rgba(255,255,255,0.35); }
+
+/* =============================================================================
+   RESEARCH CTA
+   Figma "Section": purple 1443×465, big DM Sans headline + dashboard image
+   ============================================================================= */
+.research-cta {
+  background: var(--c-accent);
+  padding-block: var(--space-1000);
+}
+
+.research-cta__inner {
+  /* Two columns that shrink together, rather than a flex row that wrapped
+     at ~1100px and left a half-width column of text, a small image and a
+     wide empty band. Stacked layout: see the 900px rule under FACULTY CTA. */
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 523px);
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-800);
+}
+
+.research-cta__copy { max-width: 500px; }
+
+/* Section heading on a colour band: DM Sans (a section heading is never
+   serif), weight 600 — 700 is for white grounds, 600 on colour. Carries the
+   size the lead used to have, so the band now reads title-then-supporting-copy
+   instead of opening on a full-size sentence. */
+.research-cta__title {
+  font-family: var(--f-sans);
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  line-height: var(--lh-heading);
+  letter-spacing: -0.704px;
+  color: var(--c-white);
+  margin-bottom: var(--space-300);
+}
+
+/* Demoted from --fs-h2 to --fs-lede now that it sits under a heading. The
+   negative tracking went with it: -0.704px is display tracking and reads as
+   cramped at 20px. Weight 400 rather than the 300 used for ledes on white —
+   thin white text on the purple band loses too much. */
+.research-cta__lead {
+  font-family: var(--f-sans);
+  font-size: var(--fs-lede);
+  font-weight: 400;
+  line-height: var(--lh-lede);
+  letter-spacing: 0;
+  color: var(--c-white);
+  margin-bottom: var(--space-500);
+}
+
+.research-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--c-white);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  padding-bottom: 2px;
+  transition: opacity 0.15s;
+}
+
+.research-cta__link:hover { opacity: 0.75; }
+
+.research-cta__image {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--space-100);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+
+/* =============================================================================
+   ABOUT THE CENTER
+   White editorial card between the purple research and orange faculty CTAs.
+   ============================================================================= */
+.about-center {
+  background: var(--c-white);
+  padding-block: var(--space-800);
+  margin-block: var(--space-800);
+}
+
+.about-center__card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: var(--space-800);
+  align-items: start;
+  padding: var(--space-800);
+  background: var(--c-white);
+  border: 1px solid rgba(13,13,12,0.08);
+  box-shadow: 0 20px 60px rgba(13,13,12,0.08);
+}
+
+.about-center__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-250);
+}
+
+.about-center__title {
+  max-width: 520px;
+  font-family: var(--f-serif);
+  font-size: var(--fs-h1);
+  font-weight: 600;
+  line-height: var(--lh-display);
+  letter-spacing: -0.025em;
+  color: var(--c-dark);
+}
+
+.about-center__copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+  max-width: 680px;
+}
+
+.about-center__copy p {
+  font-family: var(--f-sans);
+  font-size: var(--fs-lede);
+  font-weight: 300;
+  line-height: var(--lh-body);
+  color: var(--c-gray-dark);
+}
+
+.about-center__link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-100);
+  margin-top: var(--space-100);
+  padding-bottom: var(--space-050);
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-dark);
+  border-bottom: 1px solid rgba(13,13,12,0.35);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.about-center__link:hover {
+  color: var(--c-red-dark);
+  border-color: var(--c-red-dark);
+}
+
+@media (max-width: 760px) {
+  .about-center__card {
+    grid-template-columns: 1fr;
+    gap: var(--space-500);
+    padding: var(--space-400);
+  }
+}
+
+/* =============================================================================
+   FACULTY CTA
+   Same pattern as RESEARCH CTA above (copy left, image right), --c-red
+   (brand red/orange) instead of --c-accent so the two CTAs read as a pair
+   without being identical.
+   ============================================================================= */
+.faculty-cta {
+  background: var(--c-red);
+  padding-block: var(--space-1000);
+  /* No margin-bottom. This is the LAST section on the page, and the page is
+     embedded at its exact content height: a trailing margin is white space
+     between the orange block and the global footer's signal band, and it does
+     not even count toward body.scrollHeight (margins collapse out of it), so
+     the frame is sized 64px shorter than the document and the margin is
+     clipped in some browsers and painted in others. The gap before the footer
+     is the footer's own band now — it does not need help from here. */
+}
+
+.faculty-cta__inner {
+  /* Same two-column grid as .research-cta__inner. */
+  display: grid;
+  grid-template-columns: minmax(0, 500px) minmax(0, 523px);
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-800);
+}
+
+.faculty-cta__copy { max-width: 500px; }
+
+.faculty-cta__lead {
+  font-family: var(--f-sans);
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  line-height: var(--lh-heading);
+  letter-spacing: -0.704px;
+  color: var(--c-white);
+  margin-bottom: var(--space-500);
+}
+
+.faculty-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-100);
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--c-white);
+  border-bottom: 1px solid rgba(255,255,255,0.4);
+  padding-bottom: 2px;
+  transition: opacity 0.15s;
+}
+
+.faculty-cta__link:hover { opacity: 0.75; }
+
+/* The two animated cards are looping screen recordings, delivered as
+   muted <video> rather than GIF (see the README). Anyone who has asked
+   their OS to reduce motion gets the poster frame instead — CSS can't
+   stop autoplay, so a three-line script at the end of the body pauses
+   them; this rule just makes sure the poster is what shows. */
+@media (prefers-reduced-motion: reduce) {
+  .news-card__image video,
+  video.research-cta__image,
+  video.faculty-cta__image { animation: none; }
+}
+
+.faculty-cta__image {
+  display: block;
+  width: 100%;
+  border-radius: var(--space-100);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+}
+
+/* The screen recordings are links too (same destination as each band's text
+   link). A small lift on hover, like the What's New cards, says so. */
+.research-cta__media,
+.faculty-cta__media {
+  display: block;
+  border-radius: var(--space-100);
+  transition: transform 0.2s ease;
+}
+.research-cta__media:hover,
+.faculty-cta__media:hover { transform: translateY(-4px); }
+
+/* Both colour bands, narrow screens: one column, with the copy and the
+   screen recording sharing one reading width so neither is stranded in a
+   corner of the band. 640px keeps the lines readable on tablets; on phones
+   the width is simply the screen. Less vertical padding so the band is
+   mostly content rather than colour. */
+@media (max-width: 900px) {
+  .research-cta__inner,
+  .faculty-cta__inner {
+    grid-template-columns: minmax(0, 640px);
+    justify-content: start;
+    gap: var(--space-600);
+  }
+  .research-cta__copy,
+  .faculty-cta__copy { max-width: none; }
+  .research-cta,
+  .faculty-cta { padding-block: var(--space-800); }
+}
+@media (max-width: 480px) {
+  .research-cta,
+  .faculty-cta { padding-block: var(--space-600); }
+  .research-cta__inner,
+  .faculty-cta__inner { gap: var(--space-500); }
+}
+
+/* FOOTER */
+.footer { background: var(--c-dark); padding-top: var(--space-800); }
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800);
+  padding-bottom: var(--space-600);
+}
+
+.footer__brand {
+  flex: 1 1 320px;
+  max-width: 484px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.footer__tagline {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  font-weight: 300;
+  line-height: var(--lh-body);
+  color: var(--c-white);
+  max-width: 320px;
+}
+
+.footer__email {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  color: var(--c-red);
+  transition: opacity 0.15s;
+}
+
+.footer__email:hover { opacity: 0.8; }
+
+.footer__social { display: flex; align-items: center; gap: var(--space-200); }
+
+.footer__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-white);
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+
+.footer__social-link:hover { opacity: 1; }
+
+.footer__nav {
+  flex: 2 1 480px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-800);
+}
+
+.footer__nav-col { flex: 1 1 170px; min-width: 170px; }
+
+.footer__nav-heading {
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--c-white);
+  margin-bottom: var(--space-250);
+}
+
+.footer__nav-col ul { display: flex; flex-direction: column; gap: var(--space-200); }
+
+.footer__nav-col a {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  font-weight: 300;
+  color: var(--c-white);
+  transition: opacity 0.15s;
+}
+
+.footer__nav-col a:hover { opacity: 0.7; }
+
+.footer__bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-200);
+  padding-block: var(--space-250);
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.footer__bottom p {
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+}
+
+.footer__bottom-mediated { font-style: italic; }
+
+/* No trailing padding on <body>: the cursor-reactive signal band that fills
+   the gap before the footer now lives in the GLOBAL FOOTER (PennMEDIATED/footer
+   → the Divi Theme Builder Code module), so every page gets it, not just this
+   one. Adding body padding back here would double that space. */
+
+
+/* =============================================================================
+   REDESIGN TRIAL — hero, bento grid
+   ========================================================================== */
+
+
+
+/* The hero scroll cue was removed here. An in-page anchor cannot scroll the
+   PARENT page from inside a cross-origin iframe, and this page is embedded at
+   its full content height so it has nothing of its own to scroll — clicking it
+   did nothing on the live site. Bringing it back means teaching the parent's
+   embed snippet to listen for a scroll message from this page. */
+
+@media (max-width: 900px) {
+  .hero__inner { grid-template-columns: 1fr; gap: var(--space-600); min-height: 0; }
+  /* Grows with the width on tablets so the tower art keeps a usable
+     height instead of a thin 300px strip. */
+  .hero__visual { min-height: clamp(300px, 55vw, 460px); order: 2; }
+  .hero__content { max-width: none; }
+}
+
+/* ── Bento grid, v2 ──────────────────────────────────────────────────────
+   Every tile carries a colour (white / dark / purple / orange); the colour is
+   the frame. Images sit INSIDE the tile at a fixed box rather than bleeding
+   edge to edge, so a source image's aspect ratio stops mattering —
+   object-fit: cover centre-crops anything into the same box.
+
+   TWO IMAGE SHAPES, and only two:
+     SQUARE 1:1 — the feature tile (232px) and the four small tiles (132px).
+       Same shape, two scales, so ONE source file drops into either slot and
+       just scales up or down. Export square art at 600x600 and it is sharp
+       in both.
+     WIDE 16:9 — the two rectangular tiles (256x144). Export at 800x450.
+
+   Layout is 4 columns x 3 rows = 12 cells, filled exactly:
+   1 feature (2x2) + 4 squares (1x1) + 2 wides (2x1).
+   Change the card count and this stops packing cleanly — 6 or 8 are the
+   other numbers that work.
+   -------------------------------------------------------------------- */
+.whats-new__grid {
+  gap: var(--space-200);
+  background: transparent;
+  grid-auto-flow: dense;
+}
+
+.news-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+  padding: var(--space-300);
+  /* Taller than wide-ish: at the 4-column layout this makes the small tiles
+     read as near-squares rather than letterboxes, and the feature (2 rows)
+     scales with them automatically. */
+  min-height: 286px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.news-card:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(13,13,12,0.12); }
+
+/* Size tiers */
+.news-card--feature { grid-column: span 2; grid-row: span 2; min-height: 592px; }
+.news-card--wide    { grid-column: span 2; }
+.news-card--square  { grid-column: span 1; }
+
+/* Colour tiles. Text-on-solid follows the accent palette: white on purple and
+   on near-black, but DARK on orange — white on #f03d1f is only ~3.9:1. */
+.news-card--white  { background: var(--c-white);  border: 1px solid rgba(13,13,12,0.12); }
+.news-card--dark   { background: var(--c-dark);   border: 1px solid transparent; }
+.news-card--purple { background: var(--c-accent); border: 1px solid transparent; }
+.news-card--orange { background: var(--c-red);    border: 1px solid transparent; }
+.news-card--peach  { background: var(--c-peach);  border: 1px solid rgba(240,61,31,0.20); color: var(--c-dark); }
+
+.news-card--white  .news-card__title { color: var(--c-dark); }
+.news-card--white  .news-card__desc  { color: var(--c-gray-dark); }
+
+.news-card--dark   .news-card__title,
+.news-card--purple .news-card__title { color: var(--c-white); }
+.news-card--dark   .news-card__desc,
+.news-card--purple .news-card__desc  { color: rgba(255,255,255,0.62); }
+
+.news-card--orange .news-card__title { color: var(--c-dark); }
+.news-card--orange .news-card__desc  { color: rgba(13,13,12,0.74); }
+
+/* Black, not the palette's brown text-on-tint. On a tint this light the
+   brown reads as washed-out rather than as a considered colour, and the
+   orange tile next to it already sets dark text on a warm ground. */
+.news-card--peach  .news-card__title { color: var(--c-dark); }
+.news-card--peach  .news-card__desc  { color: rgba(13,13,12,0.74); }
+
+/* (1) Texture — the hero/footer glyph motif as a dot field. currentColor
+   means each tile tints it with its own text colour automatically. */
+.news-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 14px 14px;
+  opacity: 0.07;
+  pointer-events: none;
+}
+.news-card--white::before { opacity: 0.10; }
+/* Solid colour tiles stay flat: the dot field read as noise on purple,
+   orange and black, so only the white tiles keep it. */
+.news-card--purple::before,
+.news-card--orange::before,
+.news-card--dark::before { content: none; }
+
+/* Research Compendium tile — a white card with a quiet nod to the hero:
+   faint dotted broadcast rings (the same rings that circle the tower) fanning
+   out from behind the recording, over a barely-there wash of the brand
+   gradient. Rings are a mask on the gradient, so they take its colours. Static
+   and cheap: no filters, no animation. Dark text, as white cards. */
+.news-card--brush { background: var(--c-white); border: 1px solid rgba(13,13,12,0.12); }
+.news-card--brush .news-card__title { color: var(--c-dark); }
+.news-card--brush .news-card__desc  { color: var(--c-gray-dark); }
+.news-card--brush::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: var(--c-gradient);
+  opacity: 0.16;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='xMaxYMid slice'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round'%3E%3Ccircle cx='1030' cy='300' r='70' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='110' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='150' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='190' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='230' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='xMaxYMid slice'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round'%3E%3Ccircle cx='1030' cy='300' r='70' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='110' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='150' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='190' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='230' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+.news-card--brush::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 90% at 88% 50%, rgba(20,6,70,0.03), transparent 70%);
+}
+@media (max-width: 480px) {
+  .news-card--brush::before { opacity: 0.14; }
+  .news-card--brush::after { background: radial-gradient(ellipse 90% 50% at 50% 20%, rgba(20,6,70,0.07), transparent 70%); }
+}
+.news-card--brush .news-card__body { position: relative; z-index: 1; }
+.news-card--brush .news-card__media { box-shadow: 0 8px 22px rgba(20,6,70,0.14); }
+
+
+/* Fixed media box — the whole point: any source image, same result.
+   Base is the SQUARE family at small scale (the four 1x1 tiles). */
+.news-card__media {
+  position: relative;
+  z-index: 1;
+  width: 132px;
+  height: 132px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(13,13,12,0.06);
+}
+/* Same 1:1 shape as the small tiles, just blown up — swap the same file in.
+   Sized as a fraction of the tile rather than a fixed px so it keeps its
+   proportion as the column width changes. */
+.news-card--feature .news-card__media { width: 66%; height: auto; aspect-ratio: 1 / 1; }
+/* The only other shape on the page: 16:9 for the two rectangular tiles.
+   These run side-by-side — image in one column, text in the other — so the
+   image can be much larger than it was stacked, and the title can grow with
+   it. The two rectangles mirror each other: add news-card--reverse to flip
+   which side the image sits on. */
+.news-card--wide {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-400);
+}
+.news-card--wide.news-card--reverse { flex-direction: row-reverse; }
+.news-card--wide .news-card__media {
+  flex: 0 0 auto;
+  width: 46%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+.news-card--wide .news-card__body,
+.news-card--wide .news-card__body--bottom { flex: 1 1 auto; margin-top: 0; }
+.news-card--wide .news-card__title { font-size: var(--fs-h3); -webkit-line-clamp: 3; }
+.news-card--wide .news-card__desc  { -webkit-line-clamp: 3; }
+.news-card__media img,
+.news-card__media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* (3) Bottom-anchored content — the gap sits in the middle as deliberate
+   negative space instead of trailing off the end of short copy. */
+.news-card__body {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+  gap: var(--space-100);
+}
+.news-card__body--bottom { margin-top: auto; }
+
+/* The feature is a 2x2 tile — roughly four times the area of a square — so it
+   carries the page's largest card type. --fs-h2 rather than --fs-h3: at h3 it
+   read the same size as the small tiles' no-image titles, which made the
+   biggest card look like an enlarged version of a small one instead of the
+   lead. Clamped to 2 lines at this size; 3 lines of 40px type would crowd the
+   image above it. */
+.news-card--feature .news-card__title { font-size: var(--fs-h2); -webkit-line-clamp: 2; }
+.news-card--feature .news-card__desc  { -webkit-line-clamp: 4; }
+
+/* An image-bearing square is the tightest box on the page: 132px of it is the
+   media, and the title runs at 16px. Two lines is enough at 1440px but not at
+   1024, where the four columns are narrower and both "MEDIATED Membership with
+   GNI" and "Partnering with Digital Forensics Lab" were cut mid-phrase. Three
+   lines clears them at every width. */
+.news-card--square:has(.news-card__media) .news-card__title { -webkit-line-clamp: 3; }
+
+/* Text-only tile: no image, so the title has to carry the card. This is
+   AUTOMATIC — :has() detects the missing media box, so removing an <img>
+   from a card is all it takes to get the larger title. The hover underline
+   makes it read as the link the whole tile already is. */
+.news-card:not(:has(.news-card__media)) .news-card__title { font-size: var(--fs-h3); -webkit-line-clamp: 4; }
+.news-card:not(:has(.news-card__media)) .news-card__desc  { -webkit-line-clamp: 4; }
+.news-card:not(:has(.news-card__media)):hover .news-card__title { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Never break a hyphenated word across lines (“Co‑Directors”). The markup
+   uses U+2011 NON-BREAKING HYPHEN for those; this stops auto-hyphenation from
+   adding its own break points. */
+.news-card__title { hyphens: manual; overflow-wrap: normal; }
+
+/* Above the tile texture and the category mark. Colour is set once, up with
+   the base .news-card__arrow rule — deliberately NOT per tile, so white,
+   purple and orange all get the same black circle and the black tiles keep
+   their translucent grey. Every one of them runs the gradient on hover. */
+.news-card__arrow { z-index: 2; }
+
+@media (max-width: 900px) {
+  .news-card--feature { grid-column: span 2; grid-row: span 1; min-height: 320px; }
+  .news-card--wide    { grid-column: span 2; }
+  .news-card--feature .news-card__media { width: 180px; height: 180px; aspect-ratio: auto; }
+}
+@media (max-width: 480px) {
+  .whats-new__grid { gap: var(--space-250); }
+  .news-card--feature,
+  .news-card--wide,
+  .news-card--square { grid-column: span 1; }
+  .news-card--feature { min-height: 280px; }
+  .news-card__media { width: 120px; height: 120px; }
+  .news-card--feature .news-card__media { width: 168px; height: 168px; aspect-ratio: auto; }
+  .news-card--wide,
+  .news-card--wide.news-card--reverse { flex-direction: column; gap: 0; }
+  .news-card--wide .news-card__media { width: 224px; height: 126px; aspect-ratio: auto; flex: none; }
+  .news-card--wide .news-card__body--bottom { margin-top: auto; }
+}
+
+
+/* ── Trailing-margin guard ─────────────────────────────────────────────────
+   These pages are embedded in an iframe that is resized to the height this
+   page reports, and that height is measured from document.body.
+
+   A bottom margin on the last element COLLAPSES THROUGH body and out to
+   <html>. It never appears in body.scrollHeight, but it does extend
+   documentElement.scrollHeight — so the frame gets sized short of the real
+   document, the embedded page is left with a few px it can scroll, and it
+   swallows the visitor's wheel events: the outer page then only scrolls when
+   the cursor is over its scrollbar. It has bitten twice (home, 64px;
+   grants-overview, 80px) and it is invisible in the builder.
+
+   display: flow-root makes body a block formatting context, so descendant
+   margins can no longer escape it and the measured height is always the whole
+   document. Cheap, and it removes a whole class of bug rather than one
+   instance. If a page grows here, something was relying on a margin escaping
+   — convert that margin to padding rather than removing this.
+   ====================================================================== */
+body { display: flow-root; }
