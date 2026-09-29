@@ -1,0 +1,543 @@
+# Penn MEDIATED — Home
+
+The homepage for the [Center on Media, Technology and Democracy](https://mediated.upenn.edu). Static HTML/CSS, no build step — same conventions as the [`about`](https://github.com/PennMEDIATED/about) repo (shared spacing tokens, brand colors, and fonts).
+
+- `index.html` — page markup
+- `styles.css` — all styling (design tokens live at the top in `:root`)
+- `assets/` — images, GIFs, and `broadcast-tower.html` (the interactive hero graphic, embedded via iframe)
+
+## Updating content
+
+The **What's New** grid is a fixed bento layout: **4 columns × 3 rows = 12 cells,
+filled exactly by 7 cards.**
+
+| Cards | Class | Spans | Image box |
+|---|---|---|---|
+| 1 feature | `news-card--feature` | 2×2 | square, 2/3 of the tile (~385px at full width) |
+| 4 squares | `news-card--square` | 1×1 | square, 132px |
+| 2 rectangles | `news-card--wide` | 2×1 | 16:9, 46% of the tile |
+
+**Change the card count and it stops packing cleanly.** 7 is the number. (6 and 8
+are the only other counts that work, and both need the span classes rearranged.)
+So adding an item means removing one — one in, one out.
+
+Every card also carries a colour class: `--white`, `--purple`, `--orange` or
+`--twinkle`. See **Tile colours** below; the rule there is not optional and it is
+easy to break by accident.
+
+### What each slot takes
+
+Everything a slot dictates, in one place. **Image shape and upload size, type
+size, and how much copy fits** — all set by the slot, none of it by you.
+
+| Slot | Image shape | Upload at | Title | Title lines | Desc lines |
+|---|---|---|---|---|---|
+| Feature (2×2) | **1:1** | **800 × 800** | `--fs-h2` — 40px at 1440, 26px at 320 | 2 | 4 |
+| Square (1×1) **with** an image | **1:1** | **800 × 800** | `--fs-body` — 16px | 3 | 2 |
+| Rectangle (2×1) | **16:9** | **800 × 450** | `--fs-h3` — 24px | 3 | 3 |
+| Any card **without** an image | — | — | `--fs-h3` — 24px | 4 | 4 |
+
+**Two image shapes, and the square is shared on purpose.** The feature and the
+small tiles take the same 1:1 file, so one 800×800 export works in either — see
+"The rotation this is built for" below. Why 800 and not 600 is under
+**Image sizes — why those numbers**.
+
+**Corners round automatically** — the media box has `border-radius: 4px` with
+`overflow: hidden`. Supply square-cornered artwork.
+
+**Truncation is silent.** Copy past the line limit is cut mid-phrase — no
+ellipsis, nothing overflows visibly — so a title two words too long just loses
+its ending and looks fine until someone reads it.
+
+**The image-bearing square is the tightest box on the page**: 132px of it is the
+media box and the title runs at body size. Write the shortest copy there.
+"Partnering with Digital Forensics Research Lab" is about the limit at three lines.
+
+**Check 1024px.** Not only the extremes — titles clear at 1440 and at 390 but
+were being cut at 1024, where the grid is still four columns and each one is
+narrower.
+
+### Adding a new What's New item
+
+**1. Prepare the image.**
+
+Crop it to the shape of the slot it is going into — square for a square slot,
+16:9 for a rectangle — before uploading. Do not rely on the page to crop it for
+you: it centre-crops, so anything with type near the edges loses it. A 4:3 poster
+dropped into a square tile is the classic failure; the DFRLab announcement lockup
+had to be replaced with its emblem alone for exactly this reason.
+
+Export as WebP if you can (see "Images and video" below for the command). Use a
+short, lowercase, hyphenated filename: `podcast-series-launch.webp`.
+
+**2. Upload it to `assets/whats-new/` in this repository.**
+
+1. Open the `assets/whats-new/` folder on GitHub.
+2. **Add file** → **Upload files**.
+3. Choose the image and commit it.
+4. Copy the filename.
+
+The image must be in the repo before the update is requested. External image URLs
+are not part of this workflow.
+
+**3. Ask for the update.** Give Claude Code this prompt:
+
+> Add a new What's New item: "**[Title]**" — [one or two sentence description].
+> Link it to [destination URL]. Use the image I uploaded at
+> `assets/whats-new/[filename]`. Use this image alt text: "[what the image
+> shows]". Put it in the feature tile and demote the current feature to a square
+> tile. Remove [which existing card] to make room.
+
+Filled in, for reference:
+
+> Add a new What's New item: "**New Report on Monitoring LLMs**" — In a new
+> Carnegie Endowment paper, Alex Engler and Danaé Metaxa argue for longitudinal
+> monitoring to understand how LLMs impact politics. Link it to
+> https://carnegieendowment.org/research/2026/08/llms-artificial-intelligence-longitudinal-monitoring-norms-politics-research.
+> Use the image I uploaded at `assets/whats-new/llm-monitoring-report.webp`. Use
+> this image alt text: "Carnegie Endowment report on monitoring large language
+> models". Put it in the feature tile and demote the current feature to a square
+> tile. Remove the DFRLab card to make room.
+
+**Say which card comes out.** There is no automatic "oldest" — the grid is
+positional, not chronological, and the markup order drives the packing. If you do
+not name one, you will be asked.
+
+### The rotation this is built for
+
+The newest item goes in the feature tile. When the next one arrives it is demoted
+to a small square tile. **That move is a class swap only** — change
+`news-card--feature` to `news-card--square` on the `<a>` and pick a tile colour.
+The `<img>` and its `width`/`height` attributes do not change, because both boxes
+are 1:1 and `object-fit: cover` does the rest. No re-crop, no re-export, no second
+file.
+
+**Motion belongs in the two rectangular tiles.** GIFs, MP4 loops and screen
+recordings are almost always landscape, so they fit 16:9 without losing their
+sides — and a motion asset that never moves between slots does not need to
+satisfy the square rule. Keep the square tiles for stills.
+
+### A card with no image
+
+A card can run without one. A `:has()` rule detects the missing media box and
+gives the title `--fs-h3` (24px) with more room, so the title carries the card
+instead of a picture — and the whole tile is still the link. **Deleting the
+`<div class="news-card__media">…</div>` is the entire operation**; adding one
+back reverts it. Two of the seven cards run this way at the moment.
+
+Prefer this over using a weak or badly cropped image. An empty tile with a
+confident title reads better than a tile with a smudge in it.
+
+### General tips
+
+- Upload the image before sending the prompt.
+- Include alt text that describes the image for someone who cannot see it.
+- If you don't have a good image, add the item without one rather than using a
+  fabricated stock image — see above.
+- Image shape, type size and how much copy fits are all set by the slot — see
+  **What each slot takes** above.
+- After any content update, open `index.html` in a browser and check it at a
+  narrow width too — the grid reflows 4 columns → 2 → 1, and the tile-colour rule
+  has to hold at all three.
+
+### Tile colours
+
+**No two tiles of the same colour may share an edge — at any width.** The grid
+reflows from 4 columns to 2 to 1, so neighbours change: a pair that is fine on
+desktop can end up stacked on a phone. Check all three layouts before calling a
+recolour done.
+
+Current assignment, which satisfies the rule at every width:
+
+| Position | Card | Colour |
+|---|---|---|
+| Feature (2×2) | New Report on Monitoring LLMs | white |
+| Square | Welcoming New Knight Fellows | purple |
+| Square | MEDIATED Membership with GNI | orange |
+| Wide | Launching the Research Compendium | twinkle (light gray + gradient sparkle) |
+| Square | An Intro from our Co-Directors | orange |
+| Square | Partnering with Digital Forensics Research Lab | purple |
+| Wide | Announcing our Affiliated Faculty | white |
+
+Tile colours are `--white`, `--purple`, `--orange` and `--twinkle`: the site's
+light gray (`--c-light-bg`) with the hero's sparkle field drawn in the brand
+gradient and slowly twinkling (static for reduced-motion). It replaced the
+light-orange peach tile; black, light orange and light purple were all ruled
+out for this slot. Text is white on purple, dark on orange (white on `#f03d1f`
+is only ~3.9:1) and dark on twinkle. Only the white tiles carry the plain
+dot-field texture; purple and orange are flat.
+
+Two constraints make this tighter than it looks. The feature tile borders five
+other tiles across the three layouts, so **its colour has to be unique** — that
+is why it is white. And the last wide tile borders the two squares above it and
+the wide above them, which uses up all three of twinkle/purple/orange; it has to be
+white too. The one place two same-colour tiles meet is the feature and that last
+wide tile, **diagonally, across the grid gap** on desktop only. Corner contact
+across a gap is not an edge, and with four colours there is no arrangement that
+avoids it.
+
+If you add a fifth colour from the accent palette, this gets easier. Until then,
+recolouring one tile usually forces a second — re-check, don't eyeball it.
+
+### What sits directly below the grid
+
+The section immediately after the grid is the **Research Compendium** CTA. The
+last card in the markup lands directly above it at every width — bottom-right on
+desktop, and literally the previous block once the grid stacks to one column.
+
+**So the Compendium card must not be last.** Two cards in a row both headed
+"Research Compendium" reads as a duplication rather than as a lead-in, and it is
+worst on a phone, where they are stacked one on top of the other with nothing
+else in view. The same applies to any future card that points at whatever section
+follows the grid.
+
+### Rectangle tiles
+
+The two 2×1 tiles run their image and text **side by side**, not stacked, so the
+image is much larger (46% of the tile, 16:9) and the title sits at `--fs-h3`
+next to it. The two mirror each other: the first has its image on the left, the
+second carries `news-card--reverse` to put the image on the right. Keep them
+opposite. Below 480px both stack, image on top.
+
+Titles grow automatically on any card with no image — a `:has()` rule detects
+the missing media box, so deleting an `<img>` is all it takes. Hyphenated words
+in titles use U+2011 (non-breaking hyphen) so they never split across lines;
+write "Co‑Directors", not "Co-Directors".
+
+### Image sizes — why those numbers
+
+The What's New sizes live in **What each slot takes**, above, alongside the type
+and copy limits for the same slot. Stated once, there, so the two cannot drift
+apart. This section is the reasoning and the one image that is not a card.
+
+| Image | Shape | **Upload at** |
+|---|---|---|
+| Research CTA / Faculty CTA image or gif | Not cropped — displays at its own aspect ratio, up to ~523px wide on desktop | ~1046px wide, already cropped to the shape you want |
+
+**Why 800 and not 600.** The feature's image box is two-thirds of the tile,
+~385px at full width. 800px covers that at 2×, which is what a retina screen
+needs, and downscales cleanly to the 132px small box. 600px would be only ~1.5×
+and looks soft on the feature. Going past 800 just makes the visitor download
+pixels the browser throws away.
+
+**Images sit inside the tile, not edge to edge.** The box is fixed and the tile's
+colour is the frame, so a source whose ratio is a little off still lands in the
+same box as everything else. The box has `border-radius: 4px` and
+`overflow: hidden`, so **corners round automatically** — supply square-cornered
+artwork.
+
+**But it centre-crops, so crop before you upload.** `object-fit: cover` fills the
+box and throws away the overflow, evenly from both sides. The failure this
+produces is specific and ugly: a 4:3 poster in a square tile loses ~13% from each
+edge, which is enough to cut the ends off a wordmark. The Digital Sherlocks
+announcement lockup is the worked example — centre-cropped to square,
+"SHERLOCKS" renders as "HERLOCK", so the card uses the emblem alone instead. A
+3:1 lockup loses its ends entirely.
+
+If an image can't survive a square crop, the options in order are: crop to an
+element of it that can (a logo, an emblem, a figure), put the card in a rectangle
+where 16:9 fits it, ask for a square version, or run the card with no image at
+all (see **A card with no image**).
+
+**The CTA rows are different** — they display at their native aspect ratio and
+are not cropped, so crop those yourself to the shape you want.
+
+**See "Images and video" below before adding anything** — it covers the required
+`width`/`height` attributes, WebP and MP4 conversion, and the commands to do it.
+
+## Typography
+
+Sitewide convention. The `--fs-*`/`--lh-*` block at the top of `styles.css` is canonical and identical in every page repo.
+
+**Two families, no third — and the split is by what the text *is*, not by heading level.**
+
+- **`--f-serif` (EB Garamond)** — page titles, and **titles of works or names of people**: a blog post title, a paper title, a person's name. Plus pull-quote copy.
+- **`--f-sans` (DM Sans)** — **section headings**, card and UI labels, running prose, metadata, controls, and uppercase micro-labels.
+
+The one that trips people up: **a section heading is not serif.** "Past Events", "Funded Grants", "Latest Updates" are all DM Sans 700 at `--fs-h2`. Serif marks a thing that has its own name — `blog`'s `.post-item h2`, `research-compendium`'s `.entry__title`, `team-leadership`'s `.person-card__name`, `team-faculty`'s `#fb-name` and `#pd-title` — while sans marks the furniture around it, *including card titles that label a category rather than name a work* (`events`' `.event-card__title`, `data`'s `.data-project__title`, `home`'s `.news-card__title`).
+
+So two `--fs-h3` card titles can legitimately differ: a post title is serif because it names a work, an event card title is sans because it labels an event. That is the rule, not an inconsistency.
+
+**Serif titles are weight 600**, sitewide and without exception — page titles, post and paper titles, people's names. (Serif *body* copy is a different thing: pull-quotes and blockquotes stay at their own weights.)
+
+There is no monospace face.
+
+**Measure is capped per container, and the numbers differ on purpose.** A `max-width` on body copy is a reading-comfort cap (~65-75 characters), not a layout width — so it depends on how wide the container already is. `events`' `.event-card__desc` caps at **560px** because `.past-events__grid` is two columns and a card is half the row; `blog`'s `.post-excerpt` caps at **720px** because the feed is a single full-width column. Both land the same line length. **Do not "align" these two numbers** — matching them would make one of the two pages read wrong.
+
+**Sizes come from tokens, never raw px.**
+
+| Token | Mobile (=<480px) | Desktop (>=1440px) | Used for |
+| --- | --- | --- | --- |
+| `--fs-display` | 36px | 76px | the hero title |
+| `--fs-h1` | 36px | 56px | page title (`.about-center__title` here) |
+| `--fs-h2` | 26px | 40px | section titles, the CTA leads |
+| `--fs-h3` | 20px | 24px | card and third-level titles |
+| `--fs-lede` | 18px | 20px | intro paragraphs |
+| `--fs-body` | 16px | 16px | body copy |
+| `--fs-small` | 14px | 14px | captions, meta, footer copy |
+| `--fs-small-serif` | 15px | 15px | EB Garamond at small sizes |
+| `--fs-micro` | 12px | 12px | uppercase labels, tags, dates |
+
+`.hero__title` and `.about-center__title` used to carry their own bespoke clamps (`40→76` and `38→56`); those are now `--fs-display` and `--fs-h1`, whose ceilings match exactly.
+
+The top five are `clamp()` values that interpolate across the viewport, so tablet widths need no separate `@media` override. Only add a breakpoint font-size when a specific layout actually demands it.
+
+**12px is the floor** for page copy. Nothing on the page ships smaller.
+
+**Line heights are tokens too** — `--lh-display` 1.05, `--lh-heading` 1.15, `--lh-lede` 1.26, `--lh-title` 1.3, `--lh-body` 1.55. Never set a line-height in px; it breaks the fluid sizes.
+
+**No kicker labels.** No small uppercase label above a heading anywhere on the page — the sitewide convention already documented in `about`, `team-leadership`, `data` and `grants`. (The hero used to carry a white serif italic "Penn MEDIATED" line above the title; it was removed in September 2026, and the name now sits in the subtitle.)
+
+**The one exception is the `.nav`/`.brand` component.** Its sizes (9.5px eyebrow, 15/18px wordmark, 16px links, 11px subscribe) come straight from the Figma nav frame and are deliberately left as raw px — see "Site nav" above for why those rules are kept at all. Its font families were moved off `--f-mono` with everything else, so the reference stays accurate for the header build; only the sizes are frozen.
+
+## Site nav
+
+`styles.css` carries a full `.nav` component — sticky bar, brand lockup, links, subscribe button, sized by `--nav-h` and `--c-nav-bg`. There is deliberately no matching markup in `index.html`: WordPress renders the live nav, wired to its native menu system so submenu items can be added in wp-admin without a code deploy.
+
+Keep these rules. They are the only implementation of the nav design outside Figma, and they are the reference the WordPress header build works from. They are not dead code to prune.
+
+`--nav-h` belongs here, with the component that defines it. Page repos never hardcode a nav height — if one needs the value (for `scroll-margin-top` on an anchor target under the sticky nav, say), the header build sets `--nav-h` and the page reads `var(--nav-h, 0px)`, so the page still lays out correctly standalone where there is no nav.
+
+## Style guide (shared across `about` and `home`)
+
+Both repos are static HTML/CSS built off the same design system. If you're adding or editing anything, pull values from here rather than guessing new ones — that's what keeps the two sites looking like one brand instead of drifting apart.
+
+### Design tokens (`:root` in `styles.css`)
+
+**Spacing** — Atlassian's 8px scale. Always use the variable, never a raw pixel value:
+
+```
+--space-025: 2px   --space-100: 8px   --space-300: 24px  --space-600: 48px
+--space-050: 4px   --space-150: 12px  --space-400: 32px  --space-800: 64px
+--space-075: 6px   --space-200: 16px  --space-500: 40px  --space-1000: 80px
+--space-250: 20px
+```
+
+**Color:**
+
+| Token | Hex | Use |
+|---|---|---|
+| `--c-dark` | `#0d0d0c` | Primary text, dark backgrounds |
+| `--c-accent` | `#5533ee` | Brand purple |
+| `--c-red` | `#f03d1f` | Brand red/orange, links, tags |
+| `--c-gray` | `#888680` | Secondary/muted text |
+| `--c-gray-dark` | `#54534f` | Body copy needing real contrast (~8:1 on white) — `home` only so far; prefer this over `--c-gray` for paragraph text, backport to `about` if you add long-form copy there |
+| `--c-light-bg` | `#f8f7f4` | Placeholder/image background |
+| `--c-white` | `#ffffff` | — |
+
+**Brand gradient** — used on every purple-to-red surface (the about page's orbital section and newsletter/supporters block, the home hero): `linear-gradient(150deg, #5533ee 0%, #df3611 81%)` via `--c-gradient`. Never write this gradient out by hand or approximate it with different stops — reference the variable so a future palette tweak only has to happen in one place per repo. (`home` no longer has a newsletter/supporters section — see below.)
+
+**Type:**
+- `--f-serif`: `'EB Garamond', Georgia, 'Times New Roman', serif` — headlines, quotes, the "MEDIATED" wordmark
+- `--f-sans`: `'DM Sans', system-ui, -apple-system, sans-serif` — everything else
+- `--f-mono`: `'Courier New', Courier, monospace` — small meta labels only
+
+**Layout:** `--max-w: 1440px` page cap, `--pad-x: var(--space-1000)` (80px) side padding on the shared `*__inner` containers. In `home`, `--pad-x` scales down responsively (32px under 900px, 20px under 480px) — `about`'s simpler page hasn't needed this yet, but if you add anything to `about` wider than a headline/paragraph, backport the same responsive `--pad-x` media queries rather than letting content overflow on mobile.
+
+### Layout conventions
+
+- Every section's content wrapper is named `.<section>__inner` and shares one rule (`width:100%; max-width:var(--max-w); margin-inline:auto; padding-inline:var(--pad-x);`). Add new sections to that shared selector list instead of writing a one-off inner container.
+- Section-to-section vertical rhythm uses `--space-1000` (80px) for generous breaks (e.g. before a new heading like "What's New") and `--space-600` (48px) between a heading row and the content below it.
+- BEM-ish naming: `.block__element`, modifiers as `.block--variant` or `.block__element--variant` (e.g. `.news-card--dark`, `.news-card__body--bottom`).
+
+### Shared components
+
+- **Section header pattern** (`What's New` / etc.): a heading (24px, weight 600, `--c-dark`) and a "view all" link (14px, weight 500) in a `flex` row with `align-items:baseline` and a bottom border. Keep any new listing section (a future "Publications" grid, say) on this exact pattern rather than inventing a new header style.
+- **Cards** (`news-card`): the first card automatically spans two columns as one wide card, with a `2 / 1` image above a full-width text body. All other cards place a landscape `16 / 9` image (`object-fit:cover`) above a plain-rectangle text body. Title and description each clamp to 2 lines (`-webkit-line-clamp`) so copy length stays controlled. **Every card image fills its tile the same way** — photos, videos and logo/brand graphics all use `object-fit:cover`, with no letterboxed/"contain" variant — so the grid stays visually consistent. The tiles are landscape (not square) because the sources are almost all wide images; a wider-than-16:9 lockup still gets its sides center-cropped, so lay such logos out to 16:9 before uploading rather than relying on a padded "contain" treatment.
+- **Responsive grids**: never let a multi-column grid just shrink its columns as the viewport narrows — text becomes unreadably vertical. Reflow to fewer columns at defined breakpoints instead (see `home`'s `.whats-new__grid` media queries).
+
+`home` does not have a newsletter or "Supported by" section — those were removed. The `about` repo still has both (`.newsletter`, `.supporters`, the shared `.cta-block` gradient wrapper); if you're porting a component between the two repos, don't reintroduce them here without being asked.
+
+## Embedding this page
+
+WordPress renders the real site; this repo is the source. The launch plan is direct-to-disk deployment, which needs no iframe — but iframe embedding still works and is the documented fallback, so keep this snippet accurate if you rename the repo or change its Pages URL.
+
+Paste into a **Code module** — not a Text module, which mangles iframes and scripts. Two things have to be set, and they deliberately live in different places.
+
+**Per page, in the builder.** The site runs **Divi 5**, where width belongs to the row, not to the module. A Divi 5 row ships at **width 80%, max-width 1080px**, so an untouched embed renders in a narrow column and every full-bleed colour band in the design collapses with it. Set:
+
+- Row → Design → Sizing → **Width 100%** and **Max Width `none`** — `none`, not 100%
+- Section → Design → Spacing → **padding 0** top and bottom
+- Row → Design → Spacing → **padding 0** top and bottom
+
+These are design settings, so they belong where the next person will look for them. Putting the width in CSS instead leaves the builder showing 80% / 1080px while the page renders full width, and that mismatch costs someone an afternoon eventually.
+
+**Once, sitewide.** Divi has no setting for the last problem: an `<iframe>` is `display: inline` by default, so it sits on a text baseline and leaves a 4–6px gap underneath that nothing in the builder accounts for. Add this once under Divi → Theme Options → Custom CSS and no page needs it again:
+
+```css
+.et_pb_code iframe { display: block; width: 100%; border: 0; }
+```
+
+It is keyed to `.et_pb_code` rather than a per-section class on purpose — every iframe on this site sits in a Code module, so there is no hook to add and nothing to remember when page fourteen arrives. Divi's own Video and Map modules don't use Code modules, so a collision is unlikely; if someone does add a Code-module embed that shouldn't be full width, give that one its own override rather than reintroducing a class here.
+
+Divi caches its compiled CSS to a static file, so clear that cache (Divi → Theme Options → Builder → "Clear Divi Static CSS File Cache") after editing Custom CSS, or the change will not show for visitors.
+
+On Divi 4 this was all different: a **Fullwidth Section** holding a **Fullwidth Code** module, with separate CSS ID and CSS Class fields on the Advanced tab. Divi 5 removed the section-type chooser (the add-section button offers flex and grid layout options now) and folded ID and class into Advanced → **Attributes**, so ignore Divi 4 tutorials on both points. The embed snippet itself:
+
+```html
+<iframe id="pm-home" src="https://pennmediated.github.io/home/" title="Home — Penn MEDIATED" scrolling="no" loading="lazy" style="width:100%;height:4300px;border:0;display:block"></iframe><script>(function(){var f=document.getElementById('pm-home');window.addEventListener('message',function(e){if(e.source!==f.contentWindow)return;var d=e.data||{},h=d.frameHeight||(d.type==='partners-page-resize'?d.height:0);if(h)f.style.height=h+'px';});})();</script>
+```
+
+The `height` in the snippet is only the starting value. Every Penn MEDIATED page posts its real height to the parent as `{ frameHeight: <int> }` — on load, on resize, once webfonts settle, and on any `ResizeObserver` change, so reveal animations, expanding cards and `<details>` toggles all resize the frame. The listener in the snippet applies it. `grants-rfp` also emits an older `{ type: 'partners-page-resize', height }` message; the snippet accepts both.
+
+The page checks `window.self === window.top` before posting, so opening it directly does nothing. If you add a new page repo, copy the script from the bottom of this `index.html` so it behaves the same way.
+
+
+## Images and video
+
+This applies to every image, GIF and video added to any Penn MEDIATED repo. It is written to be followed directly — by a person or by a Claude session — without further instruction.
+
+### The one rule that is never optional
+
+**Every `<img>` and `<video>` carries explicit `width` and `height` attributes, holding the file's real intrinsic pixel dimensions.**
+
+```html
+<img src="assets/example.webp" width="640" height="334" alt="…">
+```
+
+They do not set the display size — CSS does. They give the browser the aspect ratio *before* the file downloads, so it reserves a correctly shaped box instead of collapsing to nothing and shoving everything below it down the page as each file lands. That shift is measured by search engines (Cumulative Layout Shift) and is worse for a reader, who loses their place or clicks a link that just moved.
+
+Every repo has a global `img, video { max-width: 100%; height: auto; display: block; }` reset, so the CSS keeps winning and the attributes only ever contribute the ratio. **Never guess the numbers** — read them off the file.
+
+### Pick the format by what the file is
+
+| Content | Format | Never use |
+| --- | --- | --- |
+| Photo, screenshot, artwork | **WebP**, quality 88 | PNG or JPEG at full camera resolution |
+| Logo, wordmark, icon | **SVG** if you have it, else WebP | — |
+| Anything that moves | **MP4** (H.264) + a WebP poster | **GIF, ever** |
+
+GIF is the big one. It has no interframe compression, so a screen recording is roughly ten times the size it needs to be: `research-compendium.gif` was 11.3MB for 290 frames; the identical recording as H.264 is 1.2MB.
+
+### Size it to the box it displays in, not to what you were sent
+
+Find the CSS box the image renders into, then export at **2×** that width for retina. Anything beyond that is bytes the browser downloads and immediately throws away. (`gni-membership.png` was 7992px wide, rendering into a 319px box — a 470KB file doing a 33KB job.)
+
+In this repo:
+
+| Where | CSS box at 1440px | Export at |
+| --- | --- | --- |
+| What's New — featured card (first child, spans 2 columns) | 640×320, cropped 2:1 | ~1280px wide |
+| What's New — regular card (photos, videos and logos alike) | 319×179, cropped 16:9 | ~640×360 |
+| Research / Faculty CTA (`.research-cta__image` / `.faculty-cta__image`) | up to 523px wide | ~1046px |
+
+Keep the subject centred in cropped slots — the card center-crops whatever you give it.
+
+If you are adding an image somewhere not listed, measure the box first (`getBoundingClientRect().width` in the browser, at a 1440px viewport) and double it.
+
+### Commands
+
+Stills — resize and convert in one pass:
+
+```python
+from PIL import Image
+TARGET = 640                      # 2x the CSS box
+im = Image.open('source.png')
+w, h = im.size
+if w > TARGET:
+    im = im.resize((TARGET, round(h * TARGET / w)), Image.LANCZOS)
+im.save('out.webp', quality=88, method=6)
+print(im.size)                    # <- these are the width/height attributes
+```
+
+Animation — MP4 plus a poster frame:
+
+```bash
+ffmpeg -i source.gif -movflags +faststart -pix_fmt yuv420p \
+       -vf "scale=1280:-2:flags=lanczos" -crf 24 out.mp4
+ffmpeg -i source.gif -frames:v 1 -vf "scale=1280:-2:flags=lanczos" poster.png
+python3 -c "from PIL import Image; Image.open('poster.png').convert('RGB').save('out-poster.webp', quality=80, method=6)"
+ffprobe -v error -show_entries stream=width,height -of default=nw=1 out.mp4
+```
+
+`-crf 24` is a good default; raise it toward 30 for a smaller file, lower it toward 20 for a sharper one. `-pix_fmt yuv420p` is required for Safari and iOS.
+
+### Markup for video
+
+```html
+<video src="assets/name.mp4" poster="assets/name-poster.webp" width="1280" height="622"
+       autoplay muted loop playsinline preload="metadata" aria-label="…"></video>
+```
+
+Each attribute earns its place: `muted` is what permits autoplay at all, `playsinline` stops iOS opening it fullscreen, `poster` means the slot is never empty while the video loads, and `aria-label` replaces `alt` (a `<video>` has no `alt`).
+
+CSS cannot stop autoplay, so **a page with video needs the reduced-motion script** at the end of `<body>`. If the page already has one, leave it alone; if you are adding the first video to a page, add it:
+
+```html
+<script>
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('video[autoplay]').forEach(function (v) {
+      v.autoplay = false; v.pause(); v.currentTime = 0; v.removeAttribute('loop');
+    });
+  }
+</script>
+```
+
+Also check the CSS: any rule that sizes or crops an image needs to name `video` too, or the video slot will not match the image slot it replaced (`.card__image img` becomes `.card__image img, .card__image video`).
+
+### Before you call it done
+
+- [ ] File is WebP, SVG or MP4 — no GIF, no full-resolution PNG or JPEG
+- [ ] Its width is about 2× the CSS box it renders into
+- [ ] `width`/`height` attributes match the file's real dimensions
+- [ ] Real `alt` text (or `aria-label` on a video) that describes the image; empty `alt=""` only if it is purely decorative
+- [ ] Lives in this repo's `assets/`, not hotlinked from another site
+- [ ] Page opened in a browser at 1440px and ~400px — nothing overflows, nothing jumps on load
+- [ ] Originals are not committed alongside the optimised file; git history is the backup
+
+Do not commit an unoptimised original "just in case" — the previous commit already holds it, and a duplicate in the working tree also ships to the server.
+
+## Hyperlinks
+
+One taxonomy, five categories, shared by every page repo. Pick the category by what the link *is*, not by which repo you happen to be editing.
+
+**1. In-text links** — embedded mid-sentence in flowing prose.
+
+| ground | text | underline | hover |
+| --- | --- | --- | --- |
+| white / light | `--c-red-dark` | none | fade to `opacity: 0.7` |
+| colour / gradient | `--c-white` | `border-bottom: 1px solid rgba(255, 255, 255, 0.5)` | fade to `opacity: 0.7` |
+
+Both grounds use `font-weight: 500` and `transition: opacity 0.15s`, and both fade rather than change hue. On a white ground **colour is the affordance** — no underline; the underline is category 2's job. On a coloured ground the red is invisible, so the link goes white and takes the hairline rule instead. Where an underline is used it is a `border-bottom`, never `text-decoration`.
+
+#### Why interactive red is `--c-red-dark`, not `--c-red`
+
+`--c-red-dark` (`#df3611`) is the closing stop of `--c-gradient`, promoted to a token of its own and declared in all twelve repos.
+
+`--c-red` (`#f03d1f`) measures roughly **3.9:1** against white — under the 4.5:1 WCAG AA threshold for body text, and the same 3.9:1 applies to white text sitting on a `--c-red` fill. `--c-red-dark` measures about **4.5:1** either way and clears it. The two are near-indistinguishable at text sizes, so this is a contrast fix, not a visual change.
+
+**The rule: anything you click is `--c-red-dark`.** Links and buttons take it wherever they would otherwise be red-orange — as text colour, as a box fill, as a hover or active state, and on the markers inside them (disclosure chevrons and their labels). It applies in every category and every state.
+
+**`--c-red` stays the brand accent for everything you don't click**: section headings, eyebrow and metadata labels, tag and pill backgrounds, accent bars and card borders, full-width colour bands, the `.card-arrow` hover gradient, and focus rings. These are either large text, non-text UI at the 3:1 threshold, or sit on a tinted rather than white ground.
+
+The one deliberate hold-out is red link text on a **dark** ground (`home`'s `.footer__email`), where the darker red would *reduce* contrast rather than improve it. That link has a separate outstanding issue — on a dark ground the standard is white text with an opacity fade, not red at all.
+
+**2. Independent links** — a standalone text link that isn't inside a sentence ("Learn More About the Center", "Download the Full Schedule"). Unlike category 1 these carry the underline and are set in the body colour, so they read as a control rather than as emphasis inside a sentence:
+
+| ground | text | underline | hover |
+| --- | --- | --- | --- |
+| white / light | `--c-dark`, `font-weight: 600` | `border-bottom: 1px solid rgba(13, 13, 12, 0.35)` | text and underline both turn `--c-red-dark` (`transition: color 0.15s, border-color 0.15s`) |
+| colour / gradient | `--c-white`, `font-weight: 600` | `border-bottom: 1px solid rgba(255, 255, 255, 0.5)` | fade to `opacity: 0.7` |
+
+Plus a **thin arrow** `⟶` after the text. Use `⟶` (`&#10230;`), not the `↗` badge from category 4.
+
+**3. Document buttons** — an independent link that opens a document (a PDF, a report). A filled button box, not text:
+
+| ground | box | text |
+| --- | --- | --- |
+| white / light | `--c-red-dark` | `--c-white` |
+| colour / gradient | `--c-white` | `--c-dark` |
+
+Hover is **movement, not colour** — a lift or nudge. Do not darken or recolour the box.
+
+**4. Links to another web page** — this site or an external one. The containing box carries the shared `.card-arrow`: a 26px dark circle with a white `↗`, in the box's top corner. On hover the arrow scales slightly and its background becomes a sliding purple-to-orange gradient (`@keyframes card-arrow-slide`), and the box itself animates. No separate text button — the whole box is the link.
+
+**Exception:** a link to a research paper is category 2, not this — thin arrow, no badge.
+
+**5. Hyperlinked headings** — a heading that is itself a link (a post title, a card title). Sits in the body colour and shifts to `--c-red-dark` on hover (or fades, on a coloured ground), with **no arrow and no underline**.
+
+### Dropdowns and disclosures
+
+A dropdown, `<details>` block or expand/collapse control uses one affordance sitewide: a **chevron SVG** (`M2 5l5 5 5-5`, 13×13, `--c-red-dark` stroke, `stroke-width: 1.8`) beside a `--c-red-dark` label at `--fs-small`, rotating `180deg` on open with `transition: transform 0.25s`. See `llm-civic-discourse`'s "Full summary & details" toggle for the reference implementation.
+
+Never leave the marker to the browser — style `<select>` with `appearance: none` and supply the chevron, and hide the native `<summary>` marker. The `↗` circle badge is category 4's language and does not belong on a disclosure control.
