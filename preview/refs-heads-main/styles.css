@@ -1051,25 +1051,11 @@ button { font: inherit; cursor: pointer; }
 .news-card--dark::before { content: none; }
 
 /* Research Compendium tile — a white card with a quiet nod to the hero:
-   faint dotted broadcast rings (the same rings that circle the tower) fanning
-   out from behind the recording, over a barely-there wash of the brand
-   gradient. Rings are a mask on the gradient, so they take its colours. Static
-   and cheap: no filters, no animation. Dark text, as white cards. */
+   soft pools of brand colour in the corners (::after), fading out over the
+   text column. Static and cheap: no filters, no animation. Dark text, as white cards. */
 .news-card--brush { background: var(--c-white); border: 1px solid rgba(13,13,12,0.12); }
 .news-card--brush .news-card__title { color: var(--c-dark); }
 .news-card--brush .news-card__desc  { color: var(--c-gray-dark); }
-.news-card--brush::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: var(--c-gradient);
-  opacity: 0.6;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='xMaxYMid slice'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round'%3E%3Ccircle cx='1030' cy='300' r='70' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='110' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='150' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='190' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='230' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 600' preserveAspectRatio='xMaxYMid slice'%3E%3Cg fill='none' stroke='%23000' stroke-linecap='round'%3E%3Ccircle cx='1030' cy='300' r='70' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='110' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='150' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='190' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3Ccircle cx='1030' cy='300' r='230' stroke-dasharray='1 9' stroke-width='2.5'/%3E%3C/g%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-}
 .news-card--brush::after {
   content: "";
   position: absolute;
@@ -1086,7 +1072,6 @@ button { font: inherit; cursor: pointer; }
     radial-gradient(ellipse 35% 55% at 0% 0%, rgba(223,54,17,0.14), transparent 70%);
 }
 @media (max-width: 480px) {
-  .news-card--brush::before { opacity: 0.45; }
   .news-card--brush::after {
     background:
       radial-gradient(ellipse 80% 45% at 0% 0%, rgba(85,51,238,0.28), transparent 70%),
