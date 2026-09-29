@@ -35,7 +35,7 @@ const W=260,H=150;
 // circles and tower stay put.
 const DOTS = new URLSearchParams(location.search).get('layer') === 'dots';
 const CX=Math.floor(W/2),CY=Math.floor(H/2);
-let mx=0.5,my=0.5,amx=0.5,amy=0.5,vx=0,vy=0,svx=0,svy=0,lastT=0;
+let mx=0.5,my=0.5,amx=0.5,amy=0.5,fmx=0.5,fmy=0.5,prevT=0,vx=0,vy=0,svx=0,svy=0,lastT=0;
 let held=false,holdStart=0,charge=0,dCharge=0;
 const pulses=[];
 
@@ -52,7 +52,7 @@ const WAVE_LIFE=5.2,WAVE_MAX_R=72;
 function coords(e){const r=el.getBoundingClientRect();return[Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];}
 function tcoords(e){const r=el.getBoundingClientRect(),t=e.touches[0];return[Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(t.clientY-r.top)/r.height))];}
 
-stage.addEventListener('mousemove',e=>{const[nx,ny]=coords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();});
+stage.addEventListener('mousemove',e=>{const[nx,ny]=coords(e);vx=(nx-mx)*110;vy=(ny-my)*110;mx=nx;my=ny;lastT=performance.now();},{passive:true});
 stage.addEventListener('mousedown',e=>{
   held=true;holdStart=performance.now();
   const[ox,oy]=coords(e);
@@ -85,37 +85,7 @@ const RINGS=[
 const D=(x,y,cx,cy)=>Math.sqrt((x-cx)**2+((y-cy)*1.85)**2);
 const RC=(chars,angle,phase)=>{const n=chars.length;const s=Math.floor(((angle/(Math.PI*2))+phase)*n*4)%n;return chars[((s%n)+n)%n];};
 
-// TOWER — drawn as a clear ASCII art broadcast tower
-// Read top-to-bottom: signal arcs, tip, upper mast, crossbar, lower mast, legs, base
-const TOWER=[
-  // [dx, dy, char]
-  // signal arcs at top
-  [-5,-9,'('],[-4,-9,'('],[-3,-9,'('],
-  [5,-9,')'],[4,-9,')'],[3,-9,')'],
-  [-3,-8,'('],[-2,-8,'('],
-  [3,-8,')'],[2,-8,')'],
-  // tip
-  [0,-7,'*'],
-  // upper mast
-  [0,-6,'|'],[0,-5,'|'],
-  // upper crossbar
-  [-2,-5,'-'],[-1,-5,'-'],[1,-5,'-'],[2,-5,'-'],
-  // mid mast
-  [0,-4,'|'],[0,-3,'|'],
-  // mid crossbar
-  [-3,-3,'-'],[-2,-3,'-'],[-1,-3,'-'],[1,-3,'-'],[2,-3,'-'],[3,-3,'-'],
-  // lower mast
-  [0,-2,'|'],[0,-1,'|'],
-  // lower crossbar
-  [-4,-1,'-'],[-3,-1,'-'],[-2,-1,'-'],[-1,-1,'-'],[1,-1,'-'],[2,-1,'-'],[3,-1,'-'],[4,-1,'-'],
-  // legs splaying out
-  [-1,0,'\\'],[1,0,'/'],
-  [-2,1,'\\'],[2,1,'/'],
-  [-3,2,'\\'],[3,2,'/'],
-  // base platform
-  [-4,3,'['],[- 3,3,'='],[- 2,3,'='],[- 1,3,'='],[0,3,'='],[1,3,'='],[2,3,'='],[3,3,'='],[4,3,']'],
-];
-
+let lastOut='';
 function render(t){
   const speed=Math.sqrt(svx*svx+svy*svy);
   const idle=Math.max(0,Math.min(1,(t-lastT-1800)/2500));
@@ -123,7 +93,7 @@ function render(t){
   if(held) charge=Math.min(1,(t-holdStart)/1200);
 
   const cx=CX+(amx-0.5)*12,cy=CY+(amy-0.5)*7;
-  const curX=amx*(W-1),curY=amy*(H-1);
+  const curX=fmx*(W-1),curY=fmy*(H-1);
   const PULSE_LIFE=2.6;
   const activeP=pulses.map(p=>{
     const age=(t-p.born)/1000;
@@ -222,13 +192,6 @@ function render(t){
     }
   }
 
-  // TOWER — drawn at shifted origin
-  const bcx=Math.round(cx),bcy=Math.round(cy);
-  const tipChar=Math.sin(t*0.004)>0.5?'*':'o';
-  for(const[dx,dy,ch] of TOWER){
-    P(bcx+dx,bcy+dy,dy===-7?tipChar:ch);
-  }
-
   // sparks near tower
   const dTower=D(curX,curY,cx,cy);
   const pBoost=Math.max(0,1-dTower/12);
@@ -266,19 +229,30 @@ function render(t){
       }
     }
   }
-  el.textContent=G.map(r=>r.join('')).join('\n');
+  const out=G.map(r=>r.join('')).join('\n');
+  if(out!==lastOut){lastOut=out;el.textContent=out;}
 }
 
 function loop(t){
-  vx*=0.79;vy*=0.79;
-  svx+=(vx-svx)*0.18;svy+=(vy-svy)*0.18;
+  // Frame-rate independent easing: k60 is the per-frame factor at 60fps.
+  const dt=Math.min(64,prevT?t-prevT:16.7);prevT=t;
+  const ease=k60=>1-Math.pow(1-k60,dt/16.7);
+  const dec=Math.pow(0.82,dt/16.7);
+  vx*=dec;vy*=dec;
+  svx+=(vx-svx)*ease(0.3);svy+=(vy-svy)*ease(0.3);
   if(Math.abs(svx)<0.02)svx=0;
   if(Math.abs(svy)<0.02)svy=0;
-  amx+=(mx-amx)*0.052;amy+=(my-amy)*0.052;
-  dCharge+=(charge-dCharge)*0.1;
+  fmx+=(mx-fmx)*ease(0.5);fmy+=(my-fmy)*ease(0.5);   // cursor marks: snappy
+  amx+=(mx-amx)*ease(0.09);amy+=(my-amy)*ease(0.09); // tower drift: gentle
+  dCharge+=(charge-dCharge)*ease(0.18);
   if(t>=nextWave){waves.push({born:t});nextWave=t+3800+Math.random()*2200;if(waves.length>3)waves.shift();}
-  render(t);requestAnimationFrame(loop);
+  // Perf: the dots layer is a slow twinkle, so ~20fps is plenty; the main
+  // layer runs full rate. Nothing draws while the tab or frame is offscreen.
+  if(visible&&!document.hidden&&(!DOTS||t-lastDraw>=48)){lastDraw=t;render(t);}
+  requestAnimationFrame(loop);
 }
+let visible=true,lastDraw=0;
+if(window.IntersectionObserver){new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(stage);}
 if(DOTS){
   // No vignette in dots mode — the field should reach the edges of the band.
   stage.style.webkitMaskImage='none';

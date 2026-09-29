@@ -1,0 +1,71 @@
+# Publishes the site to the `gh-pages` branch:
+#   push to main          -> site root (production, https://pennmediated.github.io/home/)
+#   push to any other branch -> preview/<branch-slug>/  (https://pennmediated.github.io/home/preview/<branch-slug>/)
+#   branch deleted        -> its preview folder is removed
+# One-time setup: Settings > Pages > Source = "Deploy from a branch", branch `gh-pages`, folder `/ (root)`.
+name: Pages and branch previews
+
+on:
+  push:
+  delete:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    # A `delete` event only matters for branches; skip tag deletions and gh-pages itself.
+    if: >-
+      (github.event_name == 'push' && github.ref_name != 'gh-pages' && github.ref_type == 'branch') ||
+      (github.event_name == 'delete' && github.event.ref_type == 'branch' && github.event.ref != 'gh-pages' && github.event.ref != 'main')
+    steps:
+      - name: Check out source
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          path: src
+
+      - name: Check out gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: pages
+        continue-on-error: true
+
+      - name: Publish
+        env:
+          EVENT: ${{ github.event_name }}
+          BRANCH: ${{ github.event.ref || github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ ! -d pages/.git ]; then
+            mkdir -p pages && cd pages && git init -q -b gh-pages
+            git remote add origin "https://x-access-token:${{ github.token }}@github.com/${REPO}.git"
+            cd ..
+          fi
+          slug=$(echo "$BRANCH" | tr '/_' '--' | tr -cd 'A-Za-z0-9.-')
+          cd pages
+          touch .nojekyll
+          if [ "$EVENT" = "delete" ]; then
+            rm -rf "preview/$slug"
+          elif [ "$BRANCH" = "main" ]; then
+            rsync -a --delete --exclude '.git' --exclude 'preview' --exclude '.github' --exclude 'README.md' ../src/ ./
+          else
+            mkdir -p "preview/$slug"
+            rsync -a --delete --exclude '.git' --exclude '.github' ../src/ "preview/$slug/"
+            echo "### Preview" >> "$GITHUB_STEP_SUMMARY"
+            echo "https://${REPO%%/*}.github.io/${REPO##*/}/preview/$slug/" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+          touch .nojekyll
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -q -m "Publish $BRANCH ($EVENT)"
+          git push origin HEAD:gh-pages
