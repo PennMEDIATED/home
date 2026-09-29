@@ -85,37 +85,6 @@ const RINGS=[
 const D=(x,y,cx,cy)=>Math.sqrt((x-cx)**2+((y-cy)*1.85)**2);
 const RC=(chars,angle,phase)=>{const n=chars.length;const s=Math.floor(((angle/(Math.PI*2))+phase)*n*4)%n;return chars[((s%n)+n)%n];};
 
-// TOWER — drawn as a clear ASCII art broadcast tower
-// Read top-to-bottom: signal arcs, tip, upper mast, crossbar, lower mast, legs, base
-const TOWER=[
-  // [dx, dy, char]
-  // signal arcs at top
-  [-5,-9,'('],[-4,-9,'('],[-3,-9,'('],
-  [5,-9,')'],[4,-9,')'],[3,-9,')'],
-  [-3,-8,'('],[-2,-8,'('],
-  [3,-8,')'],[2,-8,')'],
-  // tip
-  [0,-7,'*'],
-  // upper mast
-  [0,-6,'|'],[0,-5,'|'],
-  // upper crossbar
-  [-2,-5,'-'],[-1,-5,'-'],[1,-5,'-'],[2,-5,'-'],
-  // mid mast
-  [0,-4,'|'],[0,-3,'|'],
-  // mid crossbar
-  [-3,-3,'-'],[-2,-3,'-'],[-1,-3,'-'],[1,-3,'-'],[2,-3,'-'],[3,-3,'-'],
-  // lower mast
-  [0,-2,'|'],[0,-1,'|'],
-  // lower crossbar
-  [-4,-1,'-'],[-3,-1,'-'],[-2,-1,'-'],[-1,-1,'-'],[1,-1,'-'],[2,-1,'-'],[3,-1,'-'],[4,-1,'-'],
-  // legs splaying out
-  [-1,0,'\\'],[1,0,'/'],
-  [-2,1,'\\'],[2,1,'/'],
-  [-3,2,'\\'],[3,2,'/'],
-  // base platform
-  [-4,3,'['],[- 3,3,'='],[- 2,3,'='],[- 1,3,'='],[0,3,'='],[1,3,'='],[2,3,'='],[3,3,'='],[4,3,']'],
-];
-
 let lastOut='';
 function render(t){
   const speed=Math.sqrt(svx*svx+svy*svy);
@@ -221,13 +190,6 @@ function render(t){
       const a=(i/steps)*Math.PI*2;
       P(curX+Math.cos(a)*cr,curY+Math.sin(a)*cr*0.52,ch);
     }
-  }
-
-  // TOWER — drawn at shifted origin
-  const bcx=Math.round(cx),bcy=Math.round(cy);
-  const tipChar=Math.sin(t*0.004)>0.5?'*':'o';
-  for(const[dx,dy,ch] of TOWER){
-    P(bcx+dx,bcy+dy,dy===-7?tipChar:ch);
   }
 
   // sparks near tower
