@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v1 — Tower</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:transparent}
+#stage{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:crosshair;user-select:none;position:relative;
+  /* Vignette on the stage, not the <pre>: on narrow screens the art is
+     scaled past the stage and cropped (see fit()), and the fade has to sit
+     on the visible edge. */
+  -webkit-mask-image:radial-gradient(ellipse 92% 92% at 50% 50%, #000 45%, transparent 94%);
+  mask-image:radial-gradient(ellipse 92% 92% at 50% 50%, #000 45%, transparent 94%);
+}
+pre{font-family:'Courier New',Courier,monospace;font-size:8px;line-height:1.32;letter-spacing:0.08em;color:#F0EEE8;white-space:pre;position:relative;z-index:2;
+  transform-origin:center center;
+  flex-shrink:0;
+}
+</style>
+</head>
+<body>
+<div id="stage"><pre id="out"></pre></div>
+<script>
+(function(){
+const el=document.getElementById('out');
+const stage=document.getElementById('stage');
+const W=260,H=150;
+
+// ?layer=dots renders ONLY the ambient twinkle field — no rings, no tower,
+// no waves, no cursor trail. The hero loads two copies of this file: one in
+// dots mode running full-bleed behind everything, and the normal one in its
+// own column, so the sparkle spreads across the whole gradient while the
+// circles and tower stay put.
+const DOTS = new URLSearchParams(location.search).get('layer') === 'dots';
+const CX=Math.floor(W/2),CY=Math.floor(H/2);
+let mx=0.5,my=0.5,amx=0.5,amy=0.5,fmx=0.5,fmy=0.5,prevT=0,vx=0,vy=0,svx=0,svy=0,lastT=0;
+let held=false,holdStart=0,charge=0,dCharge=0;
+const pulses=[];
+
+// Ambient broadcast waves — slow rings that emanate outward from the
+// tower on their own, independent of interaction, so it reads as
+// actively "broadcasting" rather than only reacting to the cursor.
+const waves=[];
+let nextWave=2200;
+const WAVE_LIFE=5.2,WAVE_MAX_R=72;
+
+// Pointer positions are measured against the scaled <pre> (the grid itself),
+// not the stage: on narrow screens the grid overflows the stage, so stage
+// fractions would put the cursor effects in the wrong place.
+function coords(e){const r=el.getBoundingClientRect();return[Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];}
+function tcoords(e){const r=el.getBoundingClientRect(),t=e.touches[0];return[Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(t.clientY-r.top)/r.height))];}
+
+stage.addEventListener('mousemove',e=>{const[nx,ny]=coords(e);vx=(nx-mx)*110;vy=(ny-my)*110;mx=nx;my=ny;lastT=performance.now();},{passive:true});
+stage.addEventListener('mousedown',e=>{
+  held=true;holdStart=performance.now();
+  const[ox,oy]=coords(e);
+  pulses.push({ox,oy,born:performance.now(),power:0.28});
+  if(pulses.length>8)pulses.shift();
+});
+stage.addEventListener('mouseup',e=>{
+  if(held){const[ox,oy]=coords(e);pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});if(pulses.length>8)pulses.shift();}
+  held=false;charge=0;
+});
+stage.addEventListener('touchmove',e=>{e.preventDefault();const[nx,ny]=tcoords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();},{passive:false});
+stage.addEventListener('touchstart',e=>{
+  const[nx,ny]=tcoords(e);mx=nx;my=ny;held=true;holdStart=performance.now();
+  pulses.push({ox:nx,oy:ny,born:performance.now(),power:0.28});
+  if(pulses.length>8)pulses.shift();
+});
+stage.addEventListener('touchend',e=>{
+  if(held){const r=el.getBoundingClientRect(),t=e.changedTouches[0];const ox=Math.max(0,Math.min(1,(t.clientX-r.left)/r.width)),oy=Math.max(0,Math.min(1,(t.clientY-r.top)/r.height));pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});}
+  held=false;charge=0;
+});
+
+/* Pushed well outside the centered text block's radius so the revolving
+   rings frame the headline instead of passing behind it. */
+const RINGS=[
+  {r:66, lo:['»','·','»','·'],  mid:['»','+','»','+'],  hi:['»','*','»','*'],  speed:0.000072},
+  {r:86, lo:['»','-','»','-'],  mid:['»','=','»','='],  hi:['»','#','»','#'],  speed:0.000086},
+  {r:106,lo:['»','·','»','·'],  mid:['»','o','»','o'],  hi:['»','X','»','X'],  speed:0.000100},
+];
+
+const D=(x,y,cx,cy)=>Math.sqrt((x-cx)**2+((y-cy)*1.85)**2);
+const RC=(chars,angle,phase)=>{const n=chars.length;const s=Math.floor(((angle/(Math.PI*2))+phase)*n*4)%n;return chars[((s%n)+n)%n];};
+
+let lastOut='';
+function render(t){
+  const speed=Math.sqrt(svx*svx+svy*svy);
+  const idle=Math.max(0,Math.min(1,(t-lastT-1800)/2500));
+  const breath=0.5+0.5*Math.sin(t*0.0007);
+  if(held) charge=Math.min(1,(t-holdStart)/1200);
+
+  const cx=CX+(amx-0.5)*12,cy=CY+(amy-0.5)*7;
+  const curX=fmx*(W-1),curY=fmy*(H-1);
+  const PULSE_LIFE=2.6;
+  const activeP=pulses.map(p=>{
+    const age=(t-p.born)/1000;
+    const life=Math.min(1,age/PULSE_LIFE);
+    const maxR=38+p.power*55;
+    return{
+      px:p.ox*(W-1),py:p.oy*(H-1),
+      age,life,
+      rad:(1-Math.pow(1-life,3))*maxR,            // ease-out: fast start, settles gently
+      fade:Math.min(1,age/0.15)*(1-Math.pow(life,1.8)), // quick attack, slow natural decay
+      power:p.power
+    };
+  }).filter(p=>p.age<PULSE_LIFE);
+
+  // charge ring around cursor when holding
+  const chargeRing=dCharge>0.04;
+
+  const G=[];for(let y=0;y<H;y++){G.push([]);for(let x=0;x<W;x++)G[y].push(' ');}
+  const P=(x,y,c)=>{const xi=Math.round(x),yi=Math.round(y);if(xi>=0&&xi<W&&yi>=0&&yi<H)G[yi][xi]=c;};
+
+  if(DOTS){
+    // Same two-sine twinkle as the idle field further down, run across the
+    // whole grid and always on (nothing hovers this layer to wake it).
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const w=Math.sin(x*0.38+t*0.00035)*Math.sin(y*0.55+t*0.00028);
+      if(w>0.9)G[y][x]='.';
+    }
+    el.textContent=G.map(r=>r.join('')).join('\n');
+    return;
+  }
+
+  const breathScale=1+idle*breath*0.14;
+  for(const ring of RINGS){
+    const phase=-t*ring.speed;
+    const steps=Math.max(40,ring.r*18);
+    const effR=ring.r*breathScale*(1+dCharge*0.15);
+    for(let i=0;i<steps;i++){
+      const angle=(i/steps)*Math.PI*2;
+      const dot=Math.cos(angle-Math.atan2(svy,svx));
+      const warp=1+dot*speed*0.0052;
+      const stretch=1+speed*0.003;
+      const rx=cx+Math.cos(angle)*effR*warp;
+      const ry=cy+Math.sin(angle)*effR*warp*0.52*stretch;
+      const dCur=D(rx,ry,curX,curY);
+      const prox=Math.max(0,1-dCur/12)+dCharge*0.6;
+      const intensity=prox>0.62?ring.hi:prox>0.28?ring.mid:ring.lo;
+      P(rx,ry,RC(intensity,angle,phase));
+    }
+  }
+
+  // pulse wavefronts — eased radius + a fade envelope (see activeP above)
+  // instead of linear growth and a hard cutoff, so a burst reads as a
+  // natural ripple settling outward rather than a twitch that vanishes
+  // before it reaches anything.
+  for(const p of activeP){
+    if(p.fade<0.02)continue;
+    const ramp=['·','.','+','*','#','X'];
+    const outerIdx=Math.min(5,Math.floor((0.35+p.power*0.65)*5*p.fade));
+    const outer=ramp[Math.max(0,outerIdx)];
+    const inner=ramp[Math.max(0,Math.floor(outerIdx*p.fade*0.6))];
+    const steps=Math.max(30,Math.floor(p.rad*12));
+    for(let i=0;i<steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      P(p.px+Math.cos(a)*p.rad,p.py+Math.sin(a)*p.rad*0.52,outer);
+      if(p.rad>4)P(p.px+Math.cos(a)*(p.rad-3),p.py+Math.sin(a)*(p.rad-3)*0.52,inner);
+    }
+  }
+
+  // ambient broadcast waves — slow, faint rings drifting outward from the
+  // tower on their own; a gentle sine ease in/out keeps them soft rather
+  // than popping in or snapping off at either end of their life
+  for(const w of waves){
+    const age=(t-w.born)/1000;
+    if(age<0||age>WAVE_LIFE)continue;
+    const life=age/WAVE_LIFE;
+    const r=Math.sin(life*Math.PI*0.5)*WAVE_MAX_R;
+    const fade=Math.sin(life*Math.PI);
+    if(fade<0.03)continue;
+    const ch=fade>0.6?'·':'.';
+    const steps=Math.max(50,Math.floor(r*10));
+    for(let i=0;i<steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      if((i+Math.floor(r))%3===0)continue;
+      P(cx+Math.cos(a)*r,cy+Math.sin(a)*r*0.52,ch);
+    }
+  }
+
+  // charge ring — builds up around cursor as you hold
+  if(chargeRing){
+    const cr=2+dCharge*5;
+    const ch=['·','o','+','*','#'][Math.min(4,Math.floor(dCharge*5))];
+    const steps=Math.max(16,Math.floor(cr*14));
+    for(let i=0;i<steps;i++){
+      const a=(i/steps)*Math.PI*2;
+      P(curX+Math.cos(a)*cr,curY+Math.sin(a)*cr*0.52,ch);
+    }
+  }
+
+  // sparks near tower
+  const dTower=D(curX,curY,cx,cy);
+  const pBoost=Math.max(0,1-dTower/12);
+  const sPhase=-t*0.00012;
+  const sc=Math.floor(3+(0.5+0.5*Math.sin(t*0.0011))*3+pBoost*6+dCharge*5);
+  for(let s=0;s<sc;s++){
+    const a=(s/sc)*Math.PI*2+sPhase*2;
+    const r=4+Math.sin(sPhase*5+s)*2+dCharge*3;
+    P(cx+Math.cos(a)*r,cy+Math.sin(a)*r*0.52,['*','+','·','x','o','#'][s%6]);
+  }
+
+  // cursor field
+  for(let y=0;y<H;y++){
+    for(let x=0;x<W;x++){
+      if(G[y][x]!==' ')continue;
+      const dC=D(x,y,curX,curY);
+      if(dC<0.9){G[y][x]='X';continue;}
+      if(dC<1.7){G[y][x]='+';continue;}
+      if(dC<2.5){G[y][x]='o';continue;}
+      if(dC<3.2){G[y][x]='.';continue;}
+      if(speed>0.3&&dC<6+speed*4.5){
+        const ta=Math.atan2(svy,svx),tp=Math.atan2((y-curY)*1.85,x-curX);
+        if(Math.abs(((ta-tp+Math.PI*3)%(Math.PI*2))-Math.PI)<Math.PI*0.36){
+          const fade=1-dC/(6+speed*4.5);
+          G[y][x]=['.','-','=','»','#'][Math.min(4,Math.floor(fade*5))];continue;
+        }
+      }
+      if(speed>1.8&&dC<4+speed*2){
+        const ta=Math.atan2(svy,svx)+Math.PI,tp=Math.atan2((y-curY)*1.85,x-curX);
+        if(Math.abs(((ta-tp+Math.PI*3)%(Math.PI*2))-Math.PI)<Math.PI*0.26){G[y][x]='.';continue;}
+      }
+      if(idle>0.25){
+        const w=Math.sin(x*0.38+t*0.00035)*Math.sin(y*0.55+t*0.00028);
+        if(w>0.87+0.11*(1-idle)){G[y][x]='.';continue;}
+      }
+    }
+  }
+  const out=G.map(r=>r.join('')).join('\n');
+  if(out!==lastOut){lastOut=out;el.textContent=out;}
+}
+
+function loop(t){
+  // Frame-rate independent easing: k60 is the per-frame factor at 60fps.
+  const dt=Math.min(64,prevT?t-prevT:16.7);prevT=t;
+  const ease=k60=>1-Math.pow(1-k60,dt/16.7);
+  const dec=Math.pow(0.82,dt/16.7);
+  vx*=dec;vy*=dec;
+  svx+=(vx-svx)*ease(0.3);svy+=(vy-svy)*ease(0.3);
+  if(Math.abs(svx)<0.02)svx=0;
+  if(Math.abs(svy)<0.02)svy=0;
+  fmx+=(mx-fmx)*ease(0.5);fmy+=(my-fmy)*ease(0.5);   // cursor marks: snappy
+  amx+=(mx-amx)*ease(0.09);amy+=(my-amy)*ease(0.09); // tower drift: gentle
+  dCharge+=(charge-dCharge)*ease(0.18);
+  if(t>=nextWave){waves.push({born:t});nextWave=t+3800+Math.random()*2200;if(waves.length>3)waves.shift();}
+  // Perf: the dots layer is a slow twinkle, so ~20fps is plenty; the main
+  // layer runs full rate. Nothing draws while the tab or frame is offscreen.
+  if(visible&&!document.hidden&&(!DOTS||t-lastDraw>=48)){lastDraw=t;render(t);}
+  requestAnimationFrame(loop);
+}
+let visible=true,lastDraw=0;
+if(window.IntersectionObserver){new IntersectionObserver(es=>{visible=es[0].isIntersecting;}).observe(stage);}
+if(DOTS){
+  // No vignette in dots mode — the field should reach the edges of the band.
+  stage.style.webkitMaskImage='none';
+  stage.style.maskImage='none';
+  stage.style.cursor='default';
+}
+requestAnimationFrame(loop);
+
+// Stretch the fixed character grid to fill the whole stage — independent
+// X/Y scale, not just uniform font-size — so there's no visible "box"
+// with margin around it regardless of the hero's aspect ratio.
+function fit(){
+  el.style.transform='none';
+  const eb=el.getBoundingClientRect(),sb=stage.getBoundingClientRect();
+  if(eb.width<1||eb.height<1)return;
+  let sx=(sb.width*0.98)/eb.width,sy=(sb.height*0.98)/eb.height;
+  if(!DOTS){
+    // Keep the rings round. Filling the stage with independent X/Y scales
+    // squashed them flat once the hero stacks to one column (a wide, short
+    // stage), in every browser. X and Y may now differ only a little (k).
+    // Size: between fitting the whole grid in the stage and covering it,
+    // capped at 20% past the fit so the vignette crops only the outermost
+    // ring rather than most of the art. On desktop the stage already has the
+    // grid's shape, so nothing changes there. The dots layer keeps the
+    // plain stretch-to-fill.
+    const k=Math.min(1.25,Math.max(0.9,sy/sx));
+    const fitS=Math.min(sx,sy/k),coverS=Math.max(sx,sy/k);
+    const s=Math.min(coverS,fitS*1.2);
+    sx=s;sy=s*k;
+  }
+  el.style.transform=`scale(${sx},${sy})`;
+}
+requestAnimationFrame(()=>requestAnimationFrame(fit));
+window.addEventListener('resize',()=>{clearTimeout(window._fitT);window._fitT=setTimeout(fit,120);});
+// Also refit when the stage itself changes size; a nested frame does not
+// always get a resize event when its parent's layout changes.
+if(window.ResizeObserver){new ResizeObserver(()=>{clearTimeout(window._fitT);window._fitT=setTimeout(fit,60);}).observe(stage);}
+})();
+</script>
+</body>
+</html>
