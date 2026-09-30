@@ -98,7 +98,13 @@ let lastOut='';
 // Same silhouette, built from a scale factor instead: signal arcs, blinking
 // tip, mast, three widening crossbars, splayed legs, base platform. TK is the
 // only number to turn.
-const TK = 4.2;                      // tower scale; 1 reproduces the old size
+// Tower scale. The ceiling is the innermost ring, not taste: that ring has
+// r=66 in x-units and is drawn squashed to 0.52 vertically, so it passes about
+// 34 rows above centre. The tower's arcs reach 7*TK + 3.6*TK*0.55 = 8.98*TK
+// rows up, so anything past TK=2.9 puts the arcs through the ring. 2.8 leaves
+// ~10 rows of clearance and still renders the tower about 2.5x the size of the
+// old hardcoded one. Raise the ring radii before raising this.
+const TK = 2.8;
 const R  = v => Math.round(v * TK);
 const ROWK = 0.55;                   // rows are taller than columns are wide,
                                      // so vertical radii are squashed to match
