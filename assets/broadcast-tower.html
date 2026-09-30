@@ -86,6 +86,71 @@ const D=(x,y,cx,cy)=>Math.sqrt((x-cx)**2+((y-cy)*1.85)**2);
 const RC=(chars,angle,phase)=>{const n=chars.length;const s=Math.floor(((angle/(Math.PI*2))+phase)*n*4)%n;return chars[((s%n)+n)%n];};
 
 let lastOut='';
+
+// TOWER — generated, not hardcoded.
+//
+// It used to be a fixed list of ~40 [dx,dy,char] triples spanning 11 columns
+// and 13 rows. On a 260x150 grid that is 4% of the width and 9% of the height,
+// so once fit() scales the grid to the hero it renders about 20x40px — a speck
+// in the middle of rings that fill the frame. The tower is the subject of the
+// piece and it had all but vanished.
+//
+// Same silhouette, built from a scale factor instead: signal arcs, blinking
+// tip, mast, three widening crossbars, splayed legs, base platform. TK is the
+// only number to turn.
+const TK = 4.2;                      // tower scale; 1 reproduces the old size
+const R  = v => Math.round(v * TK);
+const ROWK = 0.55;                   // rows are taller than columns are wide,
+                                     // so vertical radii are squashed to match
+                                     // the rings' own 0.52 factor
+
+function drawTower(P, bcx, bcy, t){
+  const tipY = -R(7), baseY = R(3), legTop = 0;
+  const bw = R(4);                   // base half-width; the legs land on it
+
+  // mast, tip to the point where the legs take over
+  for (let y = tipY; y <= legTop; y++) P(bcx, bcy + y, '|');
+
+  // crossbars, widening downward
+  [[5, 2], [3, 3], [1, 4]].forEach(([oy, hw]) => {
+    const y = bcy - R(oy), w = R(hw);
+    for (let x = -w; x <= w; x++) if (x !== 0) P(bcx + x, y, '-');
+  });
+
+  // Legs splay from the mast to the base CORNERS. They have to land exactly on
+  // the platform ends — at the old fixed size the two-row gap between the leg
+  // feet and the base was a single character and invisible; scaled up it left
+  // the tower standing on nothing.
+  const legRows = baseY - legTop - 1;
+  for (let i = 0; i <= legRows; i++) {
+    const dx = R(1) + Math.round(i * (bw - R(1)) / Math.max(1, legRows));
+    P(bcx - dx, bcy + legTop + i, '\\');
+    P(bcx + dx, bcy + legTop + i, '/');
+  }
+
+  // base platform
+  for (let x = -bw; x <= bw; x++) {
+    P(bcx + x, bcy + baseY, x === -bw ? '[' : x === bw ? ']' : '=');
+  }
+
+  // signal arcs above the tip — real arcs rather than scaled-up straight runs,
+  // which at this size read as bars
+  const tipTop = bcy + tipY;
+  [R(2.2), R(3.6)].forEach((rad, n) => {
+    const steps = Math.max(10, Math.floor(rad * 3));
+    for (let i = 0; i <= steps; i++) {
+      const a = (-0.95 + (1.9 * i) / steps);            // radians either side of vertical
+      const x = Math.sin(a) * rad;
+      const y = -Math.cos(a) * rad * ROWK;
+      if (Math.abs(x) < 0.6) continue;                  // leave the tip clear
+      P(bcx + x, tipTop + y - n, x < 0 ? '(' : ')');
+    }
+  });
+
+  // blinking tip, drawn last so nothing overwrites it
+  P(bcx, tipTop, Math.sin(t * 0.004) > 0.5 ? '*' : 'o');
+}
+
 function render(t){
   const speed=Math.sqrt(svx*svx+svy*svy);
   const idle=Math.max(0,Math.min(1,(t-lastT-1800)/2500));
@@ -191,6 +256,10 @@ function render(t){
       P(curX+Math.cos(a)*cr,curY+Math.sin(a)*cr*0.52,ch);
     }
   }
+
+  // TOWER — drawn at shifted origin
+  const bcx=Math.round(cx),bcy=Math.round(cy);
+  drawTower(P,bcx,bcy,t);
 
   // sparks near tower
   const dTower=D(curX,curY,cx,cy);
