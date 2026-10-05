@@ -63,7 +63,10 @@ stage.addEventListener('mouseup',e=>{
   if(held){const[ox,oy]=coords(e);pulses.push({ox,oy,born:performance.now(),power:Math.min(1,charge)});if(pulses.length>8)pulses.shift();}
   held=false;charge=0;
 });
-stage.addEventListener('touchmove',e=>{e.preventDefault();const[nx,ny]=tcoords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();},{passive:false});
+// Passive and no preventDefault: a touch here must never stop the page from
+// scrolling (touchscreen laptops still reach this; phones don't — see
+// .hero__visual-frame in styles.css).
+stage.addEventListener('touchmove',e=>{const[nx,ny]=tcoords(e);vx=(nx-mx)*70;vy=(ny-my)*70;mx=nx;my=ny;lastT=performance.now();},{passive:true});
 stage.addEventListener('touchstart',e=>{
   const[nx,ny]=tcoords(e);mx=nx;my=ny;held=true;holdStart=performance.now();
   pulses.push({ox:nx,oy:ny,born:performance.now(),power:0.28});
