@@ -1054,10 +1054,13 @@ button { font: inherit; cursor: pointer; }
 }
 .news-card--white::before { opacity: 0.10; }
 /* Solid colour tiles stay flat: the dot field read as noise on purple,
-   orange and black, so only the white tiles keep it. */
+   orange and black, so only the white tiles keep it. The Research
+   Compendium (brush) tile drops it too: its colour pools are its texture,
+   and dots over them read as clutter. */
 .news-card--purple::before,
 .news-card--orange::before,
-.news-card--dark::before { content: none; }
+.news-card--dark::before,
+.news-card--brush::before { content: none; }
 
 /* Research Compendium tile — a white card with a quiet nod to the hero:
    soft pools of brand colour in the corners (::after), fading out over the
@@ -1089,7 +1092,12 @@ button { font: inherit; cursor: pointer; }
   }
 }
 .news-card--brush .news-card__body { position: relative; z-index: 1; }
-.news-card--brush .news-card__media { box-shadow: 0 10px 26px rgba(20,6,70,0.22); }
+/* Both rectangles' recordings get the same lift — rounded corners (from
+   .news-card__media) plus this shadow. Keyed to --wide rather than --brush so
+   it follows the rectangle, not the colour treatment, when tiles rotate.
+   Without it the corners of a light screen recording vanish into a white
+   card and the clip reads as a flat, square-cornered block. */
+.news-card--wide .news-card__media { box-shadow: 0 10px 26px rgba(20,6,70,0.22); }
 
 
 /* Fixed media box — the whole point: any source image, same result.
