@@ -374,6 +374,15 @@ button { font: inherit; cursor: pointer; }
   background: transparent;
 }
 
+/* Not interactive on touch screens. The graphic responds to a dragging
+   finger, which meant a swipe that started on it moved the art instead of
+   the page — on a phone, where the art fills most of the first screen, the
+   hero could not be scrolled past. (hover: none) is phones and tablets; a
+   laptop with a mouse keeps the interaction. The art still animates. */
+@media (hover: none) {
+  .hero__visual-frame { pointer-events: none; }
+}
+
 /* =============================================================================
    WHAT'S NEW  —  bento article grid, 6-unit column system
    Figma "Imported HTML": row 1 = 3+1+2 units, row 2 = 2+2+1+1 units
