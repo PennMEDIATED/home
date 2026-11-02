@@ -1161,7 +1161,7 @@ button { font: inherit; cursor: pointer; }
 /* An image-bearing square is the tightest box on the page: 132px of it is the
    media, and the title runs at 16px. Two lines is enough at 1440px but not at
    1024, where the four columns are narrower and both "MEDIATED Membership with
-   GNI" and "Partnering with Digital Forensics Lab" were cut mid-phrase. Three
+   GNI" and "Partnering with Digital Forensic Research Lab" were cut mid-phrase. Three
    lines clears them at every width. */
 .news-card--square:has(.news-card__media) .news-card__title { -webkit-line-clamp: 3; }
 

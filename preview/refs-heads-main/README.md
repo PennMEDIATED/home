@@ -22,7 +22,7 @@ are the only other counts that work, and both need the span classes rearranged.)
 So adding an item means removing one — one in, one out.
 
 Every card also carries a colour class: `--white`, `--purple`, `--orange` or
-`--twinkle`. See **Tile colours** below; the rule there is not optional and it is
+`--brush`. See **Tile colours** below; the rule there is not optional and it is
 easy to break by accident.
 
 ### What each slot takes
@@ -51,7 +51,7 @@ its ending and looks fine until someone reads it.
 
 **The image-bearing square is the tightest box on the page**: 132px of it is the
 media box and the title runs at body size. Write the shortest copy there.
-"Partnering with Digital Forensics Research Lab" is about the limit at three lines.
+"Partnering with Digital Forensic Research Lab" is about the limit at three lines.
 
 **Check 1024px.** Not only the extremes — titles clear at 1440 and at 390 but
 were being cut at 1024, where the grid is still four columns and each one is
@@ -123,7 +123,7 @@ A card can run without one. A `:has()` rule detects the missing media box and
 gives the title `--fs-h3` (24px) with more room, so the title carries the card
 instead of a picture — and the whole tile is still the link. **Deleting the
 `<div class="news-card__media">…</div>` is the entire operation**; adding one
-back reverts it. Two of the seven cards run this way at the moment.
+back reverts it. One of the seven cards runs this way at the moment.
 
 Prefer this over using a weak or badly cropped image. An empty tile with a
 confident title reads better than a tile with a smudge in it.
@@ -153,24 +153,24 @@ Current assignment, which satisfies the rule at every width:
 |---|---|---|
 | Feature (2×2) | New Report on Monitoring LLMs | white |
 | Square | Welcoming New Knight Fellows | purple |
+| Square | Two New Postdoc Openings | orange |
+| Wide | Launching the Research Compendium | brush (white + soft brand-colour pools) |
 | Square | MEDIATED Membership with GNI | orange |
-| Wide | Launching the Research Compendium | twinkle (light gray + gradient sparkle) |
-| Square | An Intro from our Co-Directors | orange |
-| Square | Partnering with Digital Forensics Research Lab | purple |
+| Square | Partnering with Digital Forensic Research Lab | purple |
 | Wide | Announcing our Affiliated Faculty | white |
 
-Tile colours are `--white`, `--purple`, `--orange` and `--twinkle`: the site's
-light gray (`--c-light-bg`) with the hero's sparkle field drawn in the brand
-gradient and slowly twinkling (static for reduced-motion). It replaced the
-light-orange peach tile; black, light orange and light purple were all ruled
-out for this slot. Text is white on purple, dark on orange (white on `#f03d1f`
-is only ~3.9:1) and dark on twinkle. Only the white tiles carry the plain
+Tile colours are `--white`, `--purple`, `--orange` and `--brush`: a white tile
+with soft pools of brand purple and red-orange in its corners, fading to clear
+behind the text (static, no animation). It replaced the light-orange peach tile;
+black, light orange and light purple were all ruled out for this slot. Text is
+white on purple, dark on orange (white on `#f03d1f` is only ~3.9:1) and dark on
+brush. Only the white tiles carry the plain
 dot-field texture; purple and orange are flat.
 
 Two constraints make this tighter than it looks. The feature tile borders five
 other tiles across the three layouts, so **its colour has to be unique** — that
 is why it is white. And the last wide tile borders the two squares above it and
-the wide above them, which uses up all three of twinkle/purple/orange; it has to be
+the wide above them, which uses up all three of brush/purple/orange; it has to be
 white too. The one place two same-colour tiles meet is the feature and that last
 wide tile, **diagonally, across the grid gap** on desktop only. Corner contact
 across a gap is not an edge, and with four colours there is no arrangement that
