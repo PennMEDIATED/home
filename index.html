@@ -133,6 +133,67 @@
     </div>
   </section>
  
+  <!-- ── Research Compendium Liveview ───────────────────────────── -->
+  <section class="liveview" aria-labelledby="liveview-heading">
+    <div class="liveview__inner">
+      <div class="liveview__head">
+        <div>
+          <h2 id="liveview-heading" class="liveview__title">Research Compendium Liveview</h2>
+        </div>
+        <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="liveview__all">View full compendium <span aria-hidden="true">⟶</span></a>
+      </div>
+      <ol class="liveview__list" id="liveview-list">
+        <li class="liveview__item">
+          <a class="liveview__card" href="https://arxiv.org/pdf/2610.09279" target="_blank" rel="noopener">
+            <span class="liveview__meta">10/7/2026</span>
+            <h3 class="liveview__paper">AI-Assisted Submissions in Online Research Are Rare and Highly Concentrated but Routinely Approved</h3>
+            <p class="liveview__author">Lyle Ungar</p>
+            <p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>AI assistance in online research submissions is very rare and has not increased in three years.</p>
+          </a>
+        </li>
+        <li class="liveview__item">
+          <a class="liveview__card" href="https://www.nature.com/articles/s43588-026-01038-1" target="_blank" rel="noopener">
+            <span class="liveview__meta">9/21/2026</span>
+            <h3 class="liveview__paper">Algorithmic systems, human agency and the future of platform research</h3>
+            <p class="liveview__author">Duncan Watts</p>
+            <p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>Evidence linking algorithms to harmful online outcomes is inconclusive, as user preferences and content supply also shape what people consume.</p>
+          </a>
+        </li>
+        <li class="liveview__item">
+          <a class="liveview__card" href="https://www.science.org/doi/10.1126/sciadv.aea7456" target="_blank" rel="noopener">
+            <span class="liveview__meta">9/9/2026</span>
+            <h3 class="liveview__paper">The Media Bias Detector: A framework for annotating and analyzing the news</h3>
+            <p class="liveview__author">Duncan Watts &amp; Chris Callison-Burch</p>
+            <p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>A new tool automatically analyzes hundreds of top news articles from major outlets, searching for biases and themes in real time. It can be accessed on the Media Bias Detector website.</p>
+          </a>
+        </li>
+      </ol>
+    </div>
+  </section>
+  <script>
+  /* Liveview: refresh the three newest entries from the compendium itself.
+     Falls back silently to the markup above if the fetch or parse fails. */
+  (function () {
+    var list = document.getElementById('liveview-list');
+    fetch('https://pennmediated.github.io/research-compendium/').then(function (r) { return r.text(); }).then(function (t) {
+      var s = t.indexOf('const ENTRIES = ');
+      if (s < 0) return;
+      s += 16;
+      var e = t.indexOf('\n];', s) + 2;
+      var data = JSON.parse(t.slice(s, e)).slice(0, 3);
+      if (!data.length) return;
+      var esc = function (v) { var d = document.createElement('div'); d.textContent = v; return d.innerHTML; };
+      list.innerHTML = data.map(function (x) {
+        return '<li class="liveview__item"><a class="liveview__card" href="' + esc(x.url) + '" target="_blank" rel="noopener">' +
+          '<span class="liveview__meta">' + esc(x.date) + '</span>' +
+          '<h3 class="liveview__paper">' + esc(x.title) + '</h3>' +
+          '<p class="liveview__author">' + esc(x.faculty) + '</p>' +
+          '<p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>' + esc(x.takeaway) + '</p></a></li>';
+      }).join('');
+    }).catch(function () {});
+  })();
+  </script>
+
   <!-- ── About the Center ───────────────────────────────────────── -->
   <section class="about-center" aria-labelledby="about-center-heading">
     <div class="about-center__inner">
