@@ -80,7 +80,7 @@
 
         <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="news-card news-card--wide news-card--brush">
           <span class="news-card__arrow" aria-hidden="true">&#8599;</span>
-          <div class="news-card__media"><video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Research Compendium dashboard"></div>
+          <div class="news-card__media"><video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Research Compendium dashboard"></video></div>
           <div class="news-card__body news-card__body--bottom">
             <h3 class="news-card__title">Launching the Research Compendium</h3>
             <p class="news-card__desc">Our redesigned research compendium is a one-stop shop for Penn research on the quantitative study of the information ecosystem.</p>
@@ -126,55 +126,48 @@
         <p class="research-cta__lead">Explore our catalog of Penn's cutting-edge research on information integrity, media ecosystems, political speech, democratic resilience, and much more.</p>
         <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="research-cta__link">Explore All Research <span aria-hidden="true">⟶</span></a>
       </div>
-      <!-- Same destination as "Explore All Research". Out of the tab order and
-           hidden from screen readers: the text link above is the accessible
-           one, so keyboard and screen-reader users don't meet it twice. -->
-      <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="research-cta__media" tabindex="-1" aria-hidden="true"><video src="assets/whats-new/research-compendium.mp4" poster="assets/whats-new/research-compendium-poster.webp" width="1278" height="622" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Penn MEDIATED Research Compendium being used" class="research-cta__image"></video></a>
+      <!-- Latest Research: the three newest compendium entries. The markup
+           below is the fallback; the script after this section replaces it
+           with the current three from the compendium page. -->
+      <section class="latest" aria-labelledby="latest-heading">
+        <h3 id="latest-heading" class="latest__title">Latest Research</h3>
+        <ol class="latest__list" id="latest-list">
+          <li class="latest__item">
+            <a class="latest__entry" href="https://arxiv.org/pdf/2610.09279" target="_blank" rel="noopener">
+              <span class="latest__date">10/7/2026</span>
+              <h4 class="latest__paper">AI-Assisted Submissions in Online Research Are Rare and Highly Concentrated but Routinely Approved</h4>
+              <p class="latest__author">Lyle Ungar</p>
+              <p class="latest__takeaway">AI assistance in online research submissions is very rare and has not increased in three years.</p>
+            </a>
+          </li>
+          <li class="latest__item">
+            <a class="latest__entry" href="https://www.nature.com/articles/s43588-026-01038-1" target="_blank" rel="noopener">
+              <span class="latest__date">9/21/2026</span>
+              <h4 class="latest__paper">Algorithmic systems, human agency and the future of platform research</h4>
+              <p class="latest__author">Duncan Watts</p>
+              <p class="latest__takeaway">Evidence linking algorithms to harmful online outcomes is inconclusive, as user preferences and content supply also shape what people consume.</p>
+            </a>
+          </li>
+          <li class="latest__item">
+            <a class="latest__entry" href="https://www.science.org/doi/10.1126/sciadv.aea7456" target="_blank" rel="noopener">
+              <span class="latest__date">9/9/2026</span>
+              <h4 class="latest__paper">The Media Bias Detector: A framework for annotating and analyzing the news</h4>
+              <p class="latest__author">Duncan Watts &amp; Chris Callison-Burch</p>
+              <p class="latest__takeaway">A new tool automatically analyzes hundreds of top news articles from major outlets, searching for biases and themes in real time. It can be accessed on the Media Bias Detector website.</p>
+            </a>
+          </li>
+        </ol>
+      </section>
     </div>
   </section>
  
-  <!-- ── Research Compendium Liveview ───────────────────────────── -->
-  <section class="liveview" aria-labelledby="liveview-heading">
-    <div class="liveview__inner">
-      <div class="liveview__head">
-        <div>
-          <h2 id="liveview-heading" class="liveview__title">Research Compendium Liveview</h2>
-        </div>
-        <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="liveview__all">View full compendium <span aria-hidden="true">⟶</span></a>
-      </div>
-      <ol class="liveview__list" id="liveview-list">
-        <li class="liveview__item">
-          <a class="liveview__card" href="https://arxiv.org/pdf/2610.09279" target="_blank" rel="noopener">
-            <span class="liveview__meta">10/7/2026</span>
-            <h3 class="liveview__paper">AI-Assisted Submissions in Online Research Are Rare and Highly Concentrated but Routinely Approved</h3>
-            <p class="liveview__author">Lyle Ungar</p>
-            <p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>AI assistance in online research submissions is very rare and has not increased in three years.</p>
-          </a>
-        </li>
-        <li class="liveview__item">
-          <a class="liveview__card" href="https://www.nature.com/articles/s43588-026-01038-1" target="_blank" rel="noopener">
-            <span class="liveview__meta">9/21/2026</span>
-            <h3 class="liveview__paper">Algorithmic systems, human agency and the future of platform research</h3>
-            <p class="liveview__author">Duncan Watts</p>
-            <p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>Evidence linking algorithms to harmful online outcomes is inconclusive, as user preferences and content supply also shape what people consume.</p>
-          </a>
-        </li>
-        <li class="liveview__item">
-          <a class="liveview__card" href="https://www.science.org/doi/10.1126/sciadv.aea7456" target="_blank" rel="noopener">
-            <span class="liveview__meta">9/9/2026</span>
-            <h3 class="liveview__paper">The Media Bias Detector: A framework for annotating and analyzing the news</h3>
-            <p class="liveview__author">Duncan Watts &amp; Chris Callison-Burch</p>
-            <p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>A new tool automatically analyzes hundreds of top news articles from major outlets, searching for biases and themes in real time. It can be accessed on the Media Bias Detector website.</p>
-          </a>
-        </li>
-      </ol>
-    </div>
-  </section>
   <script>
-  /* Liveview: refresh the three newest entries from the compendium itself.
-     Falls back silently to the markup above if the fetch or parse fails. */
+  /* Latest Research: refresh the three newest entries from the compendium
+     itself. Reads the ENTRIES array out of the compendium page's source, so
+     if that page is restructured this stops updating and the fallback markup
+     above stays — check it after any compendium refactor. */
   (function () {
-    var list = document.getElementById('liveview-list');
+    var list = document.getElementById('latest-list');
     fetch('https://pennmediated.github.io/research-compendium/').then(function (r) { return r.text(); }).then(function (t) {
       var s = t.indexOf('const ENTRIES = ');
       if (s < 0) return;
@@ -184,11 +177,11 @@
       if (!data.length) return;
       var esc = function (v) { var d = document.createElement('div'); d.textContent = v; return d.innerHTML; };
       list.innerHTML = data.map(function (x) {
-        return '<li class="liveview__item"><a class="liveview__card" href="' + esc(x.url) + '" target="_blank" rel="noopener">' +
-          '<span class="liveview__meta">' + esc(x.date) + '</span>' +
-          '<h3 class="liveview__paper">' + esc(x.title) + '</h3>' +
-          '<p class="liveview__author">' + esc(x.faculty) + '</p>' +
-          '<p class="liveview__takeaway"><span class="liveview__label">Key takeaway</span>' + esc(x.takeaway) + '</p></a></li>';
+        return '<li class="latest__item"><a class="latest__entry" href="' + esc(x.url) + '" target="_blank" rel="noopener">' +
+          '<span class="latest__date">' + esc(x.date) + '</span>' +
+          '<h4 class="latest__paper">' + esc(x.title) + '</h4>' +
+          '<p class="latest__author">' + esc(x.faculty) + '</p>' +
+          '<p class="latest__takeaway">' + esc(x.takeaway) + '</p></a></li>';
       }).join('');
     }).catch(function () {});
   })();
@@ -217,7 +210,9 @@
         <p class="faculty-cta__lead">Our 25 affiliated faculty are distinguished by their rigorous empirical and computational research that advances the collective understanding of the information ecosystem.</p>
         <a href="https://mediated.upenn.edu/faculty/" target="_top" class="faculty-cta__link">Learn More About Our Affiliated Faculty <span aria-hidden="true">⟶</span></a>
       </div>
-      <!-- Same destination as the link above; see the research CTA note. -->
+      <!-- Same destination as the link above. Out of the tab order and hidden
+           from screen readers: the text link is the accessible one, so
+           keyboard and screen-reader users don't meet it twice. -->
       <a href="https://mediated.upenn.edu/faculty/" target="_top" class="faculty-cta__media" tabindex="-1" aria-hidden="true"><video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Affiliated Faculty network, cycling through faculty profiles and their research papers" class="faculty-cta__image"></video></a>
     </div>
   </section>

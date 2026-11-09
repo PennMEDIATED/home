@@ -654,12 +654,66 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__link:hover { opacity: 0.75; }
 
-.research-cta__image {
-  display: block;
-  width: 100%;
-  height: auto;
+/* Latest Research: the three newest compendium entries, in the right-hand
+   column where the screen recording used to sit. A white card with the same
+   shadow, so the band keeps its copy-left / object-right shape. Paper titles
+   are serif 600 (named works); each entry is one link to the paper. */
+.latest {
+  background: var(--c-white);
   border-radius: var(--space-100);
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+  padding: var(--space-400) var(--space-400) var(--space-200);
+}
+.latest__title {
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  padding-bottom: var(--space-200);
+  border-bottom: 1px solid rgba(13,13,12,0.12);
+}
+.latest__list { list-style: none; margin: 0; padding: 0; }
+.latest__item + .latest__item { border-top: 1px solid rgba(13,13,12,0.12); }
+.latest__entry {
+  display: block;
+  padding-block: var(--space-300);
+  color: var(--c-dark);
+}
+.latest__date {
+  display: block;
+  font-family: var(--f-sans);
+  font-size: var(--fs-micro);
+  color: var(--c-gray-dark);
+  margin-bottom: var(--space-100);
+}
+.latest__paper {
+  font-family: var(--f-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: var(--lh-title);
+  color: var(--c-dark);
+  transition: color 0.15s;
+}
+.latest__entry:hover .latest__paper { color: var(--c-accent); }
+.latest__author {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--c-accent);
+  margin-top: var(--space-100);
+}
+.latest__takeaway {
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  line-height: var(--lh-body);
+  color: var(--c-gray-dark);
+  margin-top: var(--space-100);
+}
+@media (max-width: 480px) {
+  .latest { padding: var(--space-300) var(--space-300) var(--space-100); }
+  .latest__paper { font-size: 18px; }
 }
 
 /* =============================================================================
@@ -803,7 +857,6 @@ button { font: inherit; cursor: pointer; }
    them; this rule just makes sure the poster is what shows. */
 @media (prefers-reduced-motion: reduce) {
   .news-card__image video,
-  video.research-cta__image,
   video.faculty-cta__image { animation: none; }
 }
 
@@ -816,13 +869,11 @@ button { font: inherit; cursor: pointer; }
 
 /* The screen recordings are links too (same destination as each band's text
    link). A small lift on hover, like the What's New cards, says so. */
-.research-cta__media,
 .faculty-cta__media {
   display: block;
   border-radius: var(--space-100);
   transition: transform 0.2s ease;
 }
-.research-cta__media:hover,
 .faculty-cta__media:hover { transform: translateY(-4px); }
 
 /* Both colour bands, narrow screens: one column, with the copy and the
@@ -1224,58 +1275,3 @@ button { font: inherit; cursor: pointer; }
    ====================================================================== */
 body { display: flow-root; }
 
-/* =============================================================================
-   RESEARCH COMPENDIUM LIVEVIEW
-   Three newest entries as a numbered editorial list on a dark band, so it
-   reads apart from the purple band above and the white About card below.
-   Paper title (serif, it is a work), Penn author, key takeaway.
-   ============================================================================= */
-.liveview { background: var(--c-dark); color: var(--c-white); padding-block: var(--space-1000); }
-.liveview__inner { width: 100%; max-width: var(--max-w); margin-inline: auto; padding-inline: var(--pad-x); }
-.liveview__head {
-  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-  gap: var(--space-300); margin-bottom: var(--space-600);
-}
-.liveview__title {
-  font-family: var(--f-sans); font-size: var(--fs-h2); font-weight: 600;
-  line-height: var(--lh-heading); letter-spacing: -0.704px; color: var(--c-white);
-}
-.liveview__all {
-  font-family: var(--f-sans); font-size: var(--fs-body); font-weight: 500; color: var(--c-white);
-  border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 2px; transition: opacity 0.15s;
-}
-.liveview__all:hover { opacity: 0.75; }
-.liveview__list { list-style: none; margin: 0; padding: 0; counter-reset: lv; border-top: 1px solid rgba(255,255,255,0.18); }
-.liveview__item { counter-increment: lv; border-bottom: 1px solid rgba(255,255,255,0.18); }
-.liveview__card {
-  position: relative; display: grid; grid-template-columns: 56px minmax(0, 1.1fr) minmax(0, 1fr);
-  grid-template-areas: "num paper take" "num author take" "num meta take";
-  column-gap: var(--space-600); row-gap: var(--space-100); align-items: start;
-  padding: var(--space-500) var(--space-200); color: var(--c-white);
-  transition: background 0.2s;
-}
-.liveview__card::before {
-  content: counter(lv, decimal-leading-zero); grid-area: num;
-  font-family: var(--f-serif); font-size: var(--fs-h2); line-height: 1; color: #a89bff;
-}
-.liveview__card:hover { background: rgba(255,255,255,0.05); }
-.liveview__paper { grid-area: paper; font-family: var(--f-serif); font-size: var(--fs-h3); font-weight: 600; line-height: var(--lh-title); }
-.liveview__author { grid-area: author; font-family: var(--f-sans); font-size: var(--fs-small); font-weight: 600; color: #c9c0ff; }
-.liveview__meta { grid-area: meta; font-family: var(--f-sans); font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-muted); }
-.liveview__takeaway {
-  grid-area: take; font-family: var(--f-sans); font-size: var(--fs-body); line-height: var(--lh-body);
-  color: #e8e6e0; padding-left: var(--space-300); border-left: 2px solid var(--c-accent);
-}
-.liveview__label {
-  display: block; font-size: var(--fs-micro); font-weight: 600; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--c-muted); margin-bottom: var(--space-100);
-}
-@media (max-width: 900px) {
-  .liveview { padding-block: var(--space-800); }
-  .liveview__card {
-    grid-template-columns: 40px minmax(0, 1fr);
-    grid-template-areas: "num paper" "num author" "num meta" "num take";
-    column-gap: var(--space-300); padding-inline: 0;
-  }
-  .liveview__takeaway { margin-top: var(--space-200); }
-}
