@@ -122,48 +122,45 @@
   <section class="research-cta" aria-labelledby="research-cta-heading">
     <div class="research-cta__inner">
       <div class="research-cta__copy">
-        <h2 id="research-cta-heading" class="research-cta__title">Research Compendium</h2>
+        <h2 id="research-cta-heading" class="research-cta__title">Research Compendium: <span class="research-cta__title-line">New Publications</span></h2>
         <p class="research-cta__lead">Explore our catalog of Penn's cutting-edge research on information integrity, media ecosystems, political speech, democratic resilience, and much more.</p>
         <a href="https://mediated.upenn.edu/research-compendium/" target="_top" class="research-cta__link">Explore All Research <span aria-hidden="true">⟶</span></a>
       </div>
-      <!-- Latest Research: the three newest compendium entries. The markup
+      <!-- New Publications: the three newest compendium entries. The markup
            below is the fallback; the script after this section replaces it
            with the current three from the compendium page. -->
-      <section class="latest" aria-labelledby="latest-heading">
-        <h3 id="latest-heading" class="latest__title">Latest Research</h3>
-        <ol class="latest__list" id="latest-list">
+      <div class="latest">
+        <ol class="latest__list" id="latest-list" aria-label="New publications">
           <li class="latest__item">
-            <a class="latest__entry" href="https://arxiv.org/pdf/2610.09279" target="_blank" rel="noopener">
-              <span class="latest__date">10/7/2026</span>
+            <a class="latest__entry" href="https://mediated.upenn.edu/research-compendium/#ai-assisted-submissions-in-online-research-are-rare-and-high" target="_top">
               <h4 class="latest__paper">AI-Assisted Submissions in Online Research Are Rare and Highly Concentrated but Routinely Approved</h4>
-              <p class="latest__author">Lyle Ungar</p>
+              <p class="latest__meta"><span>Lyle Ungar</span><span>10/7/2026</span></p>
               <p class="latest__takeaway">AI assistance in online research submissions is very rare and has not increased in three years.</p>
             </a>
           </li>
           <li class="latest__item">
-            <a class="latest__entry" href="https://www.nature.com/articles/s43588-026-01038-1" target="_blank" rel="noopener">
-              <span class="latest__date">9/21/2026</span>
+            <a class="latest__entry" href="https://mediated.upenn.edu/research-compendium/#algorithmic-systems-human-agency-and-the-future-of-platform" target="_top">
               <h4 class="latest__paper">Algorithmic systems, human agency and the future of platform research</h4>
-              <p class="latest__author">Duncan Watts</p>
+              <p class="latest__meta"><span>Duncan Watts</span><span>9/21/2026</span></p>
               <p class="latest__takeaway">Evidence linking algorithms to harmful online outcomes is inconclusive, as user preferences and content supply also shape what people consume.</p>
             </a>
           </li>
           <li class="latest__item">
-            <a class="latest__entry" href="https://www.science.org/doi/10.1126/sciadv.aea7456" target="_blank" rel="noopener">
-              <span class="latest__date">9/9/2026</span>
+            <a class="latest__entry" href="https://mediated.upenn.edu/research-compendium/#the-media-bias-detector-a-framework-for-annotating-and-analy" target="_top">
               <h4 class="latest__paper">The Media Bias Detector: A framework for annotating and analyzing the news</h4>
-              <p class="latest__author">Duncan Watts &amp; Chris Callison-Burch</p>
+              <p class="latest__meta"><span>Duncan Watts &amp; Chris Callison-Burch</span><span>9/9/2026</span></p>
               <p class="latest__takeaway">A new tool automatically analyzes hundreds of top news articles from major outlets, searching for biases and themes in real time. It can be accessed on the Media Bias Detector website.</p>
             </a>
           </li>
         </ol>
-      </section>
+      </div>
     </div>
   </section>
  
   <script>
-  /* Latest Research: refresh the three newest entries from the compendium
-     itself. Reads the ENTRIES array out of the compendium page's source, so
+  /* New Publications: refresh the three newest entries from the compendium
+     itself. Each links to its entry on the compendium page via #<entry id>,
+     which that page opens and scrolls to (its "Copy entry link" format). Reads the ENTRIES array out of the compendium page's source, so
      if that page is restructured this stops updating and the fallback markup
      above stays — check it after any compendium refactor. */
   (function () {
@@ -173,14 +170,20 @@
       if (s < 0) return;
       s += 16;
       var e = t.indexOf('\n];', s) + 2;
-      var data = JSON.parse(t.slice(s, e)).slice(0, 3);
+      // Newest first by date, not list order: the compendium sorts by date when
+      // it displays, so a new entry may be added anywhere in its list. The
+      // sort is stable, so same-date entries keep their list order, which
+      // matches the compendium's own order.
+      var t2d = function (d) { var p = String(d || '').split('/'); return new Date(+p[2] || 0, (+p[0] || 1) - 1, +p[1] || 1).getTime(); };
+      var data = JSON.parse(t.slice(s, e))
+        .sort(function (a, b) { return t2d(b.date) - t2d(a.date); })
+        .slice(0, 3);
       if (!data.length) return;
       var esc = function (v) { var d = document.createElement('div'); d.textContent = v; return d.innerHTML; };
       list.innerHTML = data.map(function (x) {
-        return '<li class="latest__item"><a class="latest__entry" href="' + esc(x.url) + '" target="_blank" rel="noopener">' +
-          '<span class="latest__date">' + esc(x.date) + '</span>' +
+        return '<li class="latest__item"><a class="latest__entry" href="https://mediated.upenn.edu/research-compendium/#' + encodeURIComponent(x.id) + '" target="_top">' +
           '<h4 class="latest__paper">' + esc(x.title) + '</h4>' +
-          '<p class="latest__author">' + esc(x.faculty) + '</p>' +
+          '<p class="latest__meta"><span>' + esc(x.faculty) + '</span><span>' + esc(x.date) + '</span></p>' +
           '<p class="latest__takeaway">' + esc(x.takeaway) + '</p></a></li>';
       }).join('');
     }).catch(function () {});
