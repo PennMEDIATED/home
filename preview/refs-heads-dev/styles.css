@@ -349,38 +349,17 @@ button { font: inherit; cursor: pointer; }
   pointer-events: none;
 }
 
-/* The tower has its own column rather than sitting behind the copy, so the
-   two never fight for the same space. */
+/* The conversation icon has its own column rather than sitting behind the
+   copy, so the two never fight for the same space. Centred in the column;
+   the SVG has a transparent background, so the gradient shows through. */
 .hero__visual {
   position: relative;
   z-index: 1;
   min-height: 460px;
   align-self: stretch;
-}
-
-/* Interactive ASCII graphic (assets/broadcast-tower.html) — background is
-   transparent so the hero's own gradient shows through underneath it. */
-.hero__visual-frame {
-  /* Absolutely filled rather than height: 100%. Once the hero stacks to one
-     column, .hero__visual has only a min-height, and Safari then resolves a
-     percentage height to nothing and falls back to an iframe's default
-     150px: the tower art was drawn into a 150px strip and came out tiny. */
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
-}
-
-/* Not interactive on touch screens. The graphic responds to a dragging
-   finger, which meant a swipe that started on it moved the art instead of
-   the page — on a phone, where the art fills most of the first screen, the
-   hero could not be scrolled past. (hover: none) is phones and tablets; a
-   laptop with a mouse keeps the interaction. The art still animates. */
-@media (hover: none) {
-  .hero__visual-frame { pointer-events: none; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* =============================================================================
@@ -603,13 +582,17 @@ button { font: inherit; cursor: pointer; }
      at ~1100px and left a half-width column of text, a small image and a
      wide empty band. Stacked layout: see the 900px rule under FACULTY CTA. */
   display: grid;
-  grid-template-columns: minmax(0, 500px) minmax(0, 523px);
+  /* 2:3, so the New Publications card is the wider column at every width
+     (it was 500px / 523px when the right side was a screen recording).
+     The faculty band keeps 500/523, so the two bands no longer share an
+     exact grid. */
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   justify-content: space-between;
   align-items: center;
   gap: var(--space-800);
 }
 
-.research-cta__copy { max-width: 500px; }
+.research-cta__copy { max-width: none; }  /* the 2fr column sets the width; a 440px cap broke "Research Compendium:" */
 
 /* Section heading on a colour band: DM Sans (a section heading is never
    serif), weight 600 — 700 is for white grounds, 600 on colour. Carries the
@@ -624,6 +607,10 @@ button { font: inherit; cursor: pointer; }
   color: var(--c-white);
   margin-bottom: var(--space-300);
 }
+
+/* Start "New Publications" on its own line, so the heading never breaks
+   mid-phrase ("Compendium: New / Publications"). */
+.research-cta__title-line { display: block; }
 
 /* Demoted from --fs-h2 to --fs-lede now that it sits under a heading. The
    negative tracking went with it: -0.704px is display tracking and reads as
@@ -654,12 +641,55 @@ button { font: inherit; cursor: pointer; }
 
 .research-cta__link:hover { opacity: 0.75; }
 
-.research-cta__image {
-  display: block;
-  width: 100%;
-  height: auto;
+/* New Publications: the three newest compendium entries, in the right-hand
+   column where the screen recording used to sit. A white card with the same
+   shadow, so the band keeps its copy-left / object-right shape. Paper titles
+   are serif 600 (named works); each entry links to its compendium entry. */
+.latest {
+  background: var(--c-white);
   border-radius: var(--space-100);
   box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+  padding: var(--space-100) var(--space-400);
+}
+.latest__list { list-style: none; margin: 0; padding: 0; }
+/* Matches the compendium's entry rows: serif 600 title at body size (no "New"
+   badge: the heading already says these are new), faculty and date on one line at 14px, takeaway at
+   16px light. Dividers are the brand red-orange. */
+.latest__item + .latest__item { border-top: 1px solid var(--c-red); }
+.latest__entry {
+  display: block;
+  padding-block: var(--space-200);
+  color: var(--c-dark);
+}
+.latest__paper {
+  font-family: var(--f-serif);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  line-height: var(--lh-title);
+  color: var(--c-dark);
+  transition: color 0.15s;
+}
+.latest__entry:hover .latest__paper { color: var(--c-red-dark); }
+.latest__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-200);
+  font-family: var(--f-sans);
+  font-size: var(--fs-small);
+  color: var(--c-dark);
+  margin-top: var(--space-100);
+}
+.latest__takeaway {
+  font-family: var(--f-sans);
+  font-size: var(--fs-body);
+  font-weight: 300;
+  line-height: var(--lh-body);
+  color: var(--c-dark);
+  margin-top: var(--space-100);
+}
+@media (max-width: 480px) {
+  .latest { padding: var(--space-100) var(--space-300); }
 }
 
 /* =============================================================================
@@ -761,7 +791,8 @@ button { font: inherit; cursor: pointer; }
 }
 
 .faculty-cta__inner {
-  /* Same two-column grid as .research-cta__inner. */
+  /* Was the same grid as .research-cta__inner; that band now gives its
+     right column more room for the New Publications card. */
   display: grid;
   grid-template-columns: minmax(0, 500px) minmax(0, 523px);
   justify-content: space-between;
@@ -803,7 +834,6 @@ button { font: inherit; cursor: pointer; }
    them; this rule just makes sure the poster is what shows. */
 @media (prefers-reduced-motion: reduce) {
   .news-card__image video,
-  video.research-cta__image,
   video.faculty-cta__image { animation: none; }
 }
 
@@ -816,13 +846,11 @@ button { font: inherit; cursor: pointer; }
 
 /* The screen recordings are links too (same destination as each band's text
    link). A small lift on hover, like the What's New cards, says so. */
-.research-cta__media,
 .faculty-cta__media {
   display: block;
   border-radius: var(--space-100);
   transition: transform 0.2s ease;
 }
-.research-cta__media:hover,
 .faculty-cta__media:hover { transform: translateY(-4px); }
 
 /* Both colour bands, narrow screens: one column, with the copy and the
@@ -970,7 +998,7 @@ button { font: inherit; cursor: pointer; }
   .hero__inner { grid-template-columns: 1fr; gap: var(--space-600); min-height: 0; }
   /* Grows with the width on tablets so the tower art keeps a usable
      height instead of a thin 300px strip. */
-  .hero__visual { min-height: clamp(300px, 55vw, 460px); order: 2; }
+  .hero__visual { min-height: 0; order: 2; }
   .hero__content { max-width: none; }
 }
 
@@ -1224,58 +1252,3 @@ button { font: inherit; cursor: pointer; }
    ====================================================================== */
 body { display: flow-root; }
 
-/* =============================================================================
-   RESEARCH COMPENDIUM LIVEVIEW
-   Three newest entries as a numbered editorial list on a dark band, so it
-   reads apart from the purple band above and the white About card below.
-   Paper title (serif, it is a work), Penn author, key takeaway.
-   ============================================================================= */
-.liveview { background: var(--c-dark); color: var(--c-white); padding-block: var(--space-1000); }
-.liveview__inner { width: 100%; max-width: var(--max-w); margin-inline: auto; padding-inline: var(--pad-x); }
-.liveview__head {
-  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-  gap: var(--space-300); margin-bottom: var(--space-600);
-}
-.liveview__title {
-  font-family: var(--f-sans); font-size: var(--fs-h2); font-weight: 600;
-  line-height: var(--lh-heading); letter-spacing: -0.704px; color: var(--c-white);
-}
-.liveview__all {
-  font-family: var(--f-sans); font-size: var(--fs-body); font-weight: 500; color: var(--c-white);
-  border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 2px; transition: opacity 0.15s;
-}
-.liveview__all:hover { opacity: 0.75; }
-.liveview__list { list-style: none; margin: 0; padding: 0; counter-reset: lv; border-top: 1px solid rgba(255,255,255,0.18); }
-.liveview__item { counter-increment: lv; border-bottom: 1px solid rgba(255,255,255,0.18); }
-.liveview__card {
-  position: relative; display: grid; grid-template-columns: 56px minmax(0, 1.1fr) minmax(0, 1fr);
-  grid-template-areas: "num paper take" "num author take" "num meta take";
-  column-gap: var(--space-600); row-gap: var(--space-100); align-items: start;
-  padding: var(--space-500) var(--space-200); color: var(--c-white);
-  transition: background 0.2s;
-}
-.liveview__card::before {
-  content: counter(lv, decimal-leading-zero); grid-area: num;
-  font-family: var(--f-serif); font-size: var(--fs-h2); line-height: 1; color: #a89bff;
-}
-.liveview__card:hover { background: rgba(255,255,255,0.05); }
-.liveview__paper { grid-area: paper; font-family: var(--f-serif); font-size: var(--fs-h3); font-weight: 600; line-height: var(--lh-title); }
-.liveview__author { grid-area: author; font-family: var(--f-sans); font-size: var(--fs-small); font-weight: 600; color: #c9c0ff; }
-.liveview__meta { grid-area: meta; font-family: var(--f-sans); font-size: var(--fs-micro); letter-spacing: 0.04em; color: var(--c-muted); }
-.liveview__takeaway {
-  grid-area: take; font-family: var(--f-sans); font-size: var(--fs-body); line-height: var(--lh-body);
-  color: #e8e6e0; padding-left: var(--space-300); border-left: 2px solid var(--c-accent);
-}
-.liveview__label {
-  display: block; font-size: var(--fs-micro); font-weight: 600; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--c-muted); margin-bottom: var(--space-100);
-}
-@media (max-width: 900px) {
-  .liveview { padding-block: var(--space-800); }
-  .liveview__card {
-    grid-template-columns: 40px minmax(0, 1fr);
-    grid-template-areas: "num paper" "num author" "num meta" "num take";
-    column-gap: var(--space-300); padding-inline: 0;
-  }
-  .liveview__takeaway { margin-top: var(--space-200); }
-}
