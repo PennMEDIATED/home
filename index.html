@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script type="module" src="assets/conversation-scroll.js"></script>
 </head>
 <body>
  
@@ -27,15 +28,13 @@
         <p class="hero__subtitle">At Penn MEDIATED, we work to better understand the information ecosystem through cutting-edge science, then leverage that research to strengthen the foundations of democracy.</p>
       </div>
 
-      <!-- The ASCII broadcast tower sits in its own column rather than behind
-           the copy, so the dots never run through the text. -->
+      <!-- The conversation icon sits in its own column rather than behind
+           the copy, so the dots never run through the text. Inline SVG web
+           component (assets/conversation-scroll.js), not an iframe or an
+           animated image: ~25KB against 2MB for the WebP export. `autoplay`
+           because this page never scrolls inside its own iframe. -->
       <div class="hero__visual" aria-hidden="true">
-        <iframe
-          class="hero__visual-frame"
-          src="assets/broadcast-tower.html"
-          title="Interactive ASCII broadcast tower graphic"
-          scrolling="no"
-        ></iframe>
+        <mediated-conversation autoplay color="#fff" size="clamp(180px, 22vw, 300px)"></mediated-conversation>
       </div>
 
     </div>
