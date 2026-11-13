@@ -2,8 +2,9 @@
  * MEDIATED conversation icon — scroll-driven version (one message at a time)
  * --------------------------------------------------
  * Geometry is taken 1:1 from Figma node 533:218 ("conversation icon").
- * Two messages sit on screen. Each scroll step the older one lifts away and fades,
- * the newer one moves up into its place, and a new message pops in below it.
+ * Two messages sit on screen. Each step the older one lifts away and fades, the
+ * newer one moves straight up (keeping its side and colours), and a new message
+ * pops in below it on the opposite side, so sides alternate like a conversation.
  *
  * Usage:
  *   load this file as a module:  script type="module" src="conversation-scroll.js"
@@ -20,7 +21,7 @@
  *                scrolls. Drops the tall sticky scroll track, so the element is only
  *                as tall as the icon. Pauses while offscreen or the tab is hidden;
  *                holds still on the first message under prefers-reduced-motion.
- *   hold         autoplay only: ms each message rests between steps (default: 1300)
+ *   hold         autoplay only: ms each message rests between steps (default: 1200)
  *
  * Events:
  *   "convo-step"  detail: { index, icon, theme }  — fires when a new message appears
@@ -283,7 +284,7 @@ const easeOutQuart = (t) => 1 - Math.pow(1 - t, 4);
 // Gentle overshoot so the pop feels springy without wobbling.
 const easeOutBack = (t, s = 1.15) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2);
 
-export const DURATION = 1100;           // ms per step
+export const DURATION = 2000;           // ms per step
 export const DURATION_REDUCED = 300;    // ms crossfade when reduced motion is on
 const EXIT = [0, 0.45];                 // old top message: lift + fade out
 const MOVE = [0.1, 0.7];                // bottom message travels up to the top slot
@@ -291,29 +292,28 @@ const ENTER = [0.45, 0.95];             // new message pops in at the bottom slo
 const EXIT_LIFT = 14;                   // icon units the leaving message rises
 const ENTER_RISE = 6;                   // icon units a new bubble rises into place
 const ENTER_SCALE = 0.55;               // starting scale of a popping bubble
-const MOVE_DX = BUBBLE_TOP.center[0] - BUBBLE_BOTTOM.center[0];
-const MOVE_DY = BUBBLE_TOP.center[1] - BUBBLE_BOTTOM.center[1];
+// Vertical distance between the upper and lower slot. A message keeps its side:
+// even messages are the left (original top) bubble, odd ones the right bubble.
+const SLOT_DY = BUBBLE_BOTTOM.center[1] - BUBBLE_TOP.center[1];
+const GEOM = [BUBBLE_TOP, BUBBLE_BOTTOM];
+// y offset of a side's bubble at the upper (k=0) … lower (k=1) slot.
+const slotY = (side, k) => (side === 0 ? SLOT_DY * k : -SLOT_DY * (1 - k));
 
 /** Unroll theme pairs into the message stream: [{ icon, theme }, …]. */
 export const messagesOf = (themes) => themes.flatMap((t) => [{ icon: t.top, theme: t }, { icon: t.bottom, theme: t }]);
 
 /**
- * Pose of every moving part at time t ∈ [0,1] of one step (pure, shared with
- * the GIF exporter). `out` is the leaving top message, `mid` the bottom message
- * travelling up (it cross-fades from its bottom-slot look to its top-slot look
- * as it goes), `inn` the new bottom message.
+ * Pose of every moving part at time t ∈ [0,1] of one step (pure). `out` is the
+ * leaving upper message, `mid` the lower message travelling straight up
+ * (k: 1 = lower slot, 0 = upper slot), `inn` the new message popping in below.
  */
 export function stepPose(t) {
   const e = easeInOutCubic(phase(t, EXIT));
   const m = easeInOutCubic(phase(t, MOVE));
   const p = phase(t, ENTER);
-  const fade = easeInOutCubic(clamp((m - 0.2) / 0.6));
   return {
-    out: { dy: -EXIT_LIFT * e, opacity: 1 - e },
-    mid: {
-      bottom: { dx: MOVE_DX * m, dy: MOVE_DY * m, opacity: 1 - fade },
-      top: { dx: -MOVE_DX * (1 - m), dy: -MOVE_DY * (1 - m), opacity: fade },
-    },
+    out: { lift: -EXIT_LIFT * e, opacity: 1 - e },
+    mid: { k: 1 - m },
     inn: {
       scale: ENTER_SCALE + (1 - ENTER_SCALE) * easeOutBack(p),
       rise: ENTER_RISE * (1 - easeOutQuart(p)),
@@ -343,19 +343,11 @@ if (typeof window !== 'undefined' && !customElements.get('mediated-conversation'
           .stage { ${this.autoplay ? '' : 'position:sticky; top:0; height:100vh;'} display:flex; flex-direction:column;
                    align-items:center; justify-content:center; gap:24px; }
           svg { width:${size}; height:auto; overflow:visible; display:block; }
-          [data-msg], [data-v] { will-change: transform, opacity; }
+          [data-msg] { will-change: transform, opacity; }
         </style>
         <div class="stage">
           <svg viewBox="0 0 99 118" role="img"
                aria-label="Conversation icon cycling through Penn MEDIATED research themes">
-            <defs>
-              <mask id="ko-out" maskUnits="userSpaceOnUse" x="-60" y="-60" width="220" height="240">
-                <rect x="-60" y="-60" width="220" height="240" fill="#fff"/><g class="carve-out"></g>
-              </mask>
-              <mask id="ko-mid" maskUnits="userSpaceOnUse" x="-60" y="-60" width="220" height="240">
-                <rect x="-60" y="-60" width="220" height="240" fill="#fff"/><g class="carve-mid"></g>
-              </mask>
-            </defs>
             <g class="msgs"></g>
           </svg>
           <slot></slot>
@@ -366,22 +358,16 @@ if (typeof window !== 'undefined' && !customElements.get('mediated-conversation'
       const mono = this.getAttribute('color');
       const violet = mono || css.getPropertyValue('--convo-violet').trim() || VIOLET;
       const coral = mono || css.getPropertyValue('--convo-coral').trim() || CORAL;
-      this.carveOut = this.shadowRoot.querySelector('.carve-out');
-      this.carveMid = this.shadowRoot.querySelector('.carve-mid');
-      // Each message carries both of its looks: the top slot (violet bubble,
-      // coral icon) and the bottom slot (coral bubble, violet icon).
+      // Each message is one bubble that keeps its side and colours for its life:
+      // left = violet bubble / coral icon, right = coral bubble / violet icon.
       root.innerHTML = this.msgs
-        .map((m) =>
-          `<g data-msg style="display:none">` +
-          `<g data-v="top">${bubbleMarkup('top', m.icon, { bubbleColor: violet, iconColor: coral })}</g>` +
-          `<g data-v="bottom">${bubbleMarkup('bottom', m.icon, { bubbleColor: coral, iconColor: violet })}</g>` +
-          `</g>`)
+        .map((m, i) => {
+          const which = i % 2 === 0 ? 'top' : 'bottom';
+          return `<g data-msg style="display:none">${bubbleMarkup(which, m.icon,
+            { bubbleColor: which === 'top' ? violet : coral, iconColor: which === 'top' ? coral : violet })}</g>`;
+        })
         .join('');
-      this.nodes = [...root.querySelectorAll('[data-msg]')].map((g) => ({
-        g,
-        top: g.querySelector('[data-v="top"]'),
-        bottom: g.querySelector('[data-v="bottom"]'),
-      }));
+      this.nodes = [...root.querySelectorAll('[data-msg]')];
 
       this.shown = this.autoplay ? 0 : this.targetIndex();
       this.anim = null;           // { from, to, start }
@@ -411,7 +397,7 @@ if (typeof window !== 'undefined' && !customElements.get('mediated-conversation'
     /** Autoplay: rest `hold` ms, play one step, repeat. Skips a step (and checks
      *  again after the next rest) while offscreen or the tab is hidden. */
     startAutoplay() {
-      const hold = parseFloat(this.getAttribute('hold')) || 1300;
+      const hold = parseFloat(this.getAttribute('hold')) || 1200;
       this.visible = true;
       // With no root, IntersectionObserver measures against the top-level
       // viewport, so this also works inside a cross-origin iframe.
@@ -483,59 +469,39 @@ if (typeof window !== 'undefined' && !customElements.get('mediated-conversation'
       if (transform) el.setAttribute('transform', transform); else el.removeAttribute('transform');
     }
 
-    /** Hide every message, then show messages `s` (top) and `s+1` (bottom) at rest. */
+    /** Hide every message, then show messages `s` (upper) and `s+1` (lower) at rest. */
     showOnly(s) {
-      this.nodes.forEach(({ g, top, bottom }, j) => {
-        g.style.display = j === s || j === s + 1 ? '' : 'none';
-        g.removeAttribute('transform');
-        g.removeAttribute('mask');
-        this.put(top, j === s ? 1 : 0);
-        this.put(bottom, j === s + 1 ? 1 : 0);
+      this.nodes.forEach((g, j) => {
+        const on = j === s || j === s + 1;
+        g.style.display = on ? '' : 'none';
+        if (on) this.put(g, 1, `translate(0 ${slotY(j % 2, j === s ? 0 : 1)})`);
       });
     }
 
     /** One frame of step `s` at time t ∈ [0,1]. */
     draw(s, t) {
       const [out, mid, inn] = [this.nodes[s], this.nodes[s + 1], this.nodes[s + 2]];
-      this.nodes.forEach(({ g }) => { g.style.display = 'none'; });
-      for (const n of [out, mid, inn]) { n.g.style.display = ''; n.g.removeAttribute('transform'); n.g.removeAttribute('mask'); }
+      const [so, sm, si] = [s % 2, (s + 1) % 2, (s + 2) % 2];
+      this.nodes.forEach((g) => { g.style.display = 'none'; });
+      for (const g of [out, mid, inn]) g.style.display = '';
 
       if (this.reduced) {                         // plain crossfade, no movement
         const k = easeInOutCubic(t);
-        this.put(out.top, 1 - k); this.put(out.bottom, 0);
-        this.put(mid.top, 0); this.put(mid.bottom, 1);
-        this.put(inn.top, 0); this.put(inn.bottom, k);
+        this.put(out, 1 - k, `translate(0 ${slotY(so, 0)})`);
+        this.put(mid, 1, `translate(0 ${slotY(sm, 1)})`);
+        this.put(inn, k, `translate(0 ${slotY(si, 1)})`);
         return;
       }
 
       const p = stepPose(t);
       // 1. leaving message lifts and fades
-      this.put(out.top, p.out.opacity, `translate(0 ${p.out.dy.toFixed(3)})`);
-      this.put(out.bottom, 0);
-      // 2. middle message travels up, swapping its bottom look for its top look
-      this.put(mid.bottom, p.mid.bottom.opacity, `translate(${p.mid.bottom.dx.toFixed(3)} ${p.mid.bottom.dy.toFixed(3)})`);
-      this.put(mid.top, p.mid.top.opacity, `translate(${p.mid.top.dx.toFixed(3)} ${p.mid.top.dy.toFixed(3)})`);
-      // 3. new message pops in from its tail tip at the bottom slot
-      const [ox, oy] = BUBBLE_BOTTOM.origin;
-      const innT = `translate(0 ${p.inn.rise.toFixed(3)}) translate(${ox} ${oy}) scale(${p.inn.scale.toFixed(4)}) translate(${-ox} ${-oy})`;
-      this.put(inn.top, 0);
-      this.put(inn.bottom, p.inn.opacity, innT);
-
-      // Knock-out: a bubble in front (nearly opaque) hides the outline of one behind it.
-      const midLook = p.mid.top.opacity >= 0.5
-        ? ['top', p.mid.top, `translate(${p.mid.top.dx.toFixed(3)} ${p.mid.top.dy.toFixed(3)})`]
-        : ['bottom', p.mid.bottom, `translate(${p.mid.bottom.dx.toFixed(3)} ${p.mid.bottom.dy.toFixed(3)})`];
-      const shape = (which, tf) => {
-        const g = which === 'top' ? BUBBLE_TOP : BUBBLE_BOTTOM;
-        return `<g transform="${tf}" fill="#000" stroke="#000" stroke-width="5" stroke-linejoin="round"><path d="${g.body}"/><path d="${g.tail}"/></g>`;
-      };
-      const front = (o) => o >= 0.9;
-      const midShape = front(midLook[1].opacity) ? shape(midLook[0], midLook[2]) : '';
-      const innShape = front(p.inn.opacity) ? shape('bottom', innT) : '';
-      this.carveOut.innerHTML = midShape + innShape;
-      this.carveMid.innerHTML = innShape;
-      if (this.carveOut.innerHTML) out.g.setAttribute('mask', 'url(#ko-out)');
-      if (this.carveMid.innerHTML) mid.g.setAttribute('mask', 'url(#ko-mid)');
+      this.put(out, p.out.opacity, `translate(0 ${(slotY(so, 0) + p.out.lift).toFixed(3)})`);
+      // 2. lower message moves straight up, keeping its side
+      this.put(mid, 1, `translate(0 ${slotY(sm, p.mid.k).toFixed(3)})`);
+      // 3. new message pops in from its tail tip, on the opposite side
+      const [ox, oy] = GEOM[si].origin;
+      this.put(inn, p.inn.opacity,
+        `translate(0 ${(slotY(si, 1) + p.inn.rise).toFixed(3)}) translate(${ox} ${oy}) scale(${p.inn.scale.toFixed(4)}) translate(${-ox} ${-oy})`);
     }
   }
   customElements.define('mediated-conversation', MediatedConversation);
