@@ -152,10 +152,10 @@ Current assignment, which satisfies the rule at every width:
 | Position | Card | Colour |
 |---|---|---|
 | Feature (2×2) | New Report on Monitoring LLMs | white |
-| Square | Welcoming New Knight Fellows | purple |
+| Square | New Grants RFP and Data Sharing Program | purple |
 | Square | Two New Postdoc Openings | orange |
 | Wide | Launching the Research Compendium | brush (white + soft brand-colour pools) |
-| Square | MEDIATED Membership with GNI | orange |
+| Square | Welcoming New Knight Fellows | orange |
 | Square | Partnering with Digital Forensic Research Lab | purple |
 | Wide | Announcing our Affiliated Faculty | white |
 
