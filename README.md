@@ -152,7 +152,7 @@ Current assignment, which satisfies the rule at every width:
 | Position | Card | Colour |
 |---|---|---|
 | Feature (2×2) | New Report on Monitoring LLMs | white |
-| Square | New Grants and Data Sharing | purple |
+| Square | New Grants RFP and Data Sharing Program | purple |
 | Square | Two New Postdoc Openings | orange |
 | Wide | Launching the Research Compendium | brush (white + soft brand-colour pools) |
 | Square | Welcoming New Knight Fellows | orange |
