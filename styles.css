@@ -698,9 +698,7 @@ button { font: inherit; cursor: pointer; }
    White editorial card between the purple research and orange faculty CTAs.
    ============================================================================= */
 .about-center {
-  /* Peach (12% orange-red tint) so the white card stands out and the white
-     Instagram band below reads as a separate section. */
-  background: var(--c-peach);
+  background: var(--c-white);
   padding-block: var(--space-800);
   margin-block: var(--space-800);
 }
@@ -1259,7 +1257,9 @@ body { display: flow-root; }
 /* =============================================================================
    Instagram grid — 6 newest posts, 3×2 (2×3 on phones)
    ============================================================================= */
-.insta { background: var(--c-white); padding-bottom: var(--space-800); }
+/* Sits after the orange faculty band and before the footer; the padding-top is
+   the gap that band no longer gets from a neighbouring margin. */
+.insta { background: var(--c-white); padding-block: var(--space-800); }
 .insta__head {
   display: flex; flex-wrap: wrap; align-items: baseline;
   justify-content: space-between; gap: var(--space-150) var(--space-300);

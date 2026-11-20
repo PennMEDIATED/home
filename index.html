@@ -204,6 +204,20 @@
     </div>
   </section>
  
+  <!-- ── Faculty CTA ────────────────────────────────────────────── -->
+  <section class="faculty-cta">
+    <div class="faculty-cta__inner">
+      <div class="faculty-cta__copy">
+        <p class="faculty-cta__lead">Our 25 affiliated faculty are distinguished by their rigorous empirical and computational research that advances the collective understanding of the information ecosystem.</p>
+        <a href="https://mediated.upenn.edu/faculty/" target="_top" class="faculty-cta__link">Learn More About Our Affiliated Faculty <span aria-hidden="true">⟶</span></a>
+      </div>
+      <!-- Same destination as the link above. Out of the tab order and hidden
+           from screen readers: the text link is the accessible one, so
+           keyboard and screen-reader users don't meet it twice. -->
+      <a href="https://mediated.upenn.edu/faculty/" target="_top" class="faculty-cta__media" tabindex="-1" aria-hidden="true"><video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Affiliated Faculty network, cycling through faculty profiles and their research papers" class="faculty-cta__image"></video></a>
+    </div>
+  </section>
+
   <!-- ── Instagram grid ─────────────────────────────────────────────
        Filled from data/instagram.json, which the "Update Instagram feed"
        workflow rewrites whenever @penn_mediated posts. The six placeholder
@@ -246,20 +260,6 @@
     setInterval(load, 10 * 60 * 1000); /* a page left open picks up new posts */
   })();
   </script>
-
-  <!-- ── Faculty CTA ────────────────────────────────────────────── -->
-  <section class="faculty-cta">
-    <div class="faculty-cta__inner">
-      <div class="faculty-cta__copy">
-        <p class="faculty-cta__lead">Our 25 affiliated faculty are distinguished by their rigorous empirical and computational research that advances the collective understanding of the information ecosystem.</p>
-        <a href="https://mediated.upenn.edu/faculty/" target="_top" class="faculty-cta__link">Learn More About Our Affiliated Faculty <span aria-hidden="true">⟶</span></a>
-      </div>
-      <!-- Same destination as the link above. Out of the tab order and hidden
-           from screen readers: the text link is the accessible one, so
-           keyboard and screen-reader users don't meet it twice. -->
-      <a href="https://mediated.upenn.edu/faculty/" target="_top" class="faculty-cta__media" tabindex="-1" aria-hidden="true"><video src="assets/whats-new/affiliated-faculty.mp4" poster="assets/whats-new/affiliated-faculty-poster.webp" width="1046" height="650" autoplay muted loop playsinline preload="metadata" aria-label="Animated screenshot of the Affiliated Faculty network, cycling through faculty profiles and their research papers" class="faculty-cta__image"></video></a>
-    </div>
-  </section>
 
 
 
