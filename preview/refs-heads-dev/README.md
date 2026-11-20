@@ -541,3 +541,21 @@ Hover is **movement, not colour** — a lift or nudge. Do not darken or recolour
 A dropdown, `<details>` block or expand/collapse control uses one affordance sitewide: a **chevron SVG** (`M2 5l5 5 5-5`, 13×13, `--c-red-dark` stroke, `stroke-width: 1.8`) beside a `--c-red-dark` label at `--fs-small`, rotating `180deg` on open with `transition: transform 0.25s`. See `llm-civic-discourse`'s "Full summary & details" toggle for the reference implementation.
 
 Never leave the marker to the browser — style `<select>` with `appearance: none` and supply the chevron, and hide the native `<summary>` marker. The `↗` circle badge is category 4's language and does not belong on a disclosure control.
+
+
+## Instagram grid
+
+The **Follow along** band shows the 6 newest `@penn_mediated` posts (3×2, or 2×3 on phones).
+It reads `data/instagram.json`; the **Update Instagram feed** workflow rewrites that file
+(and `assets/instagram/`) every 30 minutes, only committing when a new post appears.
+Until the file has posts, the grid shows six empty tiles linking to the profile.
+
+One-time setup:
+1. The Instagram account must be a Business or Creator account.
+2. In [Meta for Developers](https://developers.facebook.com/), create an app with the *Instagram API with Instagram Login* product, add `penn_mediated` as an Instagram tester, and generate a long-lived access token.
+3. Add it as the repo secret `INSTAGRAM_ACCESS_TOKEN` (Settings > Secrets and variables > Actions).
+4. Run the workflow once from the Actions tab (*Run workflow*) to populate the grid.
+
+The workflow refreshes the token on every run, so it stays valid as long as the workflow keeps running.
+If the workflow is ever disabled for 60+ days (GitHub pauses scheduled runs on inactive repos), generate a new token.
+The workflow checks out and commits to `main`, so it takes effect once this branch is merged.

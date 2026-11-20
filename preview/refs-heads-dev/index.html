@@ -218,6 +218,49 @@
     </div>
   </section>
 
+  <!-- ── Instagram grid ─────────────────────────────────────────────
+       Filled from data/instagram.json, which the "Update Instagram feed"
+       workflow rewrites whenever @penn_mediated posts. The six placeholder
+       tiles below are the fallback if that file is empty or fails to load. -->
+  <section class="insta" aria-labelledby="insta-heading">
+    <div class="insta__inner">
+      <div class="insta__head">
+        <h2 id="insta-heading" class="insta__title">Follow along</h2>
+        <a href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" class="insta__link">@penn_mediated on Instagram <span aria-hidden="true">⟶</span></a>
+      </div>
+      <ul class="insta__grid" id="insta-grid">
+        <li><a class="insta__tile insta__tile--empty" href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" aria-label="See our latest posts on Instagram"></a></li>
+        <li><a class="insta__tile insta__tile--empty" href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"></a></li>
+        <li><a class="insta__tile insta__tile--empty" href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"></a></li>
+        <li><a class="insta__tile insta__tile--empty" href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"></a></li>
+        <li><a class="insta__tile insta__tile--empty" href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"></a></li>
+        <li><a class="insta__tile insta__tile--empty" href="https://www.instagram.com/penn_mediated/" target="_blank" rel="noopener" aria-hidden="true" tabindex="-1"></a></li>
+      </ul>
+    </div>
+  </section>
+  <script>
+  (function () {
+    var grid = document.getElementById('insta-grid');
+    function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+    function render(d) {
+      var posts = (d && d.posts || []).slice(0, 6);
+      if (!posts.length) return;
+      grid.innerHTML = posts.map(function (p) {
+        var alt = p.caption ? esc(p.caption) : 'Instagram post from Penn MEDIATED';
+        return '<li><a class="insta__tile" href="' + esc(p.permalink) + '" target="_blank" rel="noopener">' +
+          '<img src="' + esc(p.image) + '" alt="' + alt + '" loading="lazy" width="600" height="600">' +
+          (p.type === 'VIDEO' ? '<span class="insta__badge" aria-hidden="true">▶</span>' : '') + '</a></li>';
+      }).join('');
+    }
+    function load() {
+      fetch('data/instagram.json?t=' + Date.now(), { cache: 'no-store' })
+        .then(function (r) { return r.json(); }).then(render).catch(function () {});
+    }
+    load();
+    setInterval(load, 10 * 60 * 1000); /* a page left open picks up new posts */
+  })();
+  </script>
+
 
 
   <!-- The two animated cards are muted, looping <video> rather than GIF.
